@@ -1,0 +1,57 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            line-height: 30pt;
+            font-size: 15pt;
+            border: solid 1px green;
+            padding: 0;
+        }
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 0pt;
+        }
+
+        #nest {
+            margin: 0pt;
+            border: solid 1px aqua;
+            position: fixed;
+            top:100pt;
+            width: 400pt;
+        }
+
+        #abs {
+            position: absolute;
+            border: solid 1px blue;
+            right:20pt;
+            top: 100pt;
+            padding: 10pt;
+        }
+        
+        .padd{
+            background: silver;
+            padding: 0pt;
+        }
+    </style>
+</head>
+<body>
+    <h5>Block below is fixed positioned to the page, and an inner absolute with left location.</h5>
+    <div id="nest">
+        <div class="padd" style="height: 90pt;">Just pushing down with some text in the block.</div>
+        <div class="padd" style="padding: 10pt;">
+            <span id="before">Before the absolute.</span>
+            <div id="abs">Absolute to the fixed<br/>On 2 lines with padding</div>
+            <span id="after"> After the absolute block.</span>
+        </div>
+    </div>
+</body>
+</html>
+

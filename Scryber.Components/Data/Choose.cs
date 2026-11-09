@@ -74,7 +74,7 @@ namespace Scryber.Data
         private ChooseOtherwise _otherwise;
 
         [PDFElement("Otherwise")]
-        public ChooseOtherwise Otherwise
+        public virtual ChooseOtherwise Otherwise
         {
             get { return _otherwise; }
             set 
@@ -89,13 +89,19 @@ namespace Scryber.Data
             }
         }
 
+        private static readonly DataBindingBehaviour chooseBehaviour = new DataBindingBehaviour(
+            enumerate: false,
+            expandObject: false,
+            setContextData: false,
+            incrementIndex: false);
+
         public Choose()
-            : this(ObjectTypes.NoOp)
+            : this(ObjectTypes.NoOp, chooseBehaviour)
         {
         }
 
-        public Choose(ObjectType type)
-            : base(type)
+        protected Choose(ObjectType type, DataBindingBehaviour behaviour)
+            : base(type, behaviour)
         {
         }
 

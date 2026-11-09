@@ -206,6 +206,12 @@ namespace Scryber.Html.Parsing
                 if(int.TryParse(attrValue, out colspan))
                     ((TableCell)parsed).Style.Table.CellColumnSpan = colspan;
             }
+            else if (attrName == "rowspan")
+            {
+                int rowspan;
+                if (int.TryParse(attrValue, out rowspan))
+                    ((TableCell)parsed).Style.Table.CellRowSpan = rowspan;
+            }
             else
                 base.SetAttribute(parser, parsed, componentName, attrName, attrValue);
         }

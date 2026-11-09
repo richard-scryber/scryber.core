@@ -64,6 +64,35 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public int RowSpan {get;set;}
+
+        /// <summary>
+        /// Gets or sets the row span for this cell.
+        /// Default is 1 (no spanning).
+        /// </summary>
+        [PDFAttribute("row-span")]
+        [PDFJSConvertor("scryber.studio.design.convertors.integer_attr", JSParams = "\"rowspan\"")]
+        [PDFDesignable("Row Span", Category = "General", Priority = 3, Type = "Number")]
+        public virtual int CellRowSpan
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.TableCellRowSpanKey, 1);
+                else
+                    return 1;
+            }
+            set
+            {
+                if (value <= 0)
+                    this.Style.Table.RemoveCellRowSpan();
+                else
+                    this.Style.Table.CellRowSpan = value;
+            }
+        }
+
+        #endregion
+
         #region public PDFTableRow ContainingRow
 
         /// <summary>
@@ -116,6 +145,29 @@ namespace Scryber.Components
         internal int columnIndex { get; set; }
         internal int columnSpan { get; set; }
 
+        private string _ownStyleClass;
+        private bool _ownStyleClassCaptured;
+
+        /// <summary>
+        /// The cell's own style class, exactly as authored - captured the first time this property is
+        /// read, so it stays stable even after StyleClass is later mutated (e.g. by table-column style
+        /// application prepending a colgroup/col class name). Column style application always recomputes
+        /// the combined class from this stable snapshot rather than the live, possibly already-prefixed,
+        /// StyleClass value, so repeated layout passes don't compound duplicate class names.
+        /// </summary>
+        public string OwnStyleClass
+        {
+            get
+            {
+                if (!_ownStyleClassCaptured)
+                {
+                    _ownStyleClass = this.StyleClass;
+                    _ownStyleClassCaptured = true;
+                }
+                return _ownStyleClass;
+            }
+        }
+
         //
         // ctor(s)
         //
@@ -158,10 +210,13 @@ namespace Scryber.Components
             Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
-            style.Padding.All = (Unit)4;
+            style.Padding.All = (Unit)2;
+            style.Margins.All = (Unit)0;
             style.Border.Color = new Color(153);
             style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (Unit)1;
+            style.Position.DisplayMode = DisplayMode.TableCell;
+            style.Position.VAlign = VerticalAlignment.Middle;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row
             return style;
         }
@@ -182,7 +237,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new PDF.Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEngineTableCell(this, parent);
         }
 
         #endregion
@@ -194,9 +249,12 @@ namespace Scryber.Components
     public class TableHeaderCell : TableCell
     {
         public TableHeaderCell()
-            : base(ObjectTypes.TableHeaderCell)
+            : this(ObjectTypes.TableHeaderCell)
         { }
 
+
+        protected TableHeaderCell(ObjectType type) : base(type)
+        { }
         
     }
 
@@ -204,9 +262,12 @@ namespace Scryber.Components
     public class TableFooterCell : TableCell
     {
         public TableFooterCell()
-            : base(ObjectTypes.TableFooterCell)
+            : this(ObjectTypes.TableFooterCell)
         { }
 
+        protected TableFooterCell(ObjectType type) : base(type)
+        {
+        }
 
     }
 
@@ -216,5 +277,6 @@ namespace Scryber.Components
             : base(inner)
         {
         }
+
     }
 }

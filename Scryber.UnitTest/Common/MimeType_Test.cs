@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
+using Scryber.Components;
 using System.CodeDom;
 using Scryber.PDF.Native;
 
@@ -10,8 +11,8 @@ namespace Scryber.Core.UnitTests.Common
     
     
     /// <summary>
-    ///This is a test class for PDFColor_Test and is intended
-    ///to contain all PDFColor_Test Unit Tests
+    ///This is a test class for SVG XObjects so the drawing and the offsets at the component level are based on Top Left to Bottom Right,
+    /// and a translated to the PDF Bottom Left to Top Right at render time.
     ///</summary>
     [TestClass()]
     public class MimeType_Test
@@ -36,7 +37,9 @@ namespace Scryber.Core.UnitTests.Common
             }
         }
 
- 
+
+
+
 
         /// <summary>
         ///A test for MimeType Constructor with a simple root
@@ -90,7 +93,7 @@ namespace Scryber.Core.UnitTests.Common
             Assert.IsTrue(mime.IsValid);
             Assert.AreEqual(expected, mime.ToString());
             Assert.AreEqual("application", mime.Root);
-            Assert.AreEqual("xml",mime.Base);
+            Assert.AreEqual("xml", mime.Base);
             Assert.AreEqual("xhtml", mime.Content);
 
         }
@@ -263,7 +266,7 @@ namespace Scryber.Core.UnitTests.Common
             Assert.IsInstanceOfType(mime, typeof(QualifiedMimeType));
             var qualified = (QualifiedMimeType)mime;
 
-           
+
 
             Assert.AreEqual("application", qualified.Root);
             Assert.AreEqual("xml", qualified.Base);
@@ -283,7 +286,7 @@ namespace Scryber.Core.UnitTests.Common
             Assert.AreEqual("xml", qualified.Base);
             Assert.AreEqual("xhtml", qualified.Content);
             Assert.AreEqual("UTF-8", qualified.Charset);
-            Assert.AreEqual("Scryber",qualified.Variant);
+            Assert.AreEqual("Scryber", qualified.Variant);
 
             type = "application/xhtml+xml; variant=Scryber";
 
@@ -299,5 +302,7 @@ namespace Scryber.Core.UnitTests.Common
             Assert.IsTrue(String.IsNullOrEmpty(qualified.Charset));
             Assert.AreEqual("Scryber", qualified.Variant);
         }
+
+
     }
 }

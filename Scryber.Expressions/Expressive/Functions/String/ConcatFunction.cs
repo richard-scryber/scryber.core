@@ -18,7 +18,7 @@ namespace Scryber.Expressive.Functions.String
             }
         }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             //We can accept 1 parameter that is an array
             this.ValidateParameterCount(parameters, -1, 1);
@@ -32,7 +32,7 @@ namespace Scryber.Expressive.Functions.String
             return sb.ToString();
         }
 
-        protected virtual void Evaluate(StringBuilder sb, IEnumerable parameters, IDictionary<string, object> variables, Context context)
+        protected virtual void Evaluate(StringBuilder sb, IEnumerable parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             foreach (var p in parameters)
             {

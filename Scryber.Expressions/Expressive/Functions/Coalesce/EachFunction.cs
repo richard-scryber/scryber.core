@@ -20,11 +20,11 @@ namespace Scryber.Expressive.Functions.Coalesce
 		{
 		}
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
 			this.ValidateParameterCount(parameters, -1, 1);
 
-			var list = new ArrayList();
+			var list = new ResultList();
 			Helpers.Collections.DoForEach(parameters, variables, context, (val, vars, cont) =>
 			{
 				list.Add(val);

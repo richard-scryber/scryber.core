@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber;
+using Scryber.Drawing;
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
@@ -57,6 +60,7 @@ namespace Scryber.UnitLayouts
                 cell.Contents.Add(new TextLiteral("Cell " + i));
                 cell.Width = CellWidth;
                 cell.Height = CellHeight;
+                cell.Margins = (Thickness)0;
                 row.Cells.Add(cell);
 
             }
@@ -143,6 +147,7 @@ namespace Scryber.UnitLayouts
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Width = CellWidth;
                     cell.Height = CellHeight;
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -231,6 +236,7 @@ namespace Scryber.UnitLayouts
                 for (var c = 0; c < CellCount; c++)
                 {
                     var cell = new TableCell();
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     //cell.Width = CellWidth;
                     cell.Height = CellHeight;
@@ -294,6 +300,125 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
+        public void SimpleTable3Row3CellsFullWidthTextRightBottom()
+        {
+            const int PageWidth = 400;
+            const int PageHeight = 500;
+            //const int CellWidth = 50;
+            const int CellHeight = 50;
+            const int CellCount = 3;
+            const int RowCount = 3;
+            const int CellPadding = 4;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 10;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            var tbl = new TableGrid();
+            tbl.FullWidth = true;
+            section.Contents.Add(tbl);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var row = new TableRow();
+                tbl.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var cell = new TableCell();
+                    cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
+                    //cell.Width = CellWidth;
+                    cell.Height = CellHeight;
+                    cell.Padding = CellPadding;
+                    cell.Margins = (Thickness)0;
+                    cell.HorizontalAlignment = HorizontalAlignment.Right;
+                    cell.VerticalAlignment = VerticalAlignment.Bottom;
+                    row.Cells.Add(cell);
+
+                }
+
+            }
+
+            using (var ms = DocStreams.GetOutputStream("Table_3Row3CellsFullWidthTextRightBottom.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tblBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(tblBlock);
+            Assert.AreEqual(PageWidth, tblBlock.Width);
+            Assert.AreEqual(CellHeight * RowCount, tblBlock.Height);
+
+            Assert.AreEqual(RowCount, tblBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tblBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock);
+                Assert.AreEqual(PageWidth, rowBlock.Width);
+                Assert.AreEqual(CellHeight, rowBlock.Height);
+
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                var rowXOffset = Unit.Zero;
+                
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var column = rowBlock.Columns[c];
+                    Assert.IsNotNull(column);
+
+                    Assert.AreEqual(1, column.Contents.Count);
+                    var cellBlock = column.Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(cellBlock);
+
+                    Assert.AreEqual(CellHeight, cellBlock.Height);
+                    Assert.AreEqual((double)PageWidth / (double)CellCount, cellBlock.Width);
+
+                    Assert.AreEqual(1, cellBlock.Columns[0].Contents.Count);
+
+                    var line = cellBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                    Assert.AreEqual(3, line.Runs.Count);
+                    var chars = (line.Runs[1] as PDFTextRunCharacter);
+                    Assert.IsNotNull(chars);
+                    Assert.AreEqual("Cell " + r + "." + c, chars.Characters);
+                    
+                    
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                    var begin = line.Runs[0] as PDFTextRunBegin;
+                    Assert.IsNotNull(begin);
+                    
+                    //check bottom alignment
+                    Unit yOffset = CellHeight - CellPadding - line.Height;
+                    yOffset += (CellHeight * r); //add preceeding rows
+                    yOffset += line.BaseLineOffset; //move down to the baseline for the actual offset
+                    
+                    Assert.AreEqual(yOffset, begin.StartTextCursor.Height);
+                    
+                    
+                    //check right alignment
+                    Unit xOffset = cellBlock.Width - CellPadding - chars.Width;
+                    xOffset += rowXOffset;
+                    Assert.AreEqual(xOffset, begin.StartTextCursor.Width);
+
+                    //update the running total for the next check on X
+                    rowXOffset += cellBlock.Width;
+                }
+            }
+
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
         public void SimpleTable3Row3CellsFixedTableWidth()
         {
             const int PageWidth = 400;
@@ -327,6 +452,7 @@ namespace Scryber.UnitLayouts
                     var cell = new TableCell();
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -420,6 +546,7 @@ namespace Scryber.UnitLayouts
                     var cell = new TableCell();
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
 
+                    cell.Margins = (Thickness)0;
                     //middle cell is half the width of the table
                     if (c == 1 && r == 1)
                     {
@@ -531,7 +658,7 @@ namespace Scryber.UnitLayouts
                 {
                     var cell = new TableCell();
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
-
+                    cell.Margins = (Thickness)0;
                     //middle cell is half the width of the table
                     if (c == 1 && r == 1)
                     {
@@ -653,7 +780,7 @@ namespace Scryber.UnitLayouts
                     }
                     else
                         cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
 
                     
@@ -783,7 +910,7 @@ namespace Scryber.UnitLayouts
                     }
                     else
                         cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     row.Cells.Add(cell);
 
@@ -896,7 +1023,7 @@ namespace Scryber.UnitLayouts
                 for (var c = 0; c < CellCount; c++)
                 {
                     var cell = new TableCell();
-                    
+                    cell.Margins = (Thickness)0;
 
                     if ((r == 0 && c == 0) || (r == 2 && c == 2))
                     {
@@ -1126,7 +1253,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1142,7 +1269,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-                    
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1220,7 +1347,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1236,7 +1363,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1252,7 +1379,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Footer " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 footer.Cells.Add(cell);
 
             }
@@ -1345,7 +1472,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1361,7 +1488,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1377,7 +1504,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Footer " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 footer.Cells.Add(cell);
 
             }
@@ -1474,7 +1601,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1490,7 +1617,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1506,7 +1633,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Footer " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 footer.Cells.Add(cell);
 
             }
@@ -1567,6 +1694,1042 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual((2 * CellHeight), footRow.Height);
 
 
+        }
+
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentPercentToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+            Unit[] CellWidths = new Unit[] {
+                new Unit(20, PageUnits.Percent),
+                new Unit(30, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+                    cell.Margins = (Thickness)0;
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+            
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_TableToPage.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(580, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(580, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = 580 * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentFixedWidthToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            Unit tableWidth = 500;
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = tableWidth;
+            grid.FontSize = new Unit(70, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+                    cell.Margins = (Thickness)0;
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FixedWidthTable.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentCellRelativeWidthToPageCellHeight()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = new Unit(60, PageUnits.Percent);
+            grid.FontSize = new Unit(80, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            Unit tableWidth = (600 - 20) * 0.6;
+
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                
+
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+                    cell.Margins = (Thickness)0;
+                    //all cell heights should add up to the page content block height
+                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableCellPercentHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            //After the table should be on a new page
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //last line is zero height with the overflow
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            //Check the 80% font size on the full style
+            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+            var emptyBlock = pg.ContentBlock.Columns[0].Contents[1];
+            Assert.AreEqual(0, emptyBlock.Height);
+
+            pg = layout.AllPages[1];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+
+            //Quick check we have the literal on the new page.
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var line = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentCellRelativeWidthToColumnCellHeight()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 10;
+            section.BackgroundColor = StandardColors.Silver;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = new Unit(40, PageUnits.ViewPortMin); //40% of page width without margins
+            grid.FontSize = new Unit(80, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            Unit tableWidth = 600 * 0.4;
+
+            TableRow row  = new TableHeaderRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+                cell.Margins = (Thickness)0;
+                
+                var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    //cell.Width = CellWidths[c]; - implied width from the header
+
+                    //all cell heights should add up to the page content block height
+                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+                    cell.Margins = (Thickness)0;
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+            //Add a footer row to the table
+            row = new TableFooterRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+                cell.Margins = (Thickness)0;
+                var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableToColumnCellPercentHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            //The table should force a new column
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count); //just the table
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(800 - 20, tableBlock.Height);
+
+            //Check the 80% font size on the full style
+            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
+
+
+            //Header Row
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, rowBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+            //Header cells
+
+            for (var c = 0; c < CellCount; c++)
+            {
+                var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                Assert.IsNotNull(rowColumn);
+                Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                Assert.AreEqual(cellW, rowColumn.Width);
+
+                var cellBlock = rowColumn.Contents[0];
+                Assert.AreEqual(cellW, cellBlock.Width);
+
+                Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+            }
+
+            for (var r = 1; r < tableBlock.Columns[0].Contents.Count; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+            var col1Total = tableBlock.Columns[0].Contents.Count;
+            var col2Total = RowCount + 2 + 1 - col1Total; //total rows + the 2 headers and a footer - the count on column1
+
+            //Quick check we have the rest of the table and literal on the new page.
+            Assert.AreEqual(2, pg.ContentBlock.Columns[1].Contents.Count);
+
+            tableBlock = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tableBlock);
+
+            Assert.AreEqual(col2Total, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < col2Total; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+
+            var line = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentCellRelativeWidthToColumnCellHeightRightAlign()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 10;
+            section.BackgroundColor = StandardColors.Silver;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = new Unit(40, PageUnits.ViewPortMin); //40% of page width without margins
+            grid.FontSize = new Unit(80, PageUnits.Percent);
+            section.Contents.Add(grid);
+            grid.Style.Position.HAlign = HorizontalAlignment.Right;
+
+            Unit tableWidth = 600 * 0.4;
+
+            TableRow row  = new TableHeaderRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+                cell.Margins = (Thickness)0;
+                var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    //cell.Width = CellWidths[c]; - implied width from the header
+
+                    //all cell heights should add up to the page content block height
+                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+                    cell.Margins = (Thickness)0;
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+            //Add a footer row to the table
+            row = new TableFooterRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+                cell.Margins = (Thickness)0;
+                var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableToColumnCellPercentHeightRightAlign.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            //The table should force a new column
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count); //just the table
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(800 - 20, tableBlock.Height);
+
+            //Check the 80% font size on the full style
+            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
+
+
+            //Header Row
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, rowBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+            //Header cells
+
+            for (var c = 0; c < CellCount; c++)
+            {
+                var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                Assert.IsNotNull(rowColumn);
+                Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                Assert.AreEqual(cellW, rowColumn.Width);
+
+                var cellBlock = rowColumn.Contents[0];
+                Assert.AreEqual(cellW, cellBlock.Width);
+
+                Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+            }
+
+            for (var r = 1; r < tableBlock.Columns[0].Contents.Count; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+            var col1Total = tableBlock.Columns[0].Contents.Count;
+            var col2Total = RowCount + 2 + 1 - col1Total; //total rows + the 2 headers and a footer - the count on column1
+
+            //Quick check we have the rest of the table and literal on the new page.
+            Assert.AreEqual(2, pg.ContentBlock.Columns[1].Contents.Count);
+
+            tableBlock = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tableBlock);
+
+            Assert.AreEqual(col2Total, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < col2Total; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+
+            var line = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+            
+            Assert.Inconclusive("Need to test for the right alignment of text");
+        }
+        
+         [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentFixedWidthCenteredToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            Unit tableWidth = 300;
+            
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Margins = new Thickness(Unit.Auto);
+            grid.Width = tableWidth;
+            grid.FontSize = new Unit(70, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+                    cell.Margins = (Thickness)0;
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FixedWidthTableCentred.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width);
+            
+            //The margins of auto should be 150 left and right
+            Assert.IsTrue(tableBlock.Position.AutoMarginLeft);
+            Assert.IsTrue(tableBlock.Position.AutoMarginRight);
+            Assert.AreEqual(150, tableBlock.PagePosition.X);
+            Assert.AreEqual(300, tableBlock.Width);
+            
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+
+        //will fill a whole page.
+        private string longContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fermentum eros diam, quis eleifend urna pretium quis. " +
+                                     "Fusce pulvinar lorem tincidunt lacus porttitor dictum. Nullam vel neque dolor. Cras luctus et nisl non tincidunt. " +
+                                     "Praesent consequat nec dui vitae blandit. Interdum et malesuada fames ac ante ipsum primis in faucibus. " +
+                                     "Integer placerat, risus eu auctor placerat, purus dui venenatis ante, quis tincidunt libero est non ex. " +
+                                     "Phasellus faucibus blandit imperdiet. Suspendisse placerat facilisis urna sit amet congue. Maecenas id mollis massa. " +
+                                     "Proin venenatis consectetur leo eget mollis.<br/>\n\n" +
+                                     "Cras mi mauris, pretium ut convallis vel, ultrices at nulla. " +
+                                     "Donec venenatis scelerisque metus, non vehicula ipsum varius nec. Vestibulum eu nulla sed orci mattis fermentum iaculis nec elit. " +
+                                     "Donec sit amet nisl purus. Aenean tempus luctus enim, a suscipit massa varius a. " +
+                                     "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. " +
+                                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur fermentum pellentesque neque, a auctor sapien iaculis at. " +
+                                     "Vestibulum vel libero non nulla rutrum porta. Vivamus facilisis egestas metus eget fermentum. " +
+                                     "Vivamus ultricies vestibulum ex, vitae mattis arcu congue eget. Praesent laoreet efficitur rutrum. " +
+                                     "Sed euismod at magna et suscipit. Cras quis venenatis nisi. Suspendisse enim tortor, placerat sed lacinia vulputate, " +
+                                     "fermentum vitae nisl. Vestibulum lacinia orci risus, a mattis ipsum commodo eget.<br/>\n\n" +
+                                     "Morbi malesuada, leo at tristique luctus, neque enim porttitor orci, at pulvinar est quam vitae eros. " +
+                                     "Nulla vitae dolor ligula. Morbi a suscipit urna. Suspendisse sem eros, semper sit amet nibh eget, volutpat hendrerit elit. " +
+                                     "Curabitur et justo justo. In hac habitasse platea dictumst. Mauris pharetra ut sapien sed iaculis. " +
+                                     "Maecenas condimentum eget risus at vestibulum. In hac habitasse platea dictumst. " +
+                                     "Aliquam a odio sed ligula laoreet fringilla id quis arcu. Suspendisse sed arcu ornare, pretium sapien a, consequat risus. " +
+                                     "Sed vitae nisl a quam fringilla dictum. Donec aliquam venenatis elit eget gravida. " +
+                                     "Integer neque ligula, pulvinar in lacus in, accumsan laoreet felis. Integer sodales imperdiet justo non molestie.<br/>\n\n" +
+                                     "Integer vulputate laoreet dolor in euismod. Proin urna quam, pharetra ac mollis ut, laoreet non enim. Suspendisse felis nunc, " +
+                                     "porttitor ac dictum sed, dignissim eu est. Sed ac elit placerat, ultricies eros eu, pharetra justo. " +
+                                     "Nam euismod, nisi nec porta facilisis, risus tortor efficitur sem, vel facilisis neque justo ac arcu. " +
+                                     "Nam non enim ut purus interdum auctor. Proin dui purus, pulvinar suscipit tincidunt ut, facilisis id metus. " +
+                                     "Donec varius augue nec eleifend porta. Mauris hendrerit eleifend urna non consectetur. Nunc sit amet mauris lorem. " +
+                                     "Ut sollicitudin commodo feugiat. Nulla sed enim efficitur, iaculis libero a, egestas elit. Sed in auctor lorem. " +
+                                     "Ut urna augue, consequat id erat ac, faucibus ornare sapien. Sed pharetra placerat purus, ac pharetra turpis vestibulum a. " +
+                                     "Nunc at tellus sed purus volutpat condimentum sed vitae urna.<br/>\n\n" +
+                                     "Mauris nec lobortis lacus. Cras in feugiat nisi, quis blandit leo. Nunc tincidunt, eros id ultricies dignissim, " +
+                                     "enim nisi sodales turpis, rutrum lacinia libero arcu ut massa. Vestibulum fringilla ipsum sed accumsan condimentum. " +
+                                     "Nam ultricies nisl quam, at fermentum dolor porta ac. Proin sed posuere lectus, quis feugiat sem. " +
+                                     "Aenean accumsan eleifend ullamcorper. Suspendisse porttitor elit sit amet sagittis aliquet. Mauris sed semper orci. " +
+                                     "Vivamus sed diam vitae enim vestibulum suscipit ac quis neque. Sed vel tincidunt nisi, sed rutrum lectus. " +
+                                     "Integer eget metus ut est porttitor bibendum nec vitae ligula.\n\nAenean facilisis convallis dui, et fermentum quam pretium vel. " +
+                                     "In diam eros, egestas a tempor quis, pharetra nec ex. Nunc orci augue, egestas ut sem tempus, tempus vehicula ante. " +
+                                     "Aliquam nibh neque, vulputate venenatis pellentesque ut, maximus venenatis orci. " +
+                                     "Nullam efficitur augue nec magna aliquam commodo. Aenean euismod nisi vitae purus iaculis feugiat. " +
+                                     "Pellentesque ornare, urna at molestie dictum, augue nulla egestas mi, non ullamcorper odio purus eget orci. " +
+                                     "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; " +
+                                     "Praesent tristique lorem eu ligula convallis varius. Quisque quis tortor sollicitudin, rhoncus velit nec, dapibus odio. " +
+                                     "Vestibulum quis scelerisque purus. Curabitur posuere, metus ultricies mattis sagittis, metus ante elementum leo, " +
+                                     "sed placerat lacus lectus sit amet nibh. Pellentesque feugiat sapien et ligula aliquam euismod.<br/>\n\n" +
+                                     "Aenean consectetur eros nisl, ut lobortis urna dictum eget. Nam a condimentum nisl, eget tincidunt est. " +
+                                     "Vestibulum suscipit efficitur maximus. Phasellus porttitor ultrices sapien, id molestie magna cursus nec. " +
+                                     "Praesent libero turpis, consequat sed augue vitae, pharetra gravida ante. Donec facilisis arcu non neque blandit, " +
+                                     "sit amet volutpat nunc blandit. Morbi consequat ipsum in dui fermentum molestie. Suspendisse sit amet nisi porta, " +
+                                     "blandit nunc non, pellentesque sem. Nunc rhoncus metus in condimentum facilisis. Pellentesque eget nisi quam. Sed ullamcorper ut orci at vestibulum. Nullam non nulla non ipsum vulputate mollis rhoncus a orci. Nullam sem ipsum, pellentesque id ullamcorper et, gravida lobortis purus.\n\nCras dignissim aliquam elit eget blandit. Nulla auctor viverra nibh, et pharetra mi lacinia quis. Sed ut dignissim tellus, fringilla semper diam. Suspendisse id scelerisque nisl, nec interdum ex. Nulla ac feugiat urna. Fusce velit lorem, convallis in lectus nec, ultricies eleifend neque. Sed vitae urna sem. Maecenas nisl augue, sollicitudin ut lacinia vel, efficitur euismod dolor. Fusce iaculis interdum augue. Donec at nisi non urna placerat varius eget et lectus. Praesent egestas eget risus vel tincidunt.\n\nDuis vel bibendum arcu. Nunc at sem consequat, commodo felis eget, laoreet nibh. Mauris finibus pulvinar mauris quis suscipit. Fusce pretium pellentesque ex. Morbi eu rhoncus neque. Donec aliquet ex imperdiet bibendum imperdiet. Nulla luctus tristique arcu non placerat. Duis a lacus eu urna tempus porttitor quis sed tellus. Suspendisse ultrices risus at massa dictum, eu facilisis dui aliquam. Maecenas elementum accumsan erat, vel lobortis justo molestie ut. Cras ut lorem vitae sapien dictum bibendum a vitae ligula. Suspendisse posuere pharetra lorem quis pretium. Integer at leo ante. Aliquam varius nunc eu felis maximus cursus. Integer tempus orci tincidunt erat consectetur dignissim.\n\nSuspendisse volutpat ligula at porttitor consectetur. In turpis nulla, egestas eu rhoncus quis, vulputate egestas tortor. Vivamus finibus varius malesuada. Duis justo ex, rhoncus eu varius et, commodo non turpis. Fusce ut massa vestibulum, vestibulum justo a, fringilla odio. Donec consectetur varius orci, ac interdum risus convallis non. Nam scelerisque semper pellentesque. Nullam id bibendum nibh. Proin posuere vulputate hendrerit. Sed eleifend sit amet arcu sit amet hendrerit. Vestibulum ullamcorper, nisi maximus pharetra placerat, tellus libero condimentum felis, sit amet imperdiet felis mauris a orci.\n\nSed sit amet sapien ligula. Cras molestie, odio vitae ultrices porttitor, felis ligula condimentum turpis, at porta lectus turpis sit amet lectus. Nulla facilisi. Donec bibendum imperdiet gravida. Nulla facilisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla vel volutpat est, in sodales nulla. Pellentesque sit amet metus tempor, varius erat nec, volutpat lectus. Donec eros nibh, tempus elementum turpis a, accumsan laoreet velit. Nullam massa est, mollis ac sodales vitae, feugiat in tortor. Ut ut accumsan tellus, quis auctor lacus. Etiam magna mauris, mattis iaculis mi sit amet, dignissim pharetra ipsum. Sed eu dui scelerisque, efficitur risus quis, commodo lectus.\n\nPellentesque semper ligula in nisl blandit, vel vulputate erat pretium. Pellentesque eleifend nisl non ex ullamcorper, ut consequat justo finibus. Sed malesuada, enim a tincidunt suscipit, elit nunc faucibus felis, ac dignissim justo risus ut elit. Vestibulum nec varius quam, et maximus ex. Ut mattis augue nisl, eget laoreet leo facilisis vel. Aliquam non euismod ex. Proin luctus bibendum porttitor. Cras eu vestibulum leo, at venenatis lacus. Suspendisse potenti. Donec dignissim lectus vitae massa maximus, non euismod sapien consequat.\n\nSuspendisse congue mattis diam, ut posuere ex iaculis vitae. Donec vel nisi eu massa porttitor sodales ac ut urna. Vivamus turpis turpis, consectetur in tincidunt nec, hendrerit ut turpis. Fusce eu fringilla diam. Nullam luctus fermentum dui vel varius. Fusce non sodales libero, vitae facilisis est. Sed eget porta quam. Vivamus eu vestibulum magna, pretium viverra sem. Aliquam eu tincidunt nunc, eget vulputate dui.\n\nSed viverra commodo nisi, sit amet rhoncus augue. Nunc porttitor gravida ante, eu tempus urna scelerisque eu. Donec quis augue id erat hendrerit egestas. Sed id blandit velit. Etiam sed erat urna. In accumsan aliquam orci vehicula iaculis. Nunc suscipit pretium velit, vitae imperdiet nulla finibus eu. Pellentesque consectetur turpis diam, sit amet dignissim dui feugiat ac. Praesent quis dui ut ex fringilla tristique. Mauris molestie aliquam turpis nec efficitur. Pellentesque imperdiet, massa id commodo pretium, ligula tortor euismod massa, sit amet dapibus urna ligula nec sem. Donec euismod finibus pulvinar.\n\nAliquam a hendrerit urna. Donec in orci consectetur mi feugiat maximus sit amet vel libero. Integer pharetra id tortor vel cursus. Proin dignissim, ligula ac semper feugiat, nulla nisi pretium libero, id tempor turpis tortor vitae ex. Quisque orci tortor, porta et massa eu, vulputate fermentum purus. Donec sed lorem venenatis, ultrices justo ac, dignissim elit. Sed aliquet nisl vel elit cursus, non imperdiet nisl rutrum. Fusce aliquam ex eget nulla varius iaculis. In posuere porta massa quis aliquet. Donec rutrum ligula eros, sit amet sagittis sapien consectetur vel. Morbi sit amet neque nec sapien rutrum iaculis in et turpis. Etiam venenatis imperdiet risus at tempus. Donec et finibus ex. Aliquam nulla enim, ullamcorper sit amet sollicitudin at, vehicula eget metus. Nunc ullamcorper faucibus sapien ac blandit.";
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowCell()
+        {
+            var doc = new Document();
+            var page = new Section();
+            doc.Pages.Add(page);
+            page.Style.Font.FontSize = 12;
+            
+            var template = "<table style='width:100%'>" +
+                           "<tr>" +
+                           "<td style='width: 40pt;'>Wide Label</td>" +
+                           "<td style='overflow-y:auto'>" + longContent + "</td>" +
+                           "</tr>" +
+                           "</table>";
+            
+            var parsed = Document.ParseHtml("", new StringReader(template), ParseSourceType.Template) as Component;
+            
+            page.Contents.Add(parsed);
+            
+            using (var ms = DocStreams.GetOutputStream("Tables_OverflowingCell.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.Inconclusive("To check");
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowRow()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowAll()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowHead()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowFoot()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowWrapped()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowWrappedCell()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowWrappedRow()
+        {
+            Assert.Inconclusive("Need to add this");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowWrappedConainer()
+        {
+            Assert.Inconclusive("Need to add this - container is keep together and should simply move to the next page");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowCellToBigText()
+        {
+            Assert.Inconclusive("Need to add this - cell is too large for the page in the remainder and should simply move to the next page");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowCellToBigTextWhole()
+        {
+            Assert.Inconclusive("Need to add this - cell is too large for the entire page and should simply move to the next page");
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableOverflowCellToBigTextWholeWrapped()
+        {
+            Assert.Inconclusive("Need to add this - cell is too large for the entire page in a wrapped div and should simply move to the next page");
+        }
+        
+        
+        public void TableFromCode()
+        {
+
+            var doc = new Document();
+            var pg = new Page();
+
+            var data = GetData();
+
+            var tbl = GenerateTableGridWithAddRange(data);
+        }
+
+        private TableGrid GenerateTableGridWithAddRange(string[][] data)
+        {
+
+            var grid = new TableGrid() { FullWidth = true };
+            grid.Rows.AddRange(data.Select(rowData => {
+
+                    var row = new TableRow();
+
+                    row.Cells.AddRange(rowData.Select(cellData => {
+
+                        var cell = new TableCell();
+                        cell.Contents.Add(cellData);
+
+                        return cell;
+                    }));
+
+                    return row;
+                }));
+            return grid;
+        }
+
+
+        private string[][] GetData()
+        {
+            var list = new List<string[]>();
+
+            for(var r = 0; r < 5; r++)
+            {
+                string[] inner = new string[5];
+                for(var c = 0; c < 5; c++)
+                {
+                    inner[c] = "Cell " + r + "." + c;
+                }
+
+                list.Add(inner);
+            }
+
+            return list.ToArray();
         }
 
     }

@@ -94,6 +94,76 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public PDFPen Border {get;set;}
+
+        private PDFPenBorders _border;
+
+        /// <summary>
+        /// Gets or sets the pen that should be used to draw a border around any text.
+        /// </summary>
+        public PDFPenBorders Border
+        {
+            get { return _border; }
+            set { _border = value; }
+        }
+
+        #endregion
+
+        #region public Unit BorderRadius { get; set; }
+
+        /// <summary>
+        /// Gets or sets any border radius for the background and border
+        /// </summary>
+        public Unit BorderRadius { get; set; }
+
+        //TODO: Support multiple values
+
+        #endregion
+
+        #region public Thickness Padding {get;set;}
+
+        private Thickness? _pad;
+
+        /// <summary>
+        /// Gets or sets any padding that should be set around the text
+        /// </summary>
+        public Thickness? Padding
+        {
+            get { return _pad; }
+            set
+            {
+                _pad = value;
+            }
+        }
+
+        #endregion;
+
+        #region public Thickness InlineMargins {get;set;}
+
+        private Thickness? _inlineMargins;
+
+        public Thickness? InlineMargins
+        {
+            get { return _inlineMargins; }
+            set { _inlineMargins = value; }
+        }
+
+        #endregion
+        
+        #region public Thickness InlinePadding {get;set;}
+
+        private Thickness? _inlinePadding;
+
+        public Thickness? InlinePadding
+        {
+            get { return _inlinePadding; }
+            set { _inlinePadding = value; }
+        }
+
+        #endregion
+        
+        
+
         #region public WordWrap? WrapText {get;set;}
 
         public static readonly WordWrap DefaultWrapText = WordWrap.Auto;
@@ -141,7 +211,14 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public VerticalAlignment? VerticalAlignment { get; set; }
+        
+        /// <summary>
+        /// Gets or sets any vertical alignment on the text
+        /// </summary>
+        public VerticalAlignment? VerticalAlignment { get; set; }
 
+        #endregion
 
         #region public double? WordSpacing {get;set;}
 
@@ -225,6 +302,63 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public TextTransform TextTransform {get;set;}
+
+        /// <summary>
+        /// Gets or sets the case transformation (text-transform) applied to the text as it is laid out
+        /// </summary>
+        public Scryber.Text.TextTransform TextTransform { get; set; } = Scryber.Text.TextTransform.None;
+
+        #endregion
+
+        #region public string OverflowText {get;set;}
+
+        /// <summary>
+        /// Gets or sets the text (e.g. an ellipsis) that replaces the end of a line of text that does not wrap and is clipped by its block (text-overflow).
+        /// </summary>
+        public string OverflowText { get; set; }
+
+        #endregion
+
+        #region public OverflowWrap? OverflowWrap {get;set;}
+
+        /// <summary>
+        /// Gets or sets if a word that is longer than a whole line can be broken (overflow-wrap). When normal (or not set), the word is kept whole and overflows the line.
+        /// </summary>
+        public Scryber.Text.OverflowWrap? OverflowWrap { get; set; }
+
+        #endregion
+
+        #region public BoxShadow[] Shadows {get;set;}
+
+        /// <summary>
+        /// Gets or sets any shadows (text-shadow) to draw behind the text.
+        /// </summary>
+        public BoxShadow[] Shadows { get; set; }
+
+        #endregion
+
+        #region public Color? DecorationColor + DecorationStyle + DecorationThickness
+
+        /// <summary>
+        /// Gets or sets the color of any text decoration lines. If not set, the fill of the text is used.
+        /// </summary>
+        public Color? DecorationColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the style of any text decoration lines (solid, double, dotted, dashed or wavy)
+        /// </summary>
+        public Scryber.Text.TextDecorationStyle DecorationStyle { get; set; } = Scryber.Text.TextDecorationStyle.Solid;
+
+        /// <summary>
+        /// Gets or sets the thickness of any text decoration lines. If not set, it is based on the font size.
+        /// </summary>
+        public Unit? DecorationThickness { get; set; }
+
+        #endregion
+
+        #region public bool DrawTextFromTop {get;set;}
+        
         private bool _drawFromTop = true;
 
         /// <summary>
@@ -238,14 +372,40 @@ namespace Scryber.PDF
             set { this._drawFromTop = value; }
         }
 
+        #endregion
+
+        #region public PDFHyphenationStrategy HyphenationStrategy {get;set;}
 
         private PDFHyphenationStrategy _hyphenation = null;
 
+        /// <summary>
+        /// Gets or sets the hyphenation strategy for the text layout, when to break onto new lines, and also when to split words
+        /// </summary>
         public PDFHyphenationStrategy HyphenationStrategy
         {
             get { return this._hyphenation; }
             set { this._hyphenation = value; }
         }
+
+        #endregion
+
+        #region public PaintOrder TextPaintOrder {get; set;}
+
+        /// <summary>
+        /// Gets or sets the paint order for the text - stroke and fill
+        /// </summary>
+        public PaintOrder TextPaintOrder {get; set;}
+
+        #endregion
+        
+        #region public PaintOrder BoxPaintOrder {get; set;}
+
+        /// <summary>
+        /// Gets or sets the paint order for the box containing the text - background = fill, border = stroke  and content = markers
+        /// </summary>
+        public PaintOrder BoxPaintOrder {get; set;}
+
+        #endregion
 
         //
         // .ctor
@@ -257,6 +417,8 @@ namespace Scryber.PDF
         /// </summary>
         public PDFTextRenderOptions()
         {
+            this.BoxPaintOrder = PaintOrder.Default;
+            this.TextPaintOrder = PaintOrder.Default;
         }
 
         #endregion
@@ -386,5 +548,13 @@ namespace Scryber.PDF
 
         #endregion
 
+        public Unit GetLeftSideBearing()
+        {
+            //HACK: Should come from the font as default LSB.
+            var size = this.GetSize();
+            size = size * 0.1;
+            return size;
+            
+        }
     }
 }

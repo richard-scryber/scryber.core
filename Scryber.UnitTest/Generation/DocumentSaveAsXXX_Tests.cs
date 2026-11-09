@@ -80,7 +80,7 @@ namespace Scryber.Core.UnitTests.Generation
             
 
             //This has been loaded from the remote file
-            var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+            var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
             Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
 
 
@@ -235,7 +235,6 @@ namespace Scryber.Core.UnitTests.Generation
         [TestMethod]
         public void HtmlLoadingDirect()
         {
-            string title = "Remote Direct";
             var src = SampleHtml;
 
             using (var sr = new System.IO.StringReader(src))
@@ -254,6 +253,8 @@ namespace Scryber.Core.UnitTests.Generation
                 }
 
             }
+            
+            Assert.Inconclusive("No checking");
         }
     }
 }

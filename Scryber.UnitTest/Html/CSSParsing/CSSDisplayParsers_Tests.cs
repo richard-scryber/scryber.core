@@ -1,0 +1,643 @@
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber.Styles;
+using Scryber.Styles.Parsing;
+using Scryber.Styles.Parsing.Typed;
+using Scryber.Drawing;
+using Scryber.Html;
+
+namespace Scryber.Core.UnitTests.Html.CSSParsers
+{
+    /// <summary>
+    /// Tests for CSS display parsers: display, opacity, overflow, overflow-x, overflow-y
+    /// Covers 5 display/visibility/overflow parsers
+    /// </summary>
+    [TestClass()]
+    public class CSSDisplayParsers_Tests
+    {
+        private TestContext testContextInstance;
+
+        public TestContext TestContext
+        {
+            get { return testContextInstance; }
+            set { testContextInstance = value; }
+        }
+
+        #region Helper Methods
+
+        private Style CreateStyle()
+        {
+            return new Style();
+        }
+
+        private CSSStyleItemReader CreateReader(string cssValue)
+        {
+            var reader = new CSSStyleItemReader(cssValue);
+            return reader;
+        }
+
+        private bool ParseValue(CSSStyleValueParser parser, Style style, string cssValue)
+        {
+            var reader = CreateReader(cssValue);
+            return parser.SetStyleValue(style, reader, null);
+        }
+
+        #endregion
+
+        #region Display Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Block_SetsBlock()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Block, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Inline_SetsInline()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Inline, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_InlineBlock_SetsInlineBlock()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline-block");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.InlineBlock, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_None_SetsInvisible()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "none");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Invisible, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Table_SetsTable()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "table");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Table, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TableRow_SetsTableRow()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "table-row");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.TableRow, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TableCell_SetsTableCell()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "table-cell");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.TableCell, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Flex_SetsFlexBox()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "flex");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Grid_SetsFlexGrid()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "grid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexGrid, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_CaseInsensitive_ParsesCorrectly()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "BLOCK");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Block, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "invalid-display");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Display Parser — CSS3 two-value syntax ("<display-outside> <display-inside>")
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineFlow_SetsInline()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline flow");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Inline, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockFlow_SetsBlock()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block flow");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Block, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineFlowRoot_SetsInlineBlock()
+        {
+            // The CSS3 two-value equivalent of the legacy single keyword "inline-block".
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline flow-root");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.InlineBlock, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockFlowRoot_SetsBlock()
+        {
+            // No distinct "establishes a new block formatting context" mode - nearest
+            // supported equivalent is plain Block.
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block flow-root");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Block, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockFlex_SetsFlexBox()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block flex");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineFlex_SetsFlexBox()
+        {
+            // Strict CSS3 equivalent is "inline-flex", which we don't model as a distinct
+            // mode - resolves leniently to the same FlexBox mode as "block flex".
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline flex");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockGrid_SetsFlexGrid()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block grid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexGrid, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineGrid_SetsFlexGrid()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline grid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexGrid, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockTable_SetsTable()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block table");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Table, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineTable_SetsTable()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline table");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Table, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_CaseInsensitive_ParsesCorrectly()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "BLOCK FLEX");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_UnrecognisedPairing_ReturnsFalse()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block table-cell");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_ReversedOrder_ReturnsFalse()
+        {
+            // Only the spec's own "<display-outside> <display-inside>" order is recognised.
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "flex block");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_InlineBlock_FollowedByOtherDeclaration_StillSetsInlineBlock()
+        {
+            // Reader boundary check: a hyphenated single-keyword value like "inline-block"
+            // followed by another declaration in the same style attribute must not be
+            // affected by the two-value lookahead - the second ReadNextValue() call has to
+            // stop at the ';' rather than trying to pull "width" in as a second display word.
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline-block; width:80pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.InlineBlock, style.Position.DisplayMode);
+        }
+
+        #endregion
+
+        #region Opacity Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Opacity_FullyOpaque_SetsOne()
+        {
+            var parser = new CSSOpacityParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "1");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1.0, style.Fill.Opacity, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Opacity_HalfTransparent_SetsHalf()
+        {
+            var parser = new CSSOpacityParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "0.5");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0.5, style.Fill.Opacity, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Opacity_FullyTransparent_SetsZero()
+        {
+            var parser = new CSSOpacityParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "0");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0.0, style.Fill.Opacity, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Opacity_QuarterTransparent_SetsFraction()
+        {
+            var parser = new CSSOpacityParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "0.25");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0.25, style.Fill.Opacity, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Opacity_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSOpacityParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "invalid-opacity");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Overflow Action Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_Visible_SetsVisible()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "visible");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(OverflowAction.Visible, style.Overflow.Action);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_Hidden_SetsClip()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "hidden");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(OverflowAction.Truncate, style.Overflow.Action);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_Clip_SetsClip()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "clip");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(OverflowAction.Clip, style.Overflow.Action);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_Truncate_SetsTruncate()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "truncate");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(OverflowAction.Truncate, style.Overflow.Action);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_NewPage_SetsNewPage()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "new-page");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(OverflowAction.NewPage, style.Overflow.Action);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_CaseInsensitive_ParsesCorrectly()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "HIDDEN");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(OverflowAction.Truncate, style.Overflow.Action);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowAction_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSOverflowActionParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "invalid-overflow");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Overflow X Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowX_Visible_SetsVisible()
+        {
+            var parser = new CSSOverflowXParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "visible");
+
+            Assert.IsTrue(result);
+            var set = style.IsValueDefined(StyleKeys.ClipLeftKey); //a bit cooky, but what we have at the moment.
+            Assert.IsFalse(set);
+            Assert.Inconclusive("The removal of the style value is not the same - as it does not override other values. Needs work");
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowX_Hidden_SetsClip()
+        {
+            var parser = new CSSOverflowXParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "hidden");
+
+            Assert.IsTrue(result);
+            var left = style.GetValue(StyleKeys.ClipLeftKey, Unit.Zero);
+            Assert.AreNotEqual(left, Unit.Zero);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowX_Clip_SetsClip()
+        {
+            var parser = new CSSOverflowXParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "clip");
+
+            Assert.IsTrue(result);
+            var left = style.GetValue(StyleKeys.ClipLeftKey, Unit.Zero);
+            Assert.AreNotEqual(left, Unit.Zero);
+        }
+
+        #endregion
+
+        #region Overflow Y Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowY_Visible_SetsVisible()
+        {
+            var parser = new CSSOverflowYParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "visible");
+
+            Assert.IsTrue(result);
+            var set = style.IsValueDefined(StyleKeys.ClipTopKey); //a bit cooky, but what we have at the moment.
+            Assert.IsFalse(set);
+            Assert.Inconclusive("The removal of the style value is not the same - as it does not override other values. Needs work");
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowY_Hidden_SetsClip()
+        {
+            var parser = new CSSOverflowYParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "hidden");
+
+            Assert.IsTrue(result);
+            var top = style.GetValue(StyleKeys.ClipTopKey, Unit.Zero);
+            Assert.AreNotEqual(top, Unit.Zero);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void OverflowY_Clip_SetsClip()
+        {
+            var parser = new CSSOverflowYParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "clip");
+
+            Assert.IsTrue(result);
+            var top = style.GetValue(StyleKeys.ClipTopKey, Unit.Zero);
+            Assert.AreNotEqual(top, Unit.Zero);
+        }
+
+        #endregion
+    }
+}

@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>SVG images with img height override only — width should scale proportionally</title>
+        <style>
+            body { padding: 5pt; }
+            img { border: 1px solid black; background-color: lightgreen; }
+            p { margin: 0; margin-bottom: 5pt; }
+        </style>
+    </head>
+    <body>
+        <!-- SVG intrinsic 150x100 (no viewBox), img height=200 → rendered 300x200 -->
+        <img id="svg_h200" src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="height:200pt" />
+        <p>SVG 150x100, img height=200pt — expects run 300x200</p>
+
+        <!-- SVG intrinsic 200x150 (via viewBox), img height=100 → rendered ~133x100 -->
+        <img id="svg_vb_h100" src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="height:100pt" />
+        <p>SVG 200x150 (viewBox), img height=100pt — expects run ~133x100</p>
+
+        <!-- SVG intrinsic 300x150 (defaults), img height=75 → rendered 150x75 -->
+        <img id="svg_def_h75" src="Sample_NoViewbox_NoWidth_NoHeight.svg" style="height:75pt" />
+        <p>SVG 300x150 (default), img height=75pt — expects run 150x75</p>
+    </body>
+</html>

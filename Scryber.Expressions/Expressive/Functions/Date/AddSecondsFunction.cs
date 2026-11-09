@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Functions.Date
 
         public override string Name => "AddSeconds";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 2, 2);
 
@@ -20,7 +20,7 @@ namespace Scryber.Expressive.Functions.Date
             if (dateObject is null || secondsObject is null) { return null; }
 
             var date = Convert.ToDateTime(dateObject, context.CurrentCulture);
-            var seconds = Convert.ToDouble(secondsObject, context.CurrentCulture);
+            var seconds = Convert.ToDouble(secondsObject, context.DecimalCurrentCulture);
 
             return date.AddSeconds(seconds);
         }

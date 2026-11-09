@@ -37,6 +37,19 @@ namespace Scryber.PDF.Layout
         protected const int NULL_COLUMNINDEX = -1;
         protected const string LOG_CATEGORY = "PDFLayout";
 
+
+        //
+        // events
+        //
+
+        public event EventHandler LayoutBlockClosed;
+
+        protected virtual void OnLayoutItemClosed()
+        {
+            if (null != LayoutBlockClosed)
+                LayoutBlockClosed(this, EventArgs.Empty);
+        }
+
         //
         // properties
         //
@@ -107,6 +120,11 @@ namespace Scryber.PDF.Layout
         //
         // ctor(s)
         //
+        
+        /// <summary>
+        /// Gets or set the flag for the items' layout - Explicit means no adjustment for the flow should be made.
+        /// </summary>
+        public bool IsExplicitLayout { get; set; }
 
         #region protected PDFLayoutItem(PDFLayoutItem parent)
 
@@ -185,6 +203,9 @@ namespace Scryber.PDF.Layout
                         msg = String.Empty;
                     throw new InvalidOperationException(Errors.LayoutItemCouldNotBeClosed + msg);
                 }
+
+                this.OnLayoutItemClosed();
+
                 return perform;
             }
             else
@@ -410,7 +431,94 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        protected virtual void OutputBackground(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
+        {
+            var g = context.Graphics;
+            if (null != bg)
+            {
+                if (border.TopLeftRadius.HasValue || border.TopRightRadius.HasValue || border.BottomLeftRadius.HasValue || border.BottomRightRadius.HasValue)
+                {
+                    g.FillRoundRectangle(bg, rect.X, rect.Y, rect.Width, rect.Height, 
+                        border.TopLeftRadius ?? Unit.Zero, border.TopRightRadius ?? Unit.Zero, 
+                        border.BottomLeftRadius ?? Unit.Zero, border.BottomRightRadius ?? Unit.Zero);
+                }
+                else if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
+                {
+                    g.FillRoundRectangle(bg, rect, border.CornerRadius.Value);
+                }
+                else
+                {
+                    g.FillRectangle(bg, rect);
+                }
+            }
+        }
+
         #endregion
+
+        /// <summary>
+        /// Draws the css box-shadows for this item, behind it. They do not take up any space. Inset shadows are not drawn.
+        /// </summary>
+        protected void OutputBoxShadows(PDFRenderContext context, Rect borderRect, PDFPenBorders border, Style fullStyle)
+        {
+            var shadows = fullStyle.GetValue(StyleKeys.BorderBoxShadowKey, (BoxShadow[])null);
+            if (null == shadows || shadows.Length == 0)
+                return;
+
+            Unit tl = Unit.Zero, tr = Unit.Zero, bl = Unit.Zero, br = Unit.Zero;
+            if (null != border)
+            {
+                tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+            }
+
+            Color current = StandardColors.Black;
+            if (fullStyle.CreateFillBrush() is PDFSolidBrush fill)
+                current = fill.Color;
+
+            //The first shadow is on top, so draw them in reverse
+            for (int i = shadows.Length - 1; i >= 0; i--)
+            {
+                var shadow = shadows[i];
+                if (shadow.Inset)
+                    continue;
+
+                var color = shadow.Color ?? current;
+                context.Graphics.DrawBoxShadow(borderRect, tl, tr, bl, br, shadow.OffsetX, shadow.OffsetY, shadow.Blur, shadow.Spread, color, shadow.Opacity);
+            }
+        }
+
+        /// <summary>
+        /// Draws the css outline for this item (outside the border, with an optional offset). It does not take up any space.
+        /// </summary>
+        protected void OutputOutline(PDFRenderContext context, Rect borderRect, PDFPenBorders border, Style fullStyle)
+        {
+            var pen = fullStyle.CreateOutlinePen(out Unit offset);
+            if (null == pen)
+                return;
+
+            //The borders are drawn centered on the edge of the border rect, so the outline starts after half of the widest border.
+            double borderHalf = 0.0;
+            if (null != border)
+            {
+                foreach (var side in new[] { border.LeftPen, border.RightPen, border.TopPen, border.BottomPen, border.AllPen })
+                {
+                    if (null != side && side.LineStyle != LineType.None)
+                        borderHalf = Math.Max(borderHalf, side.Width.PointsValue / 2.0);
+                }
+            }
+
+            //The outline stroke is centered on its rectangle, so half the outline width is added.
+            double inflate = borderHalf + offset.PointsValue + (pen.Width.PointsValue / 2.0);
+            var rect = new Rect(borderRect.X - inflate, borderRect.Y - inflate,
+                borderRect.Width + (inflate * 2), borderRect.Height + (inflate * 2));
+
+            if (rect.Width <= Unit.Zero || rect.Height <= Unit.Zero)
+                return;
+
+            context.Graphics.DrawRectangle(pen, rect, Sides.Top | Sides.Right | Sides.Bottom | Sides.Left);
+        }
 
         #region protected void OutputBorder(PDFBackgroundStyle bg, PDFBorderStyle border, PDFRenderContext context, PDFRect rect)
 
@@ -424,43 +532,50 @@ namespace Scryber.PDF.Layout
         protected virtual void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
         {
             var g = context.Graphics;
-            
+
+            Unit tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+            Unit tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+            Unit bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+            Unit br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+
+            bool hasAnyCorner = tl != Unit.Zero || tr != Unit.Zero || bl != Unit.Zero || br != Unit.Zero;
+
             if (null != border.AllPen && border.AllSides > 0)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.AllPen, rect, border.AllSides, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.AllPen, rect.X, rect.Y, rect.Width, rect.Height, border.AllSides, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.AllPen, rect, border.AllSides);
             }
 
             if(null != border.TopPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.TopPen, rect, Sides.Top, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.TopPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Top, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.TopPen, rect, Sides.Top);
             }
 
             if (null != border.RightPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.RightPen, rect, Sides.Right, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.RightPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Right, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.RightPen, rect, Sides.Right);
             }
 
             if (null != border.BottomPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.BottomPen, rect, Sides.Bottom, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.BottomPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Bottom, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.BottomPen, rect, Sides.Bottom);
             }
 
             if (null != border.LeftPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.LeftPen, rect, Sides.Left, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.LeftPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Left, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.LeftPen, rect, Sides.Left);
             }
@@ -468,14 +583,20 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region protected virtual void OutputClipping(PDFBorderStyle border, PDFRenderContext context, PDFRect cliprect)
+        #region OutputClipping / ReleaseGraphicsState
 
         /// <summary>
         /// Outputs the border for this block in the specified rect with the border style
         /// </summary>
         /// <param name="context">The current render context</param>
         /// <param name="cliprect">The rectangle that shoud be rendered as the border</param>
-        protected virtual void OutputClipping(PDFRenderContext context, Rect cliprect, Unit corner, Sides sides, Thickness inset)
+        /// <returns>True if the clippong rect was set</returns>
+        protected virtual bool OutputClipping(PDFRenderContext context, Rect cliprect, Unit corner, Sides sides, Thickness inset)
+        {
+            return this.OutputClipping(context, cliprect, corner, corner, corner, corner, sides, inset);
+        }
+
+        protected virtual bool OutputClipping(PDFRenderContext context, Rect cliprect, Unit tl, Unit tr, Unit bl, Unit br, Sides sides, Thickness inset)
         {
             var g = context.Graphics;
             g.SaveGraphicsState();
@@ -488,12 +609,14 @@ namespace Scryber.PDF.Layout
                 cliprect.Height -= (inset.Top + inset.Bottom);
             }
 
-            if (corner != Unit.Zero)
-                g.SetClipRect(cliprect, sides, corner);
+            if (tl != Unit.Zero || tr != Unit.Zero || bl != Unit.Zero || br != Unit.Zero)
+                g.SetClipRect(cliprect, sides, tl, tr, bl, br);
             else
             {
                 g.SetClipRect(cliprect);
             }
+
+            return true;
         }
 
         protected virtual void ReleaseClipping(PDFRenderContext context)

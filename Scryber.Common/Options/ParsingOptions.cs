@@ -22,7 +22,7 @@ namespace Scryber.Options
         public List<BindingPrefixOption> Bindings { get; set; }
 
 
-        public ParserFactoryOption[] Parsers { get; set; }
+        public List<ParserFactoryOption> Parsers { get; set; }
         
 
         public ParsingOptions()
@@ -68,7 +68,7 @@ namespace Scryber.Options
                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
 
-            Parsers = new ParserFactoryOption[] { };
+            Parsers = new List<ParserFactoryOption>();
 
             //Parsers.Add(new ParserFactoryOption()
             //{
@@ -131,7 +131,7 @@ namespace Scryber.Options
         }
 
 
-        public IPDFBindingExpressionFactory GetBindingFactoryForPrefix(string prefix)
+        public IBindingExpressionFactory GetBindingFactoryForPrefix(string prefix)
         {
             if (string.IsNullOrEmpty(prefix) || this.Bindings == null || this.Bindings.Count == 0)
                 return null;
@@ -171,10 +171,17 @@ namespace Scryber.Options
         /// e.g. https://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd
         /// </summary>
         public string Source { get; set; }
-
-
+        
         public NamespaceMappingOption()
+        {}
+
+
+        public NamespaceMappingOption(string source, string ns , string assembly)
         {
+            this.Source = source ?? throw new ArgumentNullException(nameof(source));
+            this.Namespace = ns ?? throw new ArgumentNullException(nameof(ns));
+            this.Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+            
         }
     }
 
@@ -199,20 +206,39 @@ namespace Scryber.Options
         /// e.g. Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe
         /// </summary>
         public string FactoryAssembly { get; set; }
+        
+        
+        public BindingPrefixOption()
+        {}
+
+        public BindingPrefixOption(string prefix, string factoryType, string factoryAssembly)
+        {
+            this.Prefix = string.IsNullOrEmpty(prefix) ? throw new ArgumentNullException(nameof(prefix)) : prefix;
+            this.FactoryType = factoryType ?? throw new ArgumentNullException(nameof(factoryType));
+            this.FactoryAssembly = factoryAssembly ?? throw new ArgumentNullException(nameof(factoryAssembly));
+        }
+
+        public BindingPrefixOption(string prefix, IBindingExpressionFactory factory)
+        {
+            this.Prefix = string.IsNullOrEmpty(prefix) ? throw new ArgumentNullException(nameof(prefix)) : prefix;
+            this.FactoryType = factory?.GetType().FullName ?? throw new ArgumentNullException(nameof(factory));
+            this.FactoryAssembly = factory?.GetType().Assembly.FullName ?? throw new ArgumentNullException(nameof(factory));
+            this._factory = factory;
+        }
 
         /// <summary>
         /// We store a local cached version of the factory.
         /// </summary>
-        private IPDFBindingExpressionFactory _factory;
+        private IBindingExpressionFactory _factory;
 
         /// <summary>
         /// Gets the factory instance that is specified by this options FactoryType and FactoryAssembly
         /// </summary>
         /// <returns></returns>
-        public IPDFBindingExpressionFactory GetFactory()
+        public IBindingExpressionFactory GetFactory()
         {
             if(null == _factory)
-                _factory = Utilities.TypeHelper.GetInstance<IPDFBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
+                _factory = Utilities.TypeHelper.GetInstance<IBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
 
             return _factory;
         }
@@ -238,6 +264,24 @@ namespace Scryber.Options
         /// </summary>
         public string FactoryAssembly { get; set; }
 
+        public ParserFactoryOption()
+        {}
+
+        public ParserFactoryOption(string name, string factoryType, string factoryAssembly)
+        {
+            this.Name = string.IsNullOrEmpty(name) ? throw new ArgumentNullException(nameof(name)) : name;
+            this.FactoryType = factoryType ?? throw new ArgumentNullException(nameof(factoryType));
+            this.FactoryAssembly = factoryAssembly ?? throw new ArgumentNullException(nameof(factoryAssembly));
+        }
+
+        public ParserFactoryOption(string name, IParserFactory factory)
+        {
+            this.Name = string.IsNullOrEmpty(name) ? throw new ArgumentNullException(nameof(name)) : name;
+            this.FactoryType = factory?.GetType().FullName ?? throw new ArgumentNullException(nameof(factory));
+            this.FactoryAssembly = factory?.GetType().Assembly.FullName ?? throw new ArgumentNullException(nameof(factory));
+            this._factory = factory;
+        }
+        
         /// <summary>
         /// We store a local cached version of the factory.
         /// </summary>

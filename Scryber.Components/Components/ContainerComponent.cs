@@ -22,6 +22,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.Components
 {
@@ -40,7 +41,7 @@ namespace Scryber.Components
         /// Interface implemented property to contain all the Page Components that this item contains.
         /// Inheritors can make this list publicly accessible.
         /// </summary>
-        protected ComponentList InnerContent
+        protected virtual ComponentList InnerContent
         {
             get
             {
@@ -323,6 +324,18 @@ namespace Scryber.Components
         #endregion
 
 
+        internal protected override void DoFindMatches(MatchedComponentList found, StyleMatcher matcher)
+        {
+            base.DoFindMatches(found, matcher);
+
+            if (this.HasContent)
+            {
+                foreach (var component in this.InnerContent)
+                {
+                    component.DoFindMatches(found, matcher);
+                }
+            }
+        }
 
         #region protected override void Dispose(bool disposing) + protected virtual void DisposeChildren(disposing)
 

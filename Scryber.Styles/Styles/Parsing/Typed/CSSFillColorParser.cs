@@ -4,14 +4,14 @@ using Scryber.Drawing;
 
 namespace Scryber.Styles.Parsing.Typed
 {
-    public class CSSFillColourParser : CSSColorStyleParser
+    public class CSSFillColorParser : CSSColorStyleParser
     {
-        public CSSFillColourParser()
+        public CSSFillColorParser()
             : this(CSSStyleItems.FillColor, StyleKeys.FillColorKey, StyleKeys.FillOpacityKey)
         {
         }
 
-        public CSSFillColourParser(string css, StyleKey<Color> key, StyleKey<double> opacity)
+        public CSSFillColorParser(string css, StyleKey<Color> key, StyleKey<double> opacity)
             : base(css, key, opacity)
         { }
 

@@ -104,7 +104,8 @@ namespace Scryber.Core.UnitTests.Styles
             target.Add(defn2);
 
             StyleDefn defn3 = new StyleDefn();
-            defn3.AppliedClass = "other";
+            
+            defn3.Match = ".other";
             defn3.Border.Width = 20;
             defn3.Stroke.Color = StandardColors.Aqua;
             target.Add(defn3);

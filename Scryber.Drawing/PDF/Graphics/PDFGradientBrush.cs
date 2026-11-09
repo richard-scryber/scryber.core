@@ -53,12 +53,21 @@ namespace Scryber.PDF.Graphics
         public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, GradientLinearDescriptor descriptor, Rect bounds)
         {
             PDFLinearShadingPattern pattern = new PDFLinearShadingPattern(g.Container.Document, key, descriptor, bounds);
+            
+            //Implement and add to the 
+            // if(g.CurrentTransformationMatrix != null)
+            //     pattern.TransformationMatrix = g.CurrentTransformationMatrix;
+            
             return pattern;
         }
 
         public PDFResource GetRadialShadingPattern(PDFGraphics g, string key, GradientRadialDescriptor descriptor, Rect bounds)
         {
             PDFRadialShadingPattern pattern = new PDFRadialShadingPattern(g.Container.Document, key, descriptor, bounds);
+            
+            // if(g.CurrentTransformationMatrix != null)
+            //     pattern.TransformationMatrix = g.CurrentTransformationMatrix;
+
             return pattern;
         }
     }

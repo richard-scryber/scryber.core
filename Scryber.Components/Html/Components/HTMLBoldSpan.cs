@@ -46,14 +46,22 @@ namespace Scryber.Html.Components
         }
 
         public HTMLBoldSpan()
-            : base()
+            : this(HTMLObjectTypes.Bold)
         {
         }
+
+        protected HTMLBoldSpan(ObjectType type): base(type)
+        { }
     }
 
     [PDFParsableComponent("strong")]
     public class HTMLStrong : HTMLBoldSpan
     {
 
+        public HTMLStrong() : this(HTMLObjectTypes.Strong)
+        { }
+
+        protected HTMLStrong(ObjectType type): base(type)
+        { }
     }
 }

@@ -46,6 +46,7 @@ namespace Scryber.Core.UnitTests.Numbers
             layout = context.DocumentLayout;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
 
         [TestMethod()]
         [TestCategory("Page Numbers")]
@@ -338,6 +339,8 @@ namespace Scryber.Core.UnitTests.Numbers
                 TestContext.WriteLine("Expected '{0}', Actual '{1}'", expected, actual);
             }
         }
+        
+#pragma warning restore CS0618 // Type or member is obsolete
 
         [TestMethod()]
         public void TestingNumberOutputFormat()

@@ -24,22 +24,49 @@ namespace Scryber.Imaging
         }
 
         protected ImageFactoryGif(Regex match, string name, bool shouldCache)
-            : base(match, name, shouldCache)
+            : base(match, MimeType.GifImage,  name, shouldCache)
         {
         }
 
-
-        protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
+        protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
         {
-            IImageFormat format;
-            SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
-            var img = Image.Load(config, stream, out format);
+            var span = new ReadOnlySpan<byte>(rawData);
+            var img = Image.Load(span);
+            var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
 
             ImageData data = null;
 
-            if (format.Name == "GIF")
+            if (null != meta)
             {
-                var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
+                
+                const bool hasAlpha = true;
+                const ColorSpace colorSpace = ColorSpace.RGB;
+                const int bitDepth = 8;
+                var name = document.GetIncrementID(ObjectTypes.ImageData) + ".gif";
+                
+                data = GetImageDataForImage(ImageFormat.Gif, img, name, bitDepth, hasAlpha, colorSpace);
+            }
+            else
+            {
+                if (document.ConformanceMode == ParserConformanceMode.Strict)
+                    throw new PDFDataException(
+                        "The format of the raw image data was expected to be GIF@");
+                
+                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be GIF");
+            }
+
+            return data;
+        }
+
+        protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
+        {
+            var img = Image.Load(stream);
+            var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
+
+            ImageData data = null;
+
+            if (null != meta)
+            {
                 
                 const bool hasAlpha = true;
                 const ColorSpace colorSpace = ColorSpace.RGB;

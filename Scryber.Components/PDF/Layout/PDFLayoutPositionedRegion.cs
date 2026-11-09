@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.PDF.Native;
 
 namespace Scryber.PDF.Layout
 {
@@ -51,6 +52,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         public PDFLayoutPositionedRegionRun AssociatedRun { get; set; }
 
+        public PDFLayoutBlock RelativeTo { get; set; }
+
+        public Point RelativeOffset { get; set; }
+
         //
         // .ctor
         //
@@ -66,13 +71,14 @@ namespace Scryber.PDF.Layout
         /// <param name="columnindex"></param>
         /// <param name="position"></param>
         public PDFLayoutPositionedRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, PDFPositionOptions position)
-            : base(block, owner, contentbounds, columnindex, position.HAlign ?? HorizontalAlignment.Left, position.VAlign ?? VerticalAlignment.Top, position.PositionMode)
+            : base(block, owner, contentbounds, columnindex, position.HAlign ?? HorizontalAlignment.Left, position.VAlign ?? VerticalAlignment.Top, position.DisplayMode, position.PositionMode)
         {
             this.PositionOptions = position;
         }
 
         #endregion
 
+        
         //
         // overrides
         //
@@ -87,6 +93,8 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override bool DoClose(ref string msg)
         {
+            this.CloseCurrentItem();
+            
             //We override this to reduce the size of the region so that it
             //fits the explicit size or the content within it
 
@@ -100,7 +108,12 @@ namespace Scryber.PDF.Layout
                 w = Unit.Max(w, item.Width);
             }
 
-            if (this.PositionMode != Drawing.PositionMode.Absolute && this.PositionMode != Drawing.PositionMode.Relative)
+            if (this.PositionMode == PositionMode.Fixed)
+            {
+                if (this.PositionOptions.Height.HasValue)
+                    h = this.PositionOptions.Height.Value;
+            }
+            else if (this.PositionMode != Drawing.PositionMode.Absolute)
             {
                 if (this.PositionOptions.Width.HasValue)
                     w = this.PositionOptions.Width.Value;
@@ -111,9 +124,352 @@ namespace Scryber.PDF.Layout
             this.TotalBounds = new Rect(this.TotalBounds.Location, this.UsedSize);
 
             return base.DoClose(ref msg);
+
         }
 
         #endregion
+
+        /// <summary>
+        /// Calculates the new total bounds for the absolute positioned region based on
+        /// not having a positioned parent.
+        /// </summary>
+        /// <param name="currentOffset">The context offset for the rendering</param>
+        protected void UpdateTotalBoundsForBlockParent(Point currentOffset)
+        {
+            var bounds = this.TotalBounds;
+
+            var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
+            var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
+            
+            if (this.PositionOptions.FloatMode == FloatMode.None)
+            {
+                bounds.X = xoffset;
+            }
+            else if (this.PositionOptions.FloatMode == FloatMode.Left)
+            {
+                //we can have a left inset on the float mode.
+                bounds.X += xoffset;
+            }
+
+            bounds.Y = yoffset;
+            
+            var relativeOffset = this.RelativeOffset;
+
+            if (this.PositionOptions.X.HasValue)
+            {
+                //We have no positioned parent, so the x is taken from the page
+                bounds.X = this.PositionOptions.X.Value;
+                relativeOffset.X = 0;
+            }
+            else if (this.PositionOptions.Right.HasValue)
+            {
+                //we have no positioned parent so the x is taken from the width of
+                // the page - right and width of this region
+                
+                var farRight = this.RelativeTo.GetLayoutPage().Width;
+                farRight -= this.PositionOptions.Right.Value;
+                farRight -= this.RelativeTo.Position.Padding.Right;
+                bounds.X = farRight - this.Width;
+                
+                relativeOffset.X = 0;
+            }
+            else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+            {
+                //We need to calculate the left offset.
+                var line = this.AssociatedRun.Line;
+
+                var width = Unit.Zero;
+                var extra = Unit.Zero;
+                foreach (var run in line.Runs)
+                {
+                    if(run == this.AssociatedRun)
+                        break;
+                    
+                    width += run.Width;
+                    
+                    if (run is PDFTextRunCharacter character)
+                        width += character.ExtraSpace;
+                }
+
+                switch (line.HAlignment)
+                {
+                    case HorizontalAlignment.Right:
+                        width += line.AvailableWidth;
+                        break;
+                    case HorizontalAlignment.Center:
+                        width += line.AvailableWidth / 2.0;
+                        break;
+                    
+                    case HorizontalAlignment.Justified:
+                    case HorizontalAlignment.Left:
+                    default:
+                        //do nothing as already calculated
+                        break;
+                }
+
+                
+
+                relativeOffset.X += width;
+                bounds.X += this.RelativeTo.Position.Padding.Left;
+
+            }
+            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            {
+                //we have no horizontal offset so we include the padding
+                bounds.X += this.RelativeTo.Position.Padding.Left;
+            }
+
+
+            if (this.PositionOptions.Y.HasValue)
+            {
+                //we have no positioned parent so y is taken from the page
+                bounds.Y = this.PositionOptions.Y.Value;
+                relativeOffset.Y = 0;
+            }
+            else if (this.PositionOptions.Bottom.HasValue)
+            {
+                var bottom = this.RelativeTo.GetLayoutPage().Height;
+                bottom -= this.PositionOptions.Bottom.Value;
+                bounds.Y = bottom - this.Height;
+                relativeOffset.Y = 0;
+            }
+            else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+            {
+                //We need to calculate the left offset.
+                var line = this.AssociatedRun.Line;
+                relativeOffset.Y -= line.Height;
+            }
+            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            {
+                //we have no vertical position so we include the padding in the offsets
+                bounds.Y += this.RelativeTo.Position.Padding.Top;
+            }
+
+
+            bounds.Location = bounds.Location.Offset(relativeOffset);
+
+            this.TotalBounds = bounds;
+        }
+
+        /// <summary>
+        /// Calculates the new total bounds for the absolute positioned region based on
+        /// having a relatively positioned parent.
+        /// </summary>
+        /// <param name="currentOffset">The context offset for the rendering</param>
+        protected void UpdateTotalBoundsForRelativeParent(Point currentOffset)
+        {
+            var bounds = this.TotalBounds;
+            var floatInset = Unit.Zero;
+
+            if (this.PositionOptions.FloatMode == FloatMode.Left)
+            {
+                floatInset = bounds.X; //previously calculated inset
+            }
+            else if(this.PositionOptions.FloatMode == FloatMode.Right)
+            {
+                floatInset = 0 - (this.RelativeTo.Position.Padding.Right); //normally padding is not accounted for with relative parents, however floats should account for it.
+            }
+
+            var xoffset = (this.RelativeTo.PagePosition.X);
+            var yoffset = (this.RelativeTo.PagePosition.Y);
+            bounds.X = xoffset;
+            bounds.Y = yoffset;
+
+            var relativeOffset = this.RelativeOffset;
+
+            if (this.PositionOptions.X.HasValue)
+            {
+                bounds.X += this.PositionOptions.X.Value + this.RelativeTo.Position.Margins.Left;
+            }
+            else if (this.PositionOptions.Right.HasValue)
+            {
+                var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
+                farRight -= this.RelativeTo.Position.Margins.Right;
+                farRight -= this.PositionOptions.Right.Value;
+                bounds.X = farRight - this.Width;
+                
+            }
+            else
+            {
+                //we have no horizontal offset so we include the padding
+                bounds.X += this.RelativeTo.Position.Padding.Left + this.RelativeTo.Position.Margins.Left;
+            }
+
+
+            if (this.PositionOptions.Y.HasValue)
+            {
+                bounds.Y += this.PositionOptions.Y.Value + this.RelativeTo.Position.Margins.Top;
+            }
+            else if (this.PositionOptions.Bottom.HasValue)
+            {
+                bounds.Y -= this.Height;
+                bounds.Y += this.RelativeTo.Height -
+                            (this.RelativeTo.Position.Margins.Bottom);
+                bounds.Y -= this.PositionOptions.Bottom.Value;
+            }
+            else
+            {
+                //we have no vertical position so we include the padding in the offsets
+                bounds.Y += this.RelativeTo.Position.Padding.Top;
+            }
+
+            relativeOffset.X += floatInset;
+            
+            bounds.Location = bounds.Location.Offset(relativeOffset);
+
+            this.TotalBounds = bounds;
+        }
+
+        
+
+        /// <summary>
+        /// Calculates the new total bounds for the absolute positioned region based on
+        /// having an absolutely (or fixed) positioned parent, whose Total bounds will already have been calculated.
+        /// </summary>
+        /// <param name="currentOffset">The context offset for the rendering</param>
+        protected void UpdateTotalBoundsForAbsoluteParent(Point contextOffset)
+        {
+            var bounds = this.TotalBounds;
+            
+            var floatOffset = Unit.Zero;
+            if (this.PositionOptions.FloatMode != FloatMode.None)
+            {
+                if (this.PositionOptions.FloatMode == FloatMode.Left)
+                    floatOffset = bounds.X;
+                else if (this.PositionOptions.FloatMode == FloatMode.Right)
+                    floatOffset = bounds.X;
+            }
+
+            var xoffset = (this.RelativeTo.PagePosition.X);
+            var yoffset = (this.RelativeTo.PagePosition.Y);
+            bounds.X = xoffset;
+            bounds.Y = yoffset;
+            var relativeOffset = this.RelativeOffset;
+
+
+            if (this.PositionOptions.X.HasValue)
+            {
+                bounds.X += this.PositionOptions.X.Value + this.RelativeTo.Position.Margins.Left;
+                relativeOffset.X = 0;
+
+            }
+            else if (this.PositionOptions.Right.HasValue)
+            {
+                var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
+                farRight -= this.RelativeTo.Position.Margins.Right + this.RelativeTo.Position.Padding.Right;
+                farRight -= this.PositionOptions.Right.Value;
+                bounds.X = farRight - this.Width;
+
+                relativeOffset.X = 0;
+            }
+            else
+            {
+                bounds.X += this.RelativeTo.Position.Margins.Left + this.RelativeTo.Position.Padding.Left;
+            }
+
+
+            if (this.PositionOptions.Y.HasValue)
+            {
+                bounds.Y += this.PositionOptions.Y.Value  + this.RelativeTo.Position.Margins.Top;
+                relativeOffset.Y = 0;
+            }
+            else if (this.PositionOptions.Bottom.HasValue)
+            {
+                var bottom = this.RelativeTo.PagePosition.Y + this.RelativeTo.Height;
+                
+                bottom -= this.RelativeTo.Position.Margins.Bottom;
+                bottom -= this.PositionOptions.Bottom.Value;
+                
+                bounds.Y = bottom - this.Height;
+
+                relativeOffset.Y = 0;
+            }
+            else
+            {
+                bounds.Y += this.RelativeTo.Position.Padding.Top;
+            }
+
+            relativeOffset.X += floatOffset;
+            
+            bounds.Location = bounds.Location.Offset(relativeOffset);
+
+            this.TotalBounds = bounds;
+        }
+
+        protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            if(this.RelativeTo != null)
+            {
+                var mode = this.RelativeTo.Position.PositionMode;
+                
+                if (this.PositionOptions.FloatMode == FloatMode.Right)
+                {
+                    //this.RelativeTo region float inset
+                    //needs to take account of the possible multiple insets.
+                    // if it's not positioned directly.
+                    if (mode != PositionMode.Absolute && mode != PositionMode.Fixed && mode != PositionMode.Relative)
+                        this.PositionOptions.X = this.RelativeTo.PagePosition.X -
+                                                 (this.RelativeTo.Position.Margins.Right + this.RelativeTo.Position.Padding.Right) +
+                                                 (this.RelativeTo.Width - this.Width) -
+                                                 this.PositionOptions.Right;
+                    
+                    if (this.RelativeTo.Position.ColumnCount > 1)
+                    {
+                        //Check if we are not on the last column.
+                        //If not then move left by the width of the columns and teh alley width
+                        
+                        var region = this.AssociatedRun.Line.Region;
+                        var index = region.ColumnIndex;
+                        var count = this.RelativeTo.Position.ColumnCount - 1;
+                        var columnOptions = this.RelativeTo.FullStyle.CreateColumnOptions();
+                        
+                        var inset = Unit.Zero;
+                        while (count > index)
+                        {
+                            inset += this.RelativeTo.Columns[count].TotalBounds.Width;
+                            inset += columnOptions.AlleyWidth;
+                            count--;
+                        }
+
+                        this.PositionOptions.X -= inset;
+                    }
+                }
+                else if (this.PositionOptions.FloatMode == FloatMode.Left)
+                {
+                    // nothing to do for the left.
+                }
+
+                
+                if (mode == PositionMode.Fixed)
+                {
+                    this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
+                }
+                else if (mode == PositionMode.Absolute)
+                {
+                    this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
+                }
+                else if(mode == PositionMode.Relative)
+                {
+                    this.UpdateTotalBoundsForRelativeParent(context.Offset);
+                }
+                else
+                {
+                    this.UpdateTotalBoundsForBlockParent(context.Offset);
+                }
+            }
+            //HACK: Stops any spacing set on the line propogating to the positioned region
+            context.Graphics.SaveGraphicsState();
+            
+            if (null != context.Graphics.CurrentFont)
+                context.Graphics.SetTextSpacing(0, 0, context.Graphics.CurrentFont.Size);
+            
+            var result = base.DoOutputToPDF(context, writer);
+            
+            //Puts the line spacing back
+            context.Graphics.RestoreGraphicsState();
+
+            return result;
+        }
 
     }
 }

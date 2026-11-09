@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Styles;
 
 namespace Scryber.UnitLayouts
 {
@@ -213,7 +215,10 @@ namespace Scryber.UnitLayouts
         {
 
             Document doc = new Document();
+            var defaultMargins = new StyleDefn(typeof(Section), null, null);
+            defaultMargins.Margins.All = new Unit(10);
             
+            doc.Styles.Add(defaultMargins);
             var names = Enum.GetNames(typeof(PaperSize));
 
             foreach (var name in names)
@@ -230,6 +235,8 @@ namespace Scryber.UnitLayouts
                     section.Height = 300;
                 }
                 section.Padding = new Thickness(10);
+                section.Margins = new Thickness(10);
+                
                 section.FontSize = 20;
                 section.HorizontalAlignment = HorizontalAlignment.Center;
 
@@ -403,5 +410,251 @@ namespace Scryber.UnitLayouts
         }
 
 
+        [TestMethod("9. Defining the page sizes in an html template")]
+        public void PageSizeDefaultInHTMLTemplate()
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+    </style>
+</head>
+<body>
+    <h1>Page in the default size</h1>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("Page_SizesDefaultHTMLTemplate.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            var layout = layoutDoc;
+            var pg = layout.AllPages[0];
+            var w = pg.Width;
+            var h = pg.Height;
+            
+            Assert.AreEqual(w, Unit.Mm(210));
+            Assert.AreEqual(h, Unit.Mm(297));
+        }
+        
+        
+        [TestMethod]
+        public void PageSizeA3LandscapeInHTMLTemplate()
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A3 landscape;
+        }
+
+        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+    </style>
+</head>
+<body>
+    <h1>Page in the A3 size</h1>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("Page_SizesA3LandscapeHTMLTemplate.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            var layout = layoutDoc;
+            var pg = layout.AllPages[0];
+            var w = pg.Width;
+            var h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(420), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(297), h.ToMillimeters());
+        }
+        
+        [TestMethod]
+        public void PageSize_A4_Page2_A2_Landscape_InHTMLTemplate()
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        @page large {
+            size: A2 landscape;
+            margin-left: 100pt;
+        }
+
+        .chart {
+            page: large;
+        }
+
+        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+    </style>
+</head>
+<body>
+    <h1>Page in the A4 size</h1>
+    <section class='chart'>
+        <h1>Second page in the A2 landscape size</h1>
+    </section>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("Page_SizesA4_Page2_A2_Landscape_HTMLTemplate.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            var layout = layoutDoc;
+            var pg = layout.AllPages[0];
+            var w = pg.Width;
+            var h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(210), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(297), h.ToMillimeters());
+            
+            //check the second page
+            pg = layout.AllPages[1];
+            w = pg.Width;
+            h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(297 * 2), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(210 * 2), h.ToMillimeters());
+        }
+
+        [TestMethod]
+        public void PageSize_A4_Page2_A2_Landscape_WithContinuations_InHTMLTemplate()
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        @page x-large {
+            size: A2 landscape;
+        }
+
+        @page medium {
+            size: A3 portrait;
+        }
+
+        .chart {
+            page: x-large;
+        }
+
+        .m-large {
+            page: medium;
+        }
+
+        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+    </style>
+</head>
+<body>
+    <h1>Page in the A4 size</h1>
+    <section class='chart'>
+        <h1>Second page in the A2 landscape size</h1>
+        <div style='page-break-before: always;'>
+            <h1>Third page, should stay in A2 Landscape size</h1>
+        </div>
+    </section>
+    <section class='m-large' style='page-break-after: always;'>
+        <h1>Fourth page in A3 Portrait</h1>
+    </section>
+    <h1>Fifth page, should revert back to A4</h1>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("Page_SizesA4_Page2_A2_Landscape_WithContinuations_HTMLTemplate.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            var layout = layoutDoc;
+            Assert.AreEqual(5, layout.AllPages.Count);
+            
+            //check the first page - should be A4 portrait
+            var pg = layout.AllPages[0];
+            var w = pg.Width;
+            var h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(210), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(297), h.ToMillimeters());
+            
+            //check the second page - A2 landscape
+            pg = layout.AllPages[1];
+            w = pg.Width;
+            h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(297 * 2), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(210 * 2), h.ToMillimeters());
+            
+            
+            //third page should be the same dimensions
+            pg = layout.AllPages[2];
+            w = pg.Width;
+            h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(297 * 2), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(210 * 2), h.ToMillimeters());
+            
+            //fourth page should be A3 portrait
+            pg = layout.AllPages[3];
+            w = pg.Width;
+            h = pg.Height;
+            
+            Assert.AreEqual(Unit.Mm(297), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(420), h.ToMillimeters());
+
+            //fifth page should revert back to A4 portrait
+            pg = layout.AllPages[4];
+            w = pg.Width;
+            h = pg.Height;
+
+            Assert.AreEqual(Unit.Mm(210), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(297), h.ToMillimeters());
+        }
     }
 }

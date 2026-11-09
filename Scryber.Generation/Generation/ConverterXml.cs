@@ -416,6 +416,9 @@ namespace Scryber.Generation
 
             if (value.IndexOf(' ') > -1)
                 value = value.Replace(' ', ',');
+            if (value.IndexOf('-') > -1)
+                value = value.Replace('-', '_');
+
             object result;
             if (EnumParser.TryParse(requiredType, value, true, out result))
                 return result;
@@ -659,7 +662,7 @@ namespace Scryber.Generation
         internal static object ToPDFTemplate(XmlReader reader, Type requiredType, ParserSettings settings)
         {
             object obj = Activator.CreateInstance(settings.TempateGeneratorType);
-            IPDFTemplateGenerator gen = (IPDFTemplateGenerator)obj;
+            ITemplateGenerator gen = (ITemplateGenerator)obj;
             string content = reader.ReadInnerXml();
             gen.InitTemplate(content, new System.Xml.XmlNamespaceManager(reader.NameTable));
             return gen;

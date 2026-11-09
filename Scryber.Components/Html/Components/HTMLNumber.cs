@@ -61,9 +61,20 @@ namespace Scryber.Html.Components
             }
         }
 
+        [PDFAttribute("data-value")]
+        public override double Value { 
+            get => base.Value; 
+            set=> base.Value = value; 
+        }
 
-        public HTMLNumber()
+
+        public HTMLNumber() : this(HTMLObjectTypes.Number)
         {
+        }
+
+        protected HTMLNumber(ObjectType type) : base(type)
+        {
+            
         }
 
         protected override PDFTextReader CreateReader(ContextBase context, Style fullstyle)
@@ -71,16 +82,22 @@ namespace Scryber.Html.Components
             if (!string.IsNullOrEmpty(this.Text))
             {
                 double parsed;
-                if (double.TryParse(this.Text, out parsed))
+                //TODO: Use the lang attribute when converting the number
+                if (double.TryParse(this.Text, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsed))
                 {
                     this.Value = parsed;
                     return base.CreateReader(context, fullstyle);
                 }
                 else
-                    return Scryber.Text.PDFTextReader.Create(this.Text, TextFormat.Plain, false, context.TraceLog);
+                    return Scryber.Text.PDFTextReader.Create(this.Text, TextFormat.XHTML, false, context.TraceLog);
             }
             else
                 return base.CreateReader(context, fullstyle);
+        }
+
+        protected override void OnDataBound(DataContext context)
+        {
+            base.OnDataBound(context);
         }
     }
 }

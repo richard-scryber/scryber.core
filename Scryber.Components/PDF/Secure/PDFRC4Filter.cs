@@ -60,7 +60,7 @@ namespace Scryber.PDF.Secure
         public void FilterStream(System.IO.Stream read, System.IO.Stream write)
         {
             byte[] all = new byte[(int)(read.Length - read.Position)];
-            read.Read(all, 0, all.Length);
+            read.ReadExactly(all, 0, all.Length);
             all = FilterStream(all);
             write.Write(all, 0, all.Length);
         }
@@ -80,8 +80,6 @@ namespace Scryber.PDF.Secure
 
         #region private byte[] MD5(byte[] data)
 
-        private System.Security.Cryptography.MD5 _md5;
-
         /// <summary>
         /// MD5 hashes the input data and returns the result
         /// </summary>
@@ -89,9 +87,7 @@ namespace Scryber.PDF.Secure
         /// <returns></returns>
         private byte[] MD5(byte[] data)
         {
-            if (null == _md5)
-                _md5 = System.Security.Cryptography.MD5.Create();
-            return _md5.ComputeHash(data);
+            return MD5Managed.ComputeHash(data);
         }
 
         #endregion

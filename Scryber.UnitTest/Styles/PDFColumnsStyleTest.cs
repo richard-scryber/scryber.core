@@ -140,22 +140,22 @@ namespace Scryber.Core.UnitTests.Styles
         public void Columns_AutoFlowTest()
         {
             ColumnsStyle target = new ColumnsStyle();
-            Assert.AreEqual(true, target.AutoFlow);
+            Assert.AreEqual(ColumnFillMode.Auto, target.FillMode);
 
-            bool expected = true;
-            target.AutoFlow = expected;
-            Assert.AreEqual(expected, target.AutoFlow);
+            ColumnFillMode expected = ColumnFillMode.Balance;
+            target.FillMode = expected;
+            Assert.AreEqual(expected, target.FillMode);
 
-            expected = false;
-            target.AutoFlow = expected;
-            Assert.AreEqual(expected, target.AutoFlow);
+            expected = ColumnFillMode.Balance_All;
+            target.FillMode = expected;
+            Assert.AreEqual(expected, target.FillMode);
 
-            target.RemoveAutoFlow();
-            Assert.AreEqual(true, target.AutoFlow);
+            target.RemoveFillMode();
+            Assert.AreEqual(ColumnFillMode.Auto, target.FillMode);
 
-            expected = true;
-            target.AutoFlow = expected;
-            Assert.AreEqual(expected, target.AutoFlow);
+            expected = ColumnFillMode.Balance;
+            target.FillMode = expected;
+            Assert.AreEqual(expected, target.FillMode);
         }
 
     }

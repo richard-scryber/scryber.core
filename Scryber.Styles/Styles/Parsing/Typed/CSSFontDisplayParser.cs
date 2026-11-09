@@ -5,7 +5,7 @@ using Scryber.Html;
 namespace Scryber.Styles.Parsing.Typed
 {
     /// <summary>
-    /// Parses and sets the components italic option based on the CSS names
+    /// Parses but does nothing as the document will always wait for the font to be loaded before rendering the file, just implemented to stop error messages
     /// </summary>
     public class CSSFontDisplayParser : CSSStyleValueParser
     {

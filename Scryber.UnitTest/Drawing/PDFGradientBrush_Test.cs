@@ -67,7 +67,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
             var linear = desc as GradientLinearDescriptor;
-            Assert.AreEqual(180, linear.Angle, "Angle for value " + value + " was not correct");
+            Assert.AreEqual(90, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(2, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
             linear = desc as GradientLinearDescriptor;
-            Assert.AreEqual(0, linear.Angle, "Angle for value " + value + " was not correct");
+            Assert.AreEqual(270, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(2, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
@@ -116,7 +116,7 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
             linear = desc as GradientLinearDescriptor;
-            Assert.AreEqual(25, linear.Angle, "Angle for value " + value + " was not correct");
+            Assert.AreEqual(25 + 270, linear.Angle, "Angle for value " + value + " was not correct");
             Assert.AreEqual(3, linear.Colors.Count, "Colour count for value " + value + " was not correct");
             Assert.IsFalse(linear.Repeating, "The linear gradient was set to repeat for " + value);
 
@@ -146,27 +146,47 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsInstanceOfType(desc, typeof(GradientLinearDescriptor), "Returned type for " + value + " was not a linear gradient");
 
             linear = desc as GradientLinearDescriptor;
-            Assert.AreEqual(180, linear.Angle, "Angle for value " + value + " was not correct");
-            Assert.AreEqual(3, linear.Colors.Count, "Colour count for value " + value + " was not correct");
+            Assert.AreEqual(90, linear.Angle, "Angle for value " + value + " was not correct");
+            Assert.AreEqual(6, linear.Colors.Count, "Colour count for value " + value + " was not correct"); //repeats twice
             Assert.IsTrue(linear.Repeating, "The linear gradient was not set to repeat for " + value);
 
             //First red
             Assert.AreEqual(StandardColors.Red, linear.Colors[0].Color, "First colour value for " + value + " was not correct");
-            Assert.IsFalse(linear.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
+            Assert.IsTrue(linear.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
+            Assert.AreEqual(0, linear.Colors[0].Distance.Value, "First colour distance for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green
             Assert.AreEqual(StandardColors.Green, linear.Colors[1].Color, "Second colour value for " + value + " was not correct");
             Assert.IsTrue(linear.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was null");
-            Assert.AreEqual(20, linear.Colors[1].Distance.Value, "Second colour distance for " + value + " was not correct");
+            Assert.AreEqual(0.2, linear.Colors[1].Distance.Value, "Second colour distance for " + value + " was not correct");
             Assert.IsFalse(linear.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
 
-            //Final color
+            //Third silver
             Assert.AreEqual(new Scryber.Drawing.Color(200,200,200), linear.Colors[2].Color, "Third colour value for " + value + " was not correct");
             Assert.IsTrue(linear.Colors[2].Distance.HasValue, "Third colour distance for " + value + " was null");
-            Assert.AreEqual(50, linear.Colors[2].Distance.Value, "Third colour distance for " + value + " was not correct");
+            Assert.AreEqual(0.5, linear.Colors[2].Distance.Value, "Third colour distance for " + value + " was not correct");
             Assert.IsTrue(linear.Colors[2].Opacity.HasValue, "Third colour opacity for " + value + " was not null");
             Assert.AreEqual(0.5, linear.Colors[2].Opacity.Value, "Third colour distance for " + value + " was not correct");
+            
+            //Fourth red
+            Assert.AreEqual(StandardColors.Red, linear.Colors[3].Color, "First colour value for " + value + " was not correct");
+            Assert.IsTrue(linear.Colors[3].Distance.HasValue, "First colour distance for " + value + " was not null");
+            Assert.AreEqual(0.5, linear.Colors[3].Distance.Value, "First colour distance for " + value + " was not correct");
+            Assert.IsFalse(linear.Colors[3].Opacity.HasValue, "First colour opacity for " + value + " was not null");
+
+            //Fifth green
+            Assert.AreEqual(StandardColors.Green, linear.Colors[4].Color, "Second colour value for " + value + " was not correct");
+            Assert.IsTrue(linear.Colors[4].Distance.HasValue, "Second colour distance for " + value + " was null");
+            Assert.AreEqual(0.7, linear.Colors[4].Distance.Value, "Second colour distance for " + value + " was not correct");
+            Assert.IsFalse(linear.Colors[4].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
+
+            //Final color
+            Assert.AreEqual(new Scryber.Drawing.Color(200,200,200), linear.Colors[5].Color, "Third colour value for " + value + " was not correct");
+            Assert.IsTrue(linear.Colors[5].Distance.HasValue, "Third colour distance for " + value + " was null");
+            Assert.AreEqual(1.0, linear.Colors[5].Distance.Value, "Third colour distance for " + value + " was not correct");
+            Assert.IsTrue(linear.Colors[5].Opacity.HasValue, "Third colour opacity for " + value + " was not null");
+            Assert.AreEqual(0.5, linear.Colors[5].Opacity.Value, "Third colour distance for " + value + " was not correct");
 
         }
 
@@ -242,12 +262,14 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //First red
             Assert.AreEqual(StandardColors.Red, radial.Colors[0].Color, "First colour value for " + value + " was not correct");
-            Assert.IsFalse(radial.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
+            Assert.IsTrue(radial.Colors[0].Distance.HasValue, "First colour distance for " + value + " was not null");
+            Assert.AreEqual(0, radial.Colors[0].Distance.Value, "First colour distance for " + value + " was not correct: ");
             Assert.IsFalse(radial.Colors[0].Opacity.HasValue, "First colour opacity for " + value + " was not null");
 
             //Second green
             Assert.AreEqual(StandardColors.Green, radial.Colors[1].Color, "Second colour value for " + value + " was not correct");
-            Assert.IsFalse(radial.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
+            Assert.IsTrue(radial.Colors[1].Distance.HasValue, "Second colour distance for " + value + " was not null");
+            Assert.AreEqual(1, radial.Colors[1].Distance.Value, "Second colour distance for " + value + " was not correct: ");
             Assert.IsFalse(radial.Colors[1].Opacity.HasValue, "Second colour opacity for " + value + " was not null");
 
             

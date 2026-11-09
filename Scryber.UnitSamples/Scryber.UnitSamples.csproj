@@ -1,16 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
-    <PackageReference Include="coverlet.collector" Version="3.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="coverlet.collector" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,17 +30,21 @@
     <None Remove="Templates\PageNumbers\" />
     <None Remove="Templates\Overview\" />
     <None Remove="Templates\Overview\Fragments\" />
+    <None Update="Templates\Tigers\wwf_tigers_report_data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Tigers\wwf_tigers_report_template.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
-    <Folder Include="Templates\Tables\" />
-    <Folder Include="Images\" />
     <Folder Include="Templates\Links\" />
     <Folder Include="Templates\Lists\" />
     <Folder Include="Templates\Pages\" />
     <Folder Include="Templates\PageNumbers\" />
     <Folder Include="Templates\Overview\" />
     <Folder Include="Templates\Overview\Fragments\" />
+    <Folder Include="Templates\ProjectStatusReport\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
@@ -44,5 +53,6 @@
     <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" />
     <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
+    <ProjectReference Include="..\Scryber.UnitTest\Scryber.UnitTests.csproj" />
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -56,8 +57,20 @@ namespace Scryber.Html.Components
         }
 
         public HTMLParagraph()
-            : base()
+            : this(HTMLObjectTypes.Paragraph)
         {
+        }
+
+        protected HTMLParagraph(ObjectType type) : base(type)
+        { }
+
+        protected override Style GetBaseStyle()
+        {
+            var style= base.GetBaseStyle();
+            style.Margins.Top = new Unit(0.5, PageUnits.EMHeight);
+            style.Margins.Bottom = new Unit(0.5, PageUnits.EMHeight);
+
+            return style;
         }
     }
 }

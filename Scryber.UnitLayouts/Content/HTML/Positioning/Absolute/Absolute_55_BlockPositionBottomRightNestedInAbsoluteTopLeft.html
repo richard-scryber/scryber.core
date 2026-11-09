@@ -1,0 +1,50 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            line-height: 30pt;
+            font-size: 15pt;
+            border: solid 1px green;
+            padding: 0;
+        }
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+        }
+
+        #nest {
+            margin: 20pt;
+            border: solid 1px aqua;
+            position: absolute;
+            top: 60pt;
+            left: 80pt;
+            width: 300pt;
+        }
+
+        #abs {
+            position: absolute;
+            border: solid 1px blue;
+            width: 50%;
+            bottom:20pt;
+            right:30pt;
+        }
+    </style>
+</head>
+<body>
+    <h5>Block below is absolute positioned to the page, with a top left location and an inner absolute with a top left.</h5>
+    <div id="nest">
+        <span id="before">Before the absolute.</span>
+        <div id="abs">Absolute to the absolute</div>
+        <span id="after"> After the absolute block.</span>
+    </div>
+</body>
+</html>
+

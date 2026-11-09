@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Operators.Grouping
 
         public IEnumerable<string> Tags => new[] { "(" };
 
-        public IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             return new ParenthesisedExpression(expressions[0] ?? expressions[1]);
         }

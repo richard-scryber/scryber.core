@@ -45,15 +45,15 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
-        [PDFAttribute("data-content")]
-        public string DataContent
-        {
-            get; set;
-        }
 
         public HTMLSpan()
-            : base()
+            : this(HTMLObjectTypes.Span)
         {
+        }
+
+        protected HTMLSpan(ObjectType type) : base(type)
+        {
+
         }
 
         protected override void OnDataBinding(DataContext context)

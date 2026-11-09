@@ -10,6 +10,7 @@ namespace Scryber.Html.Parsing
     /// <summary>
     /// Implements the IEnumerator interface and is returned from the HTMLParser to loop over each parsed component in the HTMLParser content
     /// </summary>
+    [Obsolete("Please use HTMLParserEnumerator instead")]
     public class HTMLParserEnumerator : IEnumerator<HTMLParserResult>
     {
         private const char HTMLStartTag = '<';
@@ -282,7 +283,7 @@ namespace Scryber.Html.Parsing
             var content = this.Source.Substring(start, len);
 
             IComponent text = _owner.ComponentFactory.GetTextComponent(this.Parser, content);
-            ((IPDFTextLiteral)text).ReaderFormat = TextFormat.XML;
+            ((ITextLiteral)text).ReaderFormat = TextFormat.XML;
 
             HTMLParserResult result = new HTMLParserResult(text, HtmlComponentType.Text, null, start, this.Source.Offset - 1, true);
             this.TagsToClose.Push(result);

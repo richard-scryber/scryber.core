@@ -13,6 +13,7 @@ using Scryber.Expressive.Functions.Statistical;
 using Scryber.Expressive.Functions.Coalesce;
 using Scryber.Expressive.Functions.String;
 using Scryber.Expressive.Functions.CSS;
+using Scryber.Expressive.Functions.Image;
 
 namespace Scryber.Binding
 {
@@ -34,9 +35,11 @@ namespace Scryber.Binding
             _all.Add(new DecimalFunction());
             _all.Add(new DoubleFunction());
             _all.Add(new IntegerFunction());
+            _all.Add(new IntFunction()); //Just a short name integer => int
             _all.Add(new LongFunction());
             _all.Add(new StringFunction());
             _all.Add(new BoolFunction());
+            _all.Add(new BooleanFunction()); //Just a rename bool => boolean
             _all.Add(new TypeOfFunction());
             // Date
             _all.Add(new AddDaysFunction());
@@ -46,7 +49,9 @@ namespace Scryber.Binding
             _all.Add(new AddMonthsFunction());
             _all.Add(new AddSecondsFunction());
             _all.Add(new AddYearsFunction());
-            _all.Add(new DayOfFunction());
+            _all.Add(new DayOfMonthFunction());
+            _all.Add(new DayOfWeekFunction());
+            _all.Add(new DayOfYearFunction());
             _all.Add(new DaysBetweenFunction());
             _all.Add(new HourOfFunction());
             _all.Add(new HoursBetweenFunction());
@@ -54,10 +59,11 @@ namespace Scryber.Binding
             _all.Add(new MillisecondsBetweenFunction());
             _all.Add(new MinuteOfFunction());
             _all.Add(new MinutesBetweenFunction());
-            _all.Add(new MonthOfFunction());
+            _all.Add(new MonthOfYearFunction());
             _all.Add(new SecondOfFunction());
             _all.Add(new SecondsBetweenFunction());
             _all.Add(new YearOfFunction());
+
             // Mathematical
             _all.Add(new AbsFunction());
             _all.Add(new AcosFunction());
@@ -65,7 +71,6 @@ namespace Scryber.Binding
             _all.Add(new AtanFunction());
             _all.Add(new CeilingFunction());
             _all.Add(new CosFunction());
-            _all.Add(new CountFunction());
             _all.Add(new ExpFunction());
             _all.Add(new FloorFunction());
             _all.Add(new IEEERemainderFunction());
@@ -90,16 +95,28 @@ namespace Scryber.Binding
             _all.Add(new IfFunction());
             _all.Add(new InFunction());
             _all.Add(new IndexFunction());
+            _all.Add(new AtIndexFunction());
+            _all.Add(new AtFirstFunction());
+            _all.Add(new AtLastFunction());
+            _all.Add(new AtKeyFunction());
+            _all.Add(new IfErrorFunction());
+
             // Relational
             _all.Add(new MaxFunction());
             _all.Add(new MinFunction());
             _all.Add(new MinOfFunction());
             _all.Add(new MaxOfFunction());
+            _all.Add(new CountFunction());
+            _all.Add(new CountOfFunction());
             //coalesce
+            _all.Add(new CollectFunction());
+            _all.Add(new ReverseFunction());
+            _all.Add(new KeysFunction());
             _all.Add(new EachFunction());
             _all.Add(new EachOfFunction());
             _all.Add(new SortByFunction());
             _all.Add(new SelectWhereFunction());
+            _all.Add(new FirstWhereFunction());
             //TODO: Add Merge, Splice
 
             // Statistical
@@ -109,12 +126,15 @@ namespace Scryber.Binding
             _all.Add(new MedianFunction());
             _all.Add(new ModeFunction());
             // String
+            _all.Add(new FormatFunction());
             _all.Add(new ContainsFunction());
             _all.Add(new EndsWithFunction());
             _all.Add(new LengthFunction());
             _all.Add(new PadLeftFunction());
             _all.Add(new PadRightFunction());
-            _all.Add(new RegexFunction());
+            _all.Add(new RegexMatchesFunction());
+            _all.Add(new RegexIsMatchFunction());
+            _all.Add(new RegexSwapFunction());
             _all.Add(new StartsWithFunction());
             _all.Add(new SubstringFunction());
             _all.Add(new ConcatFunction());
@@ -122,10 +142,19 @@ namespace Scryber.Binding
             _all.Add(new JoinFunction());
             _all.Add(new SplitFunction());
             _all.Add(new ReplaceFunction());
-            //TODO: Add ToUpper, ToLower, Trim, TrimLeft and TrimRight functions
+            _all.Add(new ToUpperFunction());
+            _all.Add(new ToLowerFunction());
+            _all.Add(new TrimFunction());
+            _all.Add(new TrimStartFunction());
+            _all.Add(new TrimEndFunction());
+
             //css
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());
+            _all.Add(new RGBFunction());
+
+            //image
+            _all.Add(new MetaFunction());
 
             _all.Add(new EvalFunction());
         }
@@ -152,7 +181,7 @@ namespace Scryber.Binding
         /// </summary>
         /// <param name="function">The name to be used.</param>
         /// <returns>True</returns>
-        internal static bool RegisterFunction(IFunction function)
+        public static bool RegisterFunction(IFunction function)
         {
             if (null == function)
                 throw new ArgumentNullException(nameof(function));
@@ -170,7 +199,7 @@ namespace Scryber.Binding
         /// </summary>
         /// <param name="functions"></param>
         /// <returns></returns>
-        internal static int RegisterFunction(params IFunction[] functions)
+        public static int RegisterFunction(params IFunction[] functions)
         {
             if (null == functions)
                 return 0;

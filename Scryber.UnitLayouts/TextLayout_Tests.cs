@@ -4,6 +4,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Drawing;
 using System.IO;
+using Scryber.Html.Components;
 using Scryber.PDF.Resources;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -516,18 +517,10 @@ namespace Scryber.UnitLayouts
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
 
-            var em = 24.0;  //Point size of font
-            var lead = 24.0 * 1.2; //full leading
+            const double em = 24.0;  //Point size of font
+            const double lead = em * 1.2; //full leading
 
-
-            //default sans-sefif is set up as follows
-            var space = em * 0.2; // line leading - point size
-            var desc = em * 0.25;  // descender height 6pt
-            var asc = em * 0.75;  // ascender height 18pt
-
-            var pgHeight = layout.AllPages[0].Size.Height - pg.Margins.Top - pg.Margins.Bottom;
-            var lineCount = 4.0;
-            var offsetY = pgHeight.PointsValue - (lineCount * lead);
+            double offsetY = 0; // pgHeight.PointsValue - (lineCount * lead);
 
             //The textrunbegin holds the starting position for rendering the text from the TotalBounds
             //This is held from the line heights
@@ -592,7 +585,7 @@ namespace Scryber.UnitLayouts
 
             //divide all the space by 2 and this should be our middle start point;
             var half = all / 2.0;
-            var offsetY = half;
+            double offsetY = 0; //should not affect the text
 
             //The textrunbegin holds the starting position for rendering the text from the TotalBounds
             //This is held from the line heights
@@ -628,7 +621,13 @@ namespace Scryber.UnitLayouts
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
@@ -639,16 +638,17 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
-            var em = 24.0;  //Point size of font
-
+            
             //default sans-sefif is set up as follows
             var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
 
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
                 Assert.AreEqual(3, line.Runs.Count);
                 var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
                 var twidth = text.Width;
 
                 var offset = pgContentWidth - twidth;
@@ -656,12 +656,91 @@ namespace Scryber.UnitLayouts
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
-                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue, start.LineInset.PointsValue, "First line inset should be " + offset);
                 }
                 else
                 {
+                    //check the new line offset from the previous line to this line
                     var space = line.Runs[0] as PDFTextRunSpacer;
-                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, (prevWidth - newWidth).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                }
+
+
+            }
+
+        }
+        
+        /// <summary>
+        /// Checks the font and line sizing along with offset Y for an explicit aligmnent in the middle
+        /// </summary>
+        [TestMethod()]
+        public void LiteralVeryLongWithHAlignRight()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.HorizontalAlignment = HorizontalAlignment.Right;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page\r\n\r\nThis is on a new line on it's own"));
+            //pg.Contents.Add(new LineBreak());
+            //pg.Contents.Add(new LineBreak());
+            //pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            //doc.AppendTraceLog = true;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LiteralHAlignRight");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+            
+            //default sans-sefif is set up as follows
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
+                Assert.AreEqual(3, line.Runs.Count);
+                var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                var twidth = text.Width;
+
+                var offset = pgContentWidth - twidth;
+
+                if (i == 0)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue, start.LineInset.PointsValue, "First line inset should be " + offset);
+                }
+                else
+                {
+                    //check the new line offset from the previous line to this line
+                    var space = line.Runs[0] as PDFTextRunSpacer;
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, (prevWidth - newWidth).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
 
 
@@ -685,10 +764,16 @@ namespace Scryber.UnitLayouts
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
-
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            
             doc.RenderOptions.Compression = OutputCompressionType.None;
-            doc.AppendTraceLog = true;
+            //doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
             SaveAsPDF(doc, "Text_LiteralHAlignCenter");
 
@@ -696,29 +781,37 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
-            var em = 24.0;  //Point size of font
-
+            
             //default sans-sefif is set up as follows
             var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
 
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
                 Assert.AreEqual(3, line.Runs.Count);
                 var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
                 var twidth = text.Width;
 
-                var offset = (pgContentWidth - twidth) / 2.0;
+                var offset = pgContentWidth - twidth;
 
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
-                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue / 2, start.LineInset.PointsValue, "First line inset should be " + (offset / 2));
                 }
                 else
                 {
+                    //check the new line offset from the previous line to this line
                     var space = line.Runs[0] as PDFTextRunSpacer;
-                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, ((prevWidth - newWidth) / 2).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
 
 
@@ -751,8 +844,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
-            var em = 24.0;  //Point size of font
-
+            
             //default sans-sefif is set up as follows
             var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
 
@@ -930,8 +1022,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "The layout was not saved from the event");
             var region = layout.AllPages[0].ContentBlock.Columns[0];
 
-            var em = 24.0;  //Point size of font
-
+            
             //default sans-sefif is set up as follows
             var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
             Assert.AreEqual(3, region.Contents.Count);
@@ -1072,7 +1163,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1149,6 +1240,122 @@ namespace Scryber.UnitLayouts
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
             }
         }
+        
+        /// <summary>
+        /// Tests a long string literal that flows over 2 columns. Explicit font size, default leading.
+        /// </summary>
+        [TestMethod]
+        public void ALongTextBlockMultiColumnExtraReturns()
+        {
+            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \r\n\r\n" + longText + "\r\n\r\n" + longText;
+
+
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            
+            pg.ColumnCount = 2;
+            pg.AlleyWidth = 10;
+            pg.FontSize = 16;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral(text));
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralMultiColumnExtraReturns");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column
+
+            var region = content.Columns[0] as PDFLayoutRegion;
+
+
+            var colW = (content.AvailableBounds.Width - 10);
+            colW = colW / 2.0;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            var lineH = 16 * 1.2;
+            var pgH = lp.Height.PointsValue - 20.0;
+            var lineCount = Math.Floor(pgH / lineH);
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//all available plus an empty line at the end.
+
+
+            PDFLayoutLine line;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                if (i == 2 || i == 24) // empty lines
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunSpacer));
+                else
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second Column
+
+            region = content.Columns[1] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.IsTrue(region.Contents.Count > 0);//all available plus an empty line at the end.
+            lineCount = region.Contents.Count;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == lineCount - 1)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+        }
 
         /// <summary>
         /// Tests a long string literal that flows over 2 pages. Explicit font size, default leading.
@@ -1180,7 +1387,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
 
             //First Page
@@ -1231,7 +1438,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
             region = content.Columns[0] as PDFLayoutRegion;
 
@@ -1295,7 +1502,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1378,7 +1585,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column - Page 2
@@ -1446,7 +1653,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
 
             var region = content.Columns[0];
@@ -1493,7 +1700,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1576,7 +1783,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column - Page 2 - full
@@ -1651,8 +1858,8 @@ namespace Scryber.UnitLayouts
 
 
             var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
-                "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                          "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+                          "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies." +
                 " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
                 "Donec nec sapien eu mi commodo porta in quis nibh. Sed quam sem, tristique vel lobortis nec, " +
@@ -1704,7 +1911,7 @@ namespace Scryber.UnitLayouts
             var contentW = layout.AllPages[0].ContentBlock.Width;
 
             Assert.AreEqual(36, region.Contents.Count);
-            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 31 };
+            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 24, 31 };
 
             for (var i = 0; i < 36; i++)
             {
@@ -2350,12 +2557,12 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(20.0, begin.TextRenderOptions.WordSpacing.Value.PointsValue);
 
             //Lines 9 to 20 inc. are normal flowing lines
-            for (var i = 9; i < 21; i++)
+            for (var i = 9; i < 20; i++)
             {
                 line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
                 Assert.IsTrue(line.Width < contentW);
 
-                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(3, line.Runs.Count, "Expected 3 runs on line '" + i + ", actual " + line.Runs.Count);
                 Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
 
                 Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
@@ -2363,13 +2570,14 @@ namespace Scryber.UnitLayouts
 
             }
 
-            //Line 21 is a split, and reverts back to original spacing
+            //Line 20 is a split, and reverts back to original spacing
 
-            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[21] as PDFLayoutLine;
+            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[20] as PDFLayoutLine;
             Assert.AreEqual(6, line.Runs.Count);
-            //Spacer, End, InlineEnd, TextBegin, Chars, NewLine
+            //Spacer, Chars, RunEnd, InlineEnd, RunBegin, NewLine
 
-            begin = line.Runs[3] as PDFTextRunBegin;
+            begin = line.Runs[4] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
             Assert.IsNotNull(begin.TextRenderOptions);
             Assert.IsTrue(begin.TextRenderOptions.CharacterSpacing.HasValue);
             Assert.AreEqual(3.0, begin.TextRenderOptions.CharacterSpacing.Value.PointsValue);
@@ -2379,7 +2587,7 @@ namespace Scryber.UnitLayouts
 
 
             //Lines 9 to 20 inc. are normal flowing lines
-            for (var i = 22; i < 25; i++)
+            for (var i = 21; i < 25; i++)
             {
                 line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
                 Assert.IsTrue(line.Width < contentW);
@@ -2418,6 +2626,307 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
             Assert.AreEqual(line.Width, line.Runs[1].Width);
             Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+
+        }
+
+
+
+        
+        
+
+
+        /// <summary>
+        /// A test document with escaped text in inline, and pre-formatted styles to check the layout.
+        /// </summary>
+        private string HTMLTextContentEscapedSrc = @"
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Bound Document</title>
+        <style>
+            h2 { font-size: 16pt; font-weight: 400; font-style: italic;}
+            .wrapper { border: solid 1px red; margin: 10px; font-size: 12pt;}
+            .preformatted{ white-space: pre; }
+        </style>
+    </head>
+    <body style='padding: 10pt' >
+        <h2>1. Single Line,not formatted</h2>
+        <div id='div1' class='wrapper' >
+            &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt;
+        </div>
+        <div class='wrapper' >
+            &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt;
+            &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt;
+        </div>
+        <h2>2. Multiple Line, not formatted</h2>
+        <div id='div2' class='wrapper' >
+            &lt;div class='test' id='Appended' xmlns='' &gt;
+                &lt;b&gt;Inner &amp; Content&lt;/b&gt;
+            &lt;/div&gt;
+        </div>
+
+        <h2>3. Single Line with spans, not formatted</h2>
+        <div id='div3' class='wrapper' >
+            <span>Before Content</span> &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt; <span>After Content</span>
+        </div>
+
+        <h2>4. Multiple Line with spans, not formatted</h2>
+        <div id='div4' class='wrapper' >
+            <span>Before Content</span>
+            &lt;div class='test' id='Appended' xmlns='' &gt;
+                &lt;b&gt;Inner &amp; Content&lt;/b&gt;&lt;span&gt;That flows onto multiple lines.&lt;/span&gt;
+            &lt;/div&gt;
+            <span>After Content</span>
+        </div>
+
+        <h2>5. All on one line, pre-formatted</h2>
+        <div id='div5' class='wrapper preformatted' >&lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt;</div>
+
+        <h2>6. Single separate line pre-formatted</h2>
+        <div id='div6' class='wrapper preformatted' >
+            &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt;
+        </div>
+
+        <h2>7. Multiple Line, pre-formatted</h2>
+        <div id='div7' class='wrapper preformatted' >
+            &lt;div class='test' id='Appended' xmlns='' &gt;
+                &lt;b&gt;Inner &amp; Content&lt;/b&gt;
+            &lt;/div&gt;
+        </div>
+
+        <h2>8. Single Line with spans, pre-formatted</h2>
+        <div id='div8' class='wrapper preformatted' >
+            <span>Before Content</span> &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt; <span>After Content</span>
+        </div>
+        <h2>9. Multiple Line with spans, pre-formatted</h2>
+        <div id='div9' class='wrapper preformatted' >
+            <span>Before Content</span>
+            &lt;div class='test' id='Appended' xmlns='' &gt;
+                &lt;b&gt;Inner &amp; Content&lt;/b&gt;
+            &lt;/div&gt;
+            <span>After Content</span>
+        </div>
+
+    </body>
+</html>";
+
+        /// <summary>
+        /// No binding, just an initial test to make sure we are parsing all the content - both preformatted and not preformatted
+        /// </summary>
+        [TestMethod()]
+        public void MultipleSpansWithPreformattedAndEscapedTest()
+        {
+
+
+            var src = HTMLTextContentEscapedSrc;
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Text_PreFormattedAndEscpaped.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+
+                    Assert.IsNotNull(this.layout);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+
+                    //1. Single line (with whitespace before as part of the text)
+                    var wrapper = pg.FindAComponentById("div1") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(1, wrapper.Contents.Count); //Just the inner div
+                    var literal = wrapper.Contents[0] as TextLiteral;
+                    Assert.AreEqual("\n            <div data-content='{{model.items[0].content}}'></div>\n        ", literal.Text);
+
+                    //2. Multile lines (with whitespace before as part of the text)
+                    wrapper = pg.FindAComponentById("div2") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(1, wrapper.Contents.Count);
+                    literal = wrapper.Contents[0] as TextLiteral;
+                    Assert.AreEqual("\n            <div class='test' id='Appended' xmlns='' >\n                <b>Inner & Content</b>\n            </div>\n        ", literal.Text);
+
+                    // 3. Whitespace + Span either side of the encoded string
+                    wrapper = pg.FindAComponentById("div3") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    Assert.IsInstanceOfType(wrapper.Contents[0], typeof(Whitespace));
+                    Assert.IsInstanceOfType(wrapper.Contents[1], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[2], typeof(TextLiteral));
+                    Assert.IsInstanceOfType(wrapper.Contents[3], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[4], typeof(Whitespace));
+
+                    Assert.AreEqual("\n            ", ((Whitespace)wrapper.Contents[0]).Text);
+                    var span = wrapper.Contents[1] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("Before Content", ((TextLiteral)span.Contents[0]).Text);
+                    literal = wrapper.Contents[2] as TextLiteral;
+                    Assert.AreEqual(" <div data-content='{{model.items[0].content}}'></div> ", literal.Text);
+                    span = wrapper.Contents[3] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("After Content", ((TextLiteral)span.Contents[0]).Text);
+                    Assert.AreEqual("\n        ", ((Whitespace)wrapper.Contents[4]).Text);
+
+                    //4. Multiple lines - whitespace, spans either side long text.
+                    wrapper = pg.FindAComponentById("div4") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    Assert.IsInstanceOfType(wrapper.Contents[0], typeof(Whitespace));
+                    Assert.IsInstanceOfType(wrapper.Contents[1], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[2], typeof(TextLiteral));
+                    Assert.IsInstanceOfType(wrapper.Contents[3], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[4], typeof(Whitespace));
+
+                    Assert.AreEqual("\n            ", ((Whitespace)wrapper.Contents[0]).Text);
+                    span = wrapper.Contents[1] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("Before Content", ((TextLiteral)span.Contents[0]).Text);
+                    literal = wrapper.Contents[2] as TextLiteral;
+                    Assert.AreEqual("\n            <div class='test' id='Appended' xmlns='' >\n                <b>Inner & Content</b><span>That flows onto multiple lines.</span>\n            </div>\n            ", literal.Text);
+                    span = wrapper.Contents[3] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("After Content", ((TextLiteral)span.Contents[0]).Text);
+                    Assert.AreEqual("\n        ", ((Whitespace)wrapper.Contents[4]).Text);
+
+                    //5. Preformatted Single line (without whitespace)
+                    wrapper = pg.FindAComponentById("div5") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(1, wrapper.Contents.Count); //Just the inner text
+                    literal = wrapper.Contents[0] as TextLiteral;
+                    Assert.AreEqual("<div data-content='{{model.items[0].content}}'></div>", literal.Text);
+
+                    //6 Preformatted with the spacing kept.
+                    wrapper = pg.FindAComponentById("div6") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(1, wrapper.Contents.Count);
+                    literal = wrapper.Contents[0] as TextLiteral;
+                    Assert.AreEqual("\n            <div data-content='{{model.items[0].content}}'></div>\n        ", literal.Text);
+
+                    //7 Preformatted multiple lines with spacing kept.
+                    wrapper = pg.FindAComponentById("div7") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(1, wrapper.Contents.Count);
+                    literal = wrapper.Contents[0] as TextLiteral;
+                    Assert.AreEqual("\n            <div class='test' id='Appended' xmlns='' >\n                <b>Inner & Content</b>\n            </div>\n        ", literal.Text);
+
+                    //8 Preformatted with whitespace, spans and single line of text
+                    wrapper = pg.FindAComponentById("div8") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    Assert.IsInstanceOfType(wrapper.Contents[0], typeof(Whitespace));
+                    Assert.IsInstanceOfType(wrapper.Contents[1], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[2], typeof(TextLiteral));
+                    Assert.IsInstanceOfType(wrapper.Contents[3], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[4], typeof(Whitespace));
+
+                    Assert.AreEqual("\n            ", ((Whitespace)wrapper.Contents[0]).Text);
+                    span = wrapper.Contents[1] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("Before Content", ((TextLiteral)span.Contents[0]).Text);
+                    literal = wrapper.Contents[2] as TextLiteral;
+                    //should still be a space before and after
+                    Assert.AreEqual(" <div data-content='{{model.items[0].content}}'></div> ", literal.Text);
+                    span = wrapper.Contents[3] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("After Content", ((TextLiteral)span.Contents[0]).Text);
+                    Assert.AreEqual("\n        ", ((Whitespace)wrapper.Contents[4]).Text);
+
+
+                    //9 Preformatted with whitespace, spans and multiple lines of text
+                    wrapper = pg.FindAComponentById("div9") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    Assert.IsInstanceOfType(wrapper.Contents[0], typeof(Whitespace));
+                    Assert.IsInstanceOfType(wrapper.Contents[1], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[2], typeof(TextLiteral));
+                    Assert.IsInstanceOfType(wrapper.Contents[3], typeof(Span));
+                    Assert.IsInstanceOfType(wrapper.Contents[4], typeof(Whitespace));
+
+                    Assert.AreEqual("\n            ", ((Whitespace)wrapper.Contents[0]).Text);
+                    span = wrapper.Contents[1] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("Before Content", ((TextLiteral)span.Contents[0]).Text);
+                    literal = wrapper.Contents[2] as TextLiteral;
+                    //should still be the whitespace before, in the middle and after
+                    Assert.AreEqual("\n            <div class='test' id='Appended' xmlns='' >\n                <b>Inner & Content</b>\n            </div>\n            ", literal.Text);
+                    span = wrapper.Contents[3] as Span;
+                    Assert.AreEqual(1, span.Contents.Count);
+                    Assert.IsInstanceOfType(span.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual("After Content", ((TextLiteral)span.Contents[0]).Text);
+                    Assert.AreEqual("\n        ", ((Whitespace)wrapper.Contents[4]).Text);
+
+                }
+            }
+        }
+
+        [TestMethod]
+        public void MultiByteText_IncEmojies()
+        {
+
+            var src = @"<!DOCTYPE HTML>
+<html lang=""en"" xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+  <meta charset=""utf-8"" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: serif;
+      font-size: 12pt;
+    }
+    td {
+      padding: 4px 6px;
+      vertical-align: top;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<table>
+  <tr><td colspan=""8""><h6>HTML Entities &amp; Matching Unicode</h6></td></tr>
+  <tr><td>Bull (entity)</td><td>&bull;</td><td>Bull (unicode)</td><td>•</td><td>Em dash</td><td>—</td><td>Arrow</td><td>→</td></tr>
+  <tr id='emojiRow'><td>Emoji: rocket</td><td>🚀</td><td>Emoji: fire</td><td>🔥</td><td>Emoji: thumbs up</td><td>👍</td><td>Emoji: heart</td><td>❤️</td></tr>
+</table>
+</body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Text_MultibyteText.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var row = doc.FindAComponentById("emojiRow") as HTMLTableRow;
+                
+                Assert.IsNotNull(row);
+                Assert.AreEqual(8, row.Cells.Count);
+
+                var first = row.Cells[1];
+                Assert.IsNotNull(first);
+                Assert.AreEqual(1, first.Contents.Count);
+
+                var lit = first.Contents[0] as TextLiteral;
+                Assert.IsNotNull(lit);
+                var chars = lit.Text;
+                Assert.AreEqual(2, lit.Text.Length);
+                
+                var stringInfo = new System.Globalization.StringInfo(lit.Text);
+                Assert.AreEqual(1, stringInfo.LengthInTextElements);
+                
+
+            }
+
 
         }
 

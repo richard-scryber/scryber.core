@@ -257,7 +257,7 @@ namespace Scryber.Core.UnitTests.Native
                 }
             }
 
-            actual = Double.Parse(result);
+            actual = Double.Parse(result, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
             Assert.AreEqual(real, actual);
         }
 

@@ -3,6 +3,7 @@ using Scryber.Components;
 using Scryber.Styles;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
+using Scryber.Drawing;
 using Scryber.PDF;
 
 namespace Scryber.Html.Components
@@ -57,12 +58,10 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
-        protected HTMLHeadFootContainer(): this((ObjectType)"htHF")
-        {}
+        
 
         protected HTMLHeadFootContainer(ObjectType type) : base(type)
         {
-            
         }
 
         protected override void OnInitialized(InitContext context)
@@ -113,11 +112,9 @@ namespace Scryber.Html.Components
                 }
             }
         }
+        
 
-        public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
-        {
-            return new PDF.Layout.LayoutEnginePanel(this, parent);
-        }
+        
     }
 
 
@@ -172,14 +169,22 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
-        public HTMLComponentHeader() : base()
+        public HTMLComponentHeader() : this(HTMLObjectTypes.Header)
         { }
+
+        protected HTMLComponentHeader(ObjectType type) : base(type)
+        {
+
+        }
 
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
+            style.SetValue(StyleKeys.OverflowActionKey, OverflowAction.None);
+            style.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
+            style.SetValue(StyleKeys.RepeatHeader, true);
             return style;
         }
     }
@@ -236,14 +241,20 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
-        public HTMLComponentFooter(): base()
+        public HTMLComponentFooter() : this(HTMLObjectTypes.Footer)
         { }
+
+        protected HTMLComponentFooter(ObjectType type) : base(type)
+        {
+        }
 
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.SetValue(StyleKeys.OverflowActionKey, OverflowAction.None);
+            style.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             return style;
         }
     }

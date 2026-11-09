@@ -13,7 +13,7 @@ using Scryber.Expressive.Operators;
 
 namespace Scryber.Binding
 {
-    public class BindingCalcExpressionFactory : IPDFBindingExpressionFactory, IExpressionFactory
+    public class BindingCalcExpressionFactory : IBindingExpressionFactory, IExpressionFactory
     {
 
         public string BindingKey { get { return "{"; } }
@@ -73,15 +73,23 @@ namespace Scryber.Binding
             get { return DocumentGenerationStage.Bound; }
         }
 
-        public BindingCalcExpressionFactory()
-        {
 #if DEBUG
-            this._useCache = false;
+        const bool DefaultUseCache = false;
+        const ExpressiveOptions DefaultCaseOptions =  ExpressiveOptions.IgnoreCaseForParsing;
 #else
-            this._useCache = true;
+        const bool DefaultUseCache = true;
+        const ExpressiveOptions DefaultCaseOptions =  ExpressiveOptions.IgnoreCaseForParsing;
 #endif
 
-            this._options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
+        public BindingCalcExpressionFactory()
+            : this(DefaultUseCache, DefaultCaseOptions)
+        {
+        }
+
+        public BindingCalcExpressionFactory(bool useCache, ExpressiveOptions caseOptions)
+        {
+            this._useCache = useCache;
+            this._options = caseOptions;
             this.ResetBindingOptions();
         }
 
@@ -141,6 +149,7 @@ namespace Scryber.Binding
         {
             var set = new FunctionSet(this.Options);
             set.AddDefaultFunctions();
+            set.AddConfiguredFunctions();
             return set;
         }
 
@@ -148,6 +157,7 @@ namespace Scryber.Binding
         {
             var set = new OperatorSet(this.Options);
             set.AddDefaultOperators();
+            set.AddConfiguredOperators();
             return set;
             
         }
@@ -159,9 +169,9 @@ namespace Scryber.Binding
 
         
 
-        public Expressive.Context GetContext(ExpressiveOptions options)
+        public Expressive.ExpressionContext GetContext(ExpressiveOptions options)
         {
-            return new Context(options, this._stdFunctions, this._stdOperators);
+            return new ExpressionContext(options, this._stdFunctions, this._stdOperators);
         }
 
         public virtual Expression CreateExpression(string value)

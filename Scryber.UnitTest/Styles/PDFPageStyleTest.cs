@@ -91,7 +91,7 @@ namespace Scryber.Core.UnitTests.Styles
             PaperOrientation orientation = PDFStyleConst.DefaultPaperOrientation;
 
             PageStyle target = new PageStyle(); //Empty
-            PageSize expected = new PageSize(size, orientation);
+            PageSize expected = new PageSize(size, orientation, null);
             
             PageSize actual = target.CreatePageSize();
             AssertPageSizeAreEqual(expected, actual);
@@ -100,7 +100,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             size = PaperSize.Tabloid;
             orientation = PaperOrientation.Landscape;
-            expected = new PageSize(size, orientation);
+            expected = new PageSize(size, orientation, null);
             target.PaperSize = size;
             target.PaperOrientation = orientation;
             
@@ -111,7 +111,7 @@ namespace Scryber.Core.UnitTests.Styles
             orientation = PaperOrientation.Portrait;
             target.PaperSize = size;
             target.PaperOrientation = orientation;
-            expected = new PageSize(size, orientation);
+            expected = new PageSize(size, orientation, null);
             actual = target.CreatePageSize();
 
             AssertPageSizeAreEqual(expected, actual);
@@ -125,7 +125,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Width = w;
             target.Height = h;
 
-            expected = new PageSize(new Size(w, h));
+            expected = new PageSize(new Size(w, h), null);
             actual = target.CreatePageSize();
             AssertPageSizeAreEqual(expected, actual);
 
@@ -144,7 +144,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.PaperOrientation = orientation;
 
 
-            expected = new PageSize(new Size(w, h));
+            expected = new PageSize(new Size(w, h), null);
             actual = target.CreatePageSize();
 
             AssertPageSizeAreEqual(expected, actual);

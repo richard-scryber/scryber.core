@@ -21,6 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
+using Scryber.PDF.Native;
+using Scryber.Svg;
 
 namespace Scryber
 {
@@ -44,8 +47,23 @@ namespace Scryber
         /// <param name="path">The specified path to the source</param>
         /// <returns>The loaded image data</returns>
         ImageData LoadImageData(IDocument document, IComponent owner, string path);
+
+        ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type);
     }
 
+    /// <summary>
+    /// Defines the base capability of a Path Adorner that add graphic features to an individual path.
+    /// </summary>
+    public interface IPathAdorner
+    {
+        /// <summary>
+        /// Gets the ID of the path adornment
+        /// </summary>
+        string ID { get; }
+        
+        AdornmentOrientationValue Orientation { get; }
+        PDFName OutputAdornment(PDFGraphics toGraphics, PathAdornmentInfo info, ContextBase context);
+    }
 
     
 }

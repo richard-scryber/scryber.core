@@ -36,9 +36,6 @@ namespace Scryber
         public PDFParserException() { }
         public PDFParserException(string message) : base(message) { }
         public PDFParserException(string message, Exception inner) : base(message, inner) { }
-        protected PDFParserException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 }

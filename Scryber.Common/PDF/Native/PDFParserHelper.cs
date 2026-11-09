@@ -184,7 +184,7 @@ namespace Scryber.PDF.Native
             end = offset;
 
             if (hasdecimal)
-                return new PDFReal(double.Parse(full.ToString()));
+                return new PDFReal(double.Parse(full.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture));
             else
                 return new PDFNumber(long.Parse(full.ToString()));
         }

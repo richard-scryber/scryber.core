@@ -47,7 +47,7 @@ namespace Scryber.Generation
         internal const int defaultErrorLevel = 4;
 
         internal static Type[] knownObjectTypes = new Type[] { typeof(Guid), typeof(DateTime), typeof(TimeSpan), typeof(Type), typeof(System.Uri), typeof(System.Version) };
-        
+
         //internal static Type textLiteralType = typeof(Scryber.Components.PDFTextLiteral);
 
         internal static char[] trimmingCharacters = new char[] { '\r', '\n', '\t', ' ' };
@@ -65,7 +65,12 @@ namespace Scryber.Generation
         private const string ItemBindingKey = "item";
         private const string QueryStringBindingKey = "qs";
         private const string XPathBindingKey = "xpath";
+        private const string CSSVariableExpressionStart = "var(";
+        private const string CSSVariableExpressionEnd = ")";
+        private const string CSSCalcExpressionStart = "calc(";
+        private const string CSSCalcExpressionEnd = ")";
         private const string HandlebarsExpressionBindingKey = "calc";
+        
         private const int HandlebarsExpressionInset = 2; // for {{
         private const int HandlebarsExpressionLength = 4; // for {{ and }}
 
@@ -76,7 +81,7 @@ namespace Scryber.Generation
 
 
         private static object _configlock = new object();
-        private static Dictionary<string, IPDFBindingExpressionFactory> _configFactories = null;
+        private static Dictionary<string, IBindingExpressionFactory> _configFactories = null;
 
         #region private static Dictionary<string, IPDFBindingExpressionFactory> InitFactories()
 
@@ -85,9 +90,9 @@ namespace Scryber.Generation
         /// configured binding expression factories based on the prefix
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, IPDFBindingExpressionFactory> InitFactories()
+        private static Dictionary<string, IBindingExpressionFactory> InitFactories()
         {
-            Dictionary<string, IPDFBindingExpressionFactory> factories = new Dictionary<string, IPDFBindingExpressionFactory>();
+            Dictionary<string, IBindingExpressionFactory> factories = new Dictionary<string, IBindingExpressionFactory>();
 
             //let's be thread safe here just so we can be sure 
             lock (_configlock)
@@ -105,7 +110,7 @@ namespace Scryber.Generation
                     {
                         foreach (var ele in config)
                         {
-                            IPDFBindingExpressionFactory factory = ele.GetFactory();
+                            IBindingExpressionFactory factory = ele.GetFactory();
                             string key = ele.Prefix;
 
                             //By using the set accessor this will overwrite any of the standard factories previously added.
@@ -124,7 +129,7 @@ namespace Scryber.Generation
 
         #endregion
 
-        public static bool ContainsBindingExpressions(string value, out string[] parts, out IPDFBindingExpressionFactory[] factories)
+        public static bool ContainsBindingExpressions(string value, out string[] parts, out IBindingExpressionFactory[] factories)
         {
 
             if (value.IndexOf(BindingStartChar) < 0)
@@ -136,7 +141,7 @@ namespace Scryber.Generation
 
 
             var match = bindingMatcher.Match(value);
-            if(match == null || match.Success == false)
+            if (match == null || match.Success == false)
             {
                 parts = null;
                 factories = null;
@@ -144,17 +149,17 @@ namespace Scryber.Generation
             }
 
             List<string> partColl = new List<string>();
-            List<IPDFBindingExpressionFactory> factColl = new List<IPDFBindingExpressionFactory>();
+            List<IBindingExpressionFactory> factColl = new List<IBindingExpressionFactory>();
 
             var pos = 0;
             bool found = false;
 
-            while(match != null && match.Success)
+            while (match != null && match.Success)
             {
                 string sub;
-                IPDFBindingExpressionFactory fact;
+                IBindingExpressionFactory fact;
 
-                if(match.Index > pos)
+                if (match.Index > pos)
                 {
                     sub = value.Substring(pos, match.Index - pos);
                     partColl.Add(sub);
@@ -163,11 +168,10 @@ namespace Scryber.Generation
                 sub = match.Value;
                 if (IsEscapedBindingExpression(sub)) //We ignore escaped
                 {
-                    partColl.Add(sub.Substring(1, sub.Length-2));
+                    partColl.Add(sub.Substring(1, sub.Length - 2));
                     factColl.Add(null);
-                    found = true;
                 }
-                else if(TryGetBindingExpression(ref sub, out fact))
+                else if (TryGetBindingExpression(ref sub, out fact))
                 {
                     partColl.Add(sub);
                     factColl.Add(fact);
@@ -182,12 +186,25 @@ namespace Scryber.Generation
                 match = match.NextMatch();
             }
 
-            if(pos < value.Length)
+            if (pos < value.Length)
             {
                 partColl.Add(value.Substring(pos));
                 factColl.Add(null);
             }
 
+            if (!found && partColl.Count > 0)
+            {
+                //We did not find any factories but have split up the string,
+                //so bring it all back together as a single string with a null factory.
+                //(rather than returning false (as the content may have changed).
+
+                var concat = string.Concat(partColl);
+                partColl.Clear();
+                partColl.Add(concat);
+                factColl.Clear();
+                factColl.Add(null);
+                found = true;
+            }
             parts = partColl.ToArray();
             factories = factColl.ToArray();
 
@@ -208,6 +225,36 @@ namespace Scryber.Generation
         }
 
 
+        public static bool IsEscapedBindingExpression(ref string value)
+        {
+            if (!value.StartsWith("\\"))
+                return false;
+            else if (!value.EndsWith("\\"))
+            {
+                if (value.Length == 3 && value == "\\{{")
+                {
+                    value = "{{";
+                    return true;
+                }
+                else
+                    return false;
+            }
+
+            else if (value.StartsWith("\\{{") && value.EndsWith("}}\\"))
+            {
+                value = value.Substring(1, value.Length - 2);
+                return true;
+            }
+            else if(value.EndsWith("}}\\"))
+            {
+                value = "}}";
+                return true;
+            }
+            else
+                return false;
+        }
+
+
         /// <summary>
         /// Returns true if the value provided is an expression that matches the pattern required for a binding expression.
         /// If it does value will be modified to be just the content of that expression and the bindingFactory will be set to the 
@@ -217,7 +264,7 @@ namespace Scryber.Generation
         /// <param name="bindingfactory"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+        public static bool IsBindingExpression(ref string value, out IBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             bindingfactory = null;
 
@@ -296,6 +343,41 @@ namespace Scryber.Generation
             }
         }
 
+        internal static bool IsCSSVariableOrCalcExpression(ref string value,
+            out IBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+        {
+            if (value.StartsWith(CSSVariableExpressionStart) && value.EndsWith(CSSVariableExpressionEnd))
+            {
+                if (null == _configFactories)
+                    _configFactories = InitFactories();
+                
+                if(_configFactories.TryGetValue(HandlebarsExpressionBindingKey, out bindingfactory))
+                    return true;
+                else
+                {
+                    return false;
+                }
+                
+            }
+            else if (value.StartsWith(CSSVariableExpressionStart) && value.EndsWith(CSSVariableExpressionEnd))
+            {
+                if (null == _configFactories)
+                    _configFactories = InitFactories();
+                
+                if(_configFactories.TryGetValue(HandlebarsExpressionBindingKey, out bindingfactory))
+                    return true;
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                bindingfactory = null;
+                return false;
+            }
+        }
+
 
         #region internal static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, PDFGeneratorSettings settings)
 
@@ -308,7 +390,7 @@ namespace Scryber.Generation
         /// <param name="bindingfactory"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static bool TryGetBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+        public static bool TryGetBindingExpression(ref string value, out IBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             bindingfactory = null;
             if (string.IsNullOrEmpty(value) || value.Length < 4)

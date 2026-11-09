@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 10pt;
+      margin: 24pt;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      font-style: normal;
+    }
+
+    h2 {
+      font-size: 14pt;
+      margin-top: 0;
+      margin-bottom: 2pt;
+    }
+
+    h4 {
+        font-size: 12pt;
+        margin-bottom: 4pt;
+    }
+
+    .header-table {
+        width: 100%;
+    }
+
+    .header-table td { border: none; }
+
+    .header-logo-cell {
+        width: 30%;
+        vertical-align: middle;
+        text-align: left;
+    }
+
+    .header-logo img {
+        max-width: 150pt;
+        max-height: 50pt;
+        height: auto;
+    }
+
+    .header-title-cell {
+        vertical-align: middle;
+        text-align: right;
+    }
+
+    .header-title h1 {
+      font-size: 16pt;
+      padding-top: 0pt;
+      padding-bottom: 0pt;
+      margin-top: 0pt;
+      margin-bottom: 0pt;
+    }
+
+    .header-title h2 {
+      font-size: 12pt;
+      font-weight: normal;
+      color: #555;
+      padding-top: 0pt;
+      padding-bottom: 0pt;
+      margin-top: 0pt;
+      margin-bottom: 0pt;
+    }
+    
+
+    /* Assembly Layout Styles */
+    .assembly-title {
+        margin-bottom: 4pt;
+        font-size: 14pt;
+    }
+
+    .assembly-image-container {
+        text-align: center;
+        margin-bottom: 15pt;
+        border: 1pt solid #dee2e6;
+        padding: 10pt;
+    }
+
+    .assembly-image-container img {
+        max-width: 400pt;
+        max-height: 300pt;
+    }
+
+    .parts-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .parts-table th {
+      background-color: #f2f2f2;
+      padding: 3pt;
+      padding-left: 4pt;
+      padding-right: 4pt;
+      font-size: 10pt;
+      font-weight: normal;
+      border: 0.5pt solid #dddddd;
+    }
+
+    .parts-table td {
+      padding: 2pt;
+      font-size: 8pt;
+      border: 0.5pt solid #dddddd;
+    }
+
+    .col-balloon {
+      width: 45pt;
+      text-align: center;
+    }
+
+    .col-part {
+      width: 75pt;
+      text-align: center;
+    }
+
+    .col-desc {
+      width: auto;
+    }
+
+    .col-qty {
+      width: 30pt;
+      text-align: center;
+    }
+
+    .col-weight {
+        width: 60pt;
+        text-align: right;
+    }
+
+    .col-price {
+        width: 60pt;
+        text-align: right;
+    }
+
+    .footer {
+        width: 100%;
+        margin-top: 20pt;
+        padding-top: 5pt;
+        font-size: 8pt;
+        color: #777;
+    }
+
+    .footer td {
+        border: none;
+    }
+  </style>
+</head>
+<body>
+    <main>
+        <!-- Header Section (Logo + Title side by side) -->
+        <table class="header-table">
+            <tr>
+                <td class="header-logo-cell">
+                    <div class="header-logo">
+                        <img src="{{model.Header.LogoPath}}" alt="Logo" />
+                    </div>
+                </td>
+                <td class="header-title-cell">
+                    <div class="header-title">
+                        <h1>{{model.Header.ProductModel}} - {{model.Header.ProductType}}</h1>
+                        <h2>{{model.Header.SerialNumber}}</h2>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <template data-bind='{{model.Assemblies}}'>
+            <div class="assembly-section">
+                <h2 id="{{.AnchorId}}" title="{{.Title}}" class="assembly-title">{{.Title}}</h2>
+
+                <if data-test="{{.ImageFilePath != ''}}">
+                <div class="assembly-image-container">
+                    <img src="{{.ImageFilePath}}" alt="Assembly image" style="min-height: 200pt;" />
+                </div>
+                </if>
+
+                <table class="parts-table">
+                    <thead>
+                        <tr>
+                            <th class="col-balloon">{{model.Labels.Balloon}}</th>
+                            <th class="col-part">{{model.Labels.PartNumber}}</th>
+                            <th class="col-desc">{{model.Labels.Description}}</th>
+                            <th class="col-qty">{{model.Labels.Quantity}}</th>
+                            <th class="col-weight">{{model.Labels.Weight}}</th>
+                            <if data-test="{{model.ShowPrices}}">
+                            <th class="col-price">{{model.Labels.Price}} ({{model.Header.Currency}})</th>
+                            </if>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template data-bind='{{.Parts}}'>
+                            <tr>
+                                <td class="col-balloon">{{.Balloon}}</td>
+                                <td class="col-part">{{.PartNumber}}</td>
+                                <td class="col-desc">{{.Description}}</td>
+                                <td class="col-qty">{{.Quantity}}</td>
+                                <td class="col-weight">{{.Weight}}</td>
+                                <if data-test="{{model.ShowPrices}}">
+                                <td class="col-price">{{.Price}}</td>
+                                </if>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+    </main>
+
+    <footer>
+        <table class="footer">
+            <tr>
+                <td style="width: 50%; text-align: left;">
+                    {{model.Header.SerialNumber}}
+                </td>
+                <td style="width: 50%; text-align: right;">
+                    <page data-format="{0:D3} / {1:D3}" />
+                </td>
+            </tr>
+        </table>
+    </footer>
+</body>
+</html>

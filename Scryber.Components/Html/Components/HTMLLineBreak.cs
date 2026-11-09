@@ -46,9 +46,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLLineBreak()
-            : base()
+            : this(HTMLObjectTypes.LineBreak)
         {
         }
+
+        protected HTMLLineBreak(ObjectType type) : base(type)
+        { }
     }
 
 }

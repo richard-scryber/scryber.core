@@ -45,10 +45,46 @@ namespace Scryber.Text
         NoWrap
     }
 
+    /// <summary>
+    /// Where words can be broken between lines (word-break)
+    /// </summary>
+    public enum WordBreak
+    {
+        /// <summary>Words are only broken when they are too long for a line</summary>
+        Normal,
+        /// <summary>Words can be broken at any character to fill the line</summary>
+        BreakAll,
+        /// <summary>Same as normal for text that is not Chinese, Japanese or Korean</summary>
+        KeepAll,
+        /// <summary>Deprecated css, the same as normal with overflow-wrap: anywhere</summary>
+        BreakWord
+    }
+
+    /// <summary>
+    /// If a word that is too long for a line can be broken (overflow-wrap)
+    /// </summary>
+    public enum OverflowWrap
+    {
+        Normal,
+        BreakWord,
+        Anywhere
+    }
+
     public enum WordHyphenation
     {
         None,
         Auto
+    }
+
+    /// <summary>
+    /// The case transformation applied to text when it is laid out
+    /// </summary>
+    public enum TextTransform
+    {
+        None,
+        Uppercase,
+        Lowercase,
+        Capitalize
     }
 
     [Flags()]
@@ -58,6 +94,18 @@ namespace Scryber.Text
         Underline = 1,
         Overline = 2,
         StrikeThrough = 4,
+    }
+
+    /// <summary>
+    /// The style of line drawn for a text decoration (text-decoration-style)
+    /// </summary>
+    public enum TextDecorationStyle
+    {
+        Solid,
+        Double,
+        Dotted,
+        Dashed,
+        Wavy
     }
 
     public enum TextRenderMode

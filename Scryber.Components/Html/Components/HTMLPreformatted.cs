@@ -46,8 +46,20 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
         public HTMLPreformatted()
-            : base()
+            : this(HTMLObjectTypes.Preformatted)
         {
+        }
+
+        protected HTMLPreformatted(ObjectType type)
+            : base(type)
+        {
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Size.FullWidth = true;
+            return style;
         }
     }
 

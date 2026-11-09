@@ -1,0 +1,63 @@
+﻿<?scryber append-log=true log-parser=true log-level=verbose ?>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+            border: solid 1pt black;
+        }
+        
+        section{
+            border: solid 1pt green;
+            page-break-before: avoid;
+        }
+        
+        header{
+            background-color: silver;
+        }
+        
+        section > header{
+            background: silver;
+            border-bottom: solid 1pt black;
+            padding: 5pt;
+        }
+        
+        td{
+            text-align: center;
+            font-size:8pt;
+            margin: 0pt;
+            padding: 0pt;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        Body header above all
+    </header>
+    <div>
+        Before the section
+    </div>
+    <section>
+        <header>
+            <table style="width:100%">
+                <tr>
+                    <td>Section Title</td>
+                    <td><page data-format="Page {0} of {1}" ></page></td>
+                    <td><time datetime="{{date()}}" data-format="dd MMM yyyy" ></time></td>
+                </tr>
+            </table>
+        </header>
+        <div>In the section</div>
+    </section>
+
+    <div>
+        After the section
+    </div>
+</body>
+</html>
+

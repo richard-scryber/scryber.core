@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Drawing;
 
 namespace Scryber.Components
 {
@@ -61,7 +62,8 @@ namespace Scryber.Components
             style.Font.FontFamily = (Scryber.Drawing.FontSelector)"Courier";
             style.Text.WrapText = Scryber.Text.WordWrap.NoWrap;
             style.Text.PreserveWhitespace = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.PositionMode = Drawing.PositionMode.Static;
+            style.Position.DisplayMode = DisplayMode.Block;
             style.Font.FontSize = 10;
             //style.Overflow.Split = Drawing.OverflowSplit.Never;
             return style;

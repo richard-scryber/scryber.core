@@ -16,6 +16,8 @@
  * 
  */
 
+#define PROCESS_HANDLEBAR_HELPERS
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,6 +27,8 @@ using System.Data.Common;
 
 using Scryber.Logging;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace Scryber.Generation
 {
@@ -33,6 +37,7 @@ namespace Scryber.Generation
         private static readonly string[] TextElements = new string[] { "BR" };
 
         protected const string ScryberProcessingInstructionsName = "scryber";
+        protected const string PaperworkProcessingInstructionsName = "paperwork";
         protected string ParserLogCategory = "Xml Parser";
         public const string InheritsAttributeName = "inherits";
         public const string CodeBehindAttributeName = "code-file";
@@ -201,7 +206,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = new XmlHtmlEntityReader(stream))
+            using (XmlReader reader = CreateXmlReader(stream))
             {
                 return Parse(source, reader, type);
             }
@@ -216,7 +221,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = new XmlHtmlEntityReader(reader))
+            using (XmlReader xreader = CreateXmlReader(reader))
             {
                 return this.Parse(source, xreader, type);
             }
@@ -247,19 +252,51 @@ namespace Scryber.Generation
         }
 
         #endregion
+        
+        
+
+        protected XmlReader CreateXmlReader(Stream stream)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(stream);
+#else
+            return new XmlHtmlEntityReader(stream);
+#endif           
+        }
+        
+        protected virtual XmlReader CreateXmlReader(TextReader reader)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(reader);
+#else
+            return new XmlHtmlEntityReader(reader);
+#endif
+        }
 
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="reader"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected virtual IComponent DoParse(string source, XmlReader reader, ParseSourceType type)
+        {
+            return this.DoParseAsync(source, reader, type).GetAwaiter().GetResult();
+        }
 
         /// <summary>
-        /// Top level Parse method which returns the complete component that was parsed from the source.
+        /// Top level asynchronous ParseAsync method which returns the complete component that was parsed from the source.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="reader"></param>
         /// <param name="istemplate"></param>
         /// <returns></returns>
-        protected virtual IComponent DoParse(string source, XmlReader reader, ParseSourceType type)
+        protected virtual async Task<IComponent> DoParseAsync(string source, XmlReader reader, ParseSourceType type)
         {
+            var alreadyMoved = false; //allow the read to continue on, without actually moving to the next node.
             
             IDisposable recorder;
             if (type == ParseSourceType.Template)
@@ -268,13 +305,16 @@ namespace Scryber.Generation
                 recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, source);
 
             IComponent parsed = null;
-            while (reader.Read())
+            while (alreadyMoved || reader.Read())
             {
+                alreadyMoved = false;
                 if (reader.NodeType == XmlNodeType.ProcessingInstruction)
                 {
                     string name = reader.Name;
                     if (name == ScryberProcessingInstructionsName)
-                        this.ParseProcessingInstructions(reader);
+                        this.ParseProcessingInstructions(reader, name);
+                    else if(name == PaperworkProcessingInstructionsName)
+                        this.ParseProcessingInstructions(reader, name);
                 }
                 if (reader.NodeType == XmlNodeType.Element)
                 {
@@ -289,7 +329,7 @@ namespace Scryber.Generation
                     //make sure we have an instance of our controller type to hand
                     this.EnsureControllerInstance();
 
-                    object value = ParseComponent(reader, true);
+                    object value = await ParseComponent(reader, true);
 
                     // must return a value from this parse methos
                     if (!(value is IComponent))
@@ -418,7 +458,7 @@ namespace Scryber.Generation
         /// <param name="reader">The current xml reader to read the component from</param>
         /// <param name="isroot">If true this is the top level component. If false then this </param>
         /// <returns></returns>
-        protected virtual object ParseComponent(XmlReader reader, bool isroot)
+        protected virtual async ValueTask<object> ParseComponent(XmlReader reader, bool isroot)
         {
             if (reader.NodeType != XmlNodeType.Element)
                 throw BuildParserXMLException(reader, Errors.CanOnlyParseComponentAsElement);
@@ -444,9 +484,9 @@ namespace Scryber.Generation
             this.CheckFrameworkIsSupported(reader, cdef, this.Mode);
 
             if (isremote)
-                return this.ParseRemoteComponent(cdef, reader);
+                return await this.ParseRemoteComponent(cdef, reader);
             else
-                return ParseComplexComponent(reader, cdef, isroot);
+                return await ParseComplexComponent(reader, cdef, isroot);
         }
 
         #endregion
@@ -460,7 +500,7 @@ namespace Scryber.Generation
         /// <param name="cdef">The class definition of the type of component that to be parsed</param>
         /// <param name="isroot">If true then this is the top level root component</param>
         /// <returns>The parsed component</returns>
-        private object ParseComplexComponent(XmlReader reader, ParserClassDefinition cdef, bool isroot)
+        private async ValueTask<object> ParseComplexComponent(XmlReader reader, ParserClassDefinition cdef, bool isroot)
         {
             string fullname = reader.Name;
             object value = null;
@@ -473,7 +513,7 @@ namespace Scryber.Generation
                 if (isroot && null == this.RootComponent)
                     this.RootComponent = value;
 
-                ParseComplexComponentXml(value, reader, cdef);
+                await ParseComplexComponentXml(value, reader, cdef);
 
                 LogEnd(TraceLevel.Verbose, "Completed parsing of component of type '{0}'", cdef.ClassType);
             }
@@ -501,7 +541,7 @@ namespace Scryber.Generation
         /// <param name="component"></param>
         /// <param name="reader"></param>
         /// <param name="cdef"></param>
-        private void ParseComplexComponentXml(object component, XmlReader reader, ParserClassDefinition cdef)
+        private async ValueTask ParseComplexComponentXml(object component, XmlReader reader, ParserClassDefinition cdef)
         {
             string name = reader.LocalName;
             string ns = reader.NamespaceURI;
@@ -530,7 +570,7 @@ namespace Scryber.Generation
                 else if (cdef.DefaultElement != null && cdef.DefaultElement.PropertyInfo.PropertyType == typeof(System.Xml.XmlNode))
                     ParseSimpleElement(component, reader, cdef.DefaultElement, cdef);
                 else
-                    ParseContents(component, reader, name, ns, cdef);
+                    await ParseContents(component, reader, name, ns, cdef);
             }
             
         }
@@ -546,7 +586,7 @@ namespace Scryber.Generation
         /// <param name="resolver"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private object ParseRemoteComponent(ParserClassDefinition cdef, XmlReader reader)
+        private async ValueTask<object> ParseRemoteComponent(ParserClassDefinition cdef, XmlReader reader)
         {
             string element = reader.LocalName;
             string ns = reader.NamespaceURI;
@@ -561,15 +601,19 @@ namespace Scryber.Generation
             if (reader.MoveToAttribute(SelectAttributeName))
                 select = reader.Value;
 
-            object complex = ResolveAndParseRemoteComponent(reader, path, select);
+            object complex = await ResolveAndParseRemoteComponent(reader, path, select);
 
             if (null != complex)
             {
                 if (reader.HasAttributes && reader.AttributeCount > 1)
                     this.ParseAttributes(complex, true, reader, cdef);
 
+                //As the returned type may not be the same as the actual referenced type - make sure we have a matching definition.
+                if (complex.GetType() != cdef.ClassType)
+                    cdef = AssertGetClassDefinition(complex.GetType());
+
                 if (!empty)
-                    this.ParseContents(complex, reader, element, ns, cdef);
+                    await this.ParseContents(complex, reader, element, ns, cdef);
             }
             //this.ParseComplexComponent(complex, reader, cdef, resolver);
             return complex;
@@ -602,7 +646,7 @@ namespace Scryber.Generation
                 
                 ParserPropertyDefinition attr;
                 ParserEventDefinition evt;
-                IPDFBindingExpressionFactory factory;
+                IBindingExpressionFactory factory;
                 if (IsSpecialAttribute(reader, isremotecomponent, cdef))
                 {
                     if ((reader.Name.ToLower() == "xmlns" || reader.Name.ToLower().StartsWith("xmlns:")))
@@ -614,7 +658,18 @@ namespace Scryber.Generation
                         this.EnsureNamespaceRegistered(prefix, ns);
 
                     string value =reader.Value;
-                    if (ParserHelper.IsBindingExpression(ref value,out factory, this.Settings))
+                    if(ParserHelper.IsEscapedBindingExpression(ref value))
+                    {
+                        object actualValue = value;
+                        this.SetValue(container, value, attr);
+                        if (attr.IsParserSourceValue)
+                            this.LoadedSourcePath = actualValue.ToString();
+                    }
+                    else if (ParserHelper.IsBindingExpression(ref value,out factory, this.Settings))
+                    {
+                        GenerateBindingExpression(reader, container, cdef, attr, value, factory);
+                    }
+                    else if (ParserHelper.IsCSSVariableOrCalcExpression(ref value, out factory, this.Settings))
                     {
                         GenerateBindingExpression(reader, container, cdef, attr, value, factory);
                     }
@@ -641,7 +696,13 @@ namespace Scryber.Generation
                 else if (cdef.Events.TryGetPropertyDefinition(name, out evt))
                 {
                     string expression = reader.Value;
-                    
+                    if(ParserHelper.IsEscapedBindingExpression(ref expression))
+                    {
+                        if (this.Mode == ParserConformanceMode.Strict)
+                            throw BuildParserXMLException(reader, Errors.CannotSpecifyBindingExpressionsOnEvents, expression, name);
+                        else
+                            LogAdd(reader, TraceLevel.Error, Errors.CannotSpecifyBindingExpressionsOnEvents, expression, name);
+                    }
                     if (ParserHelper.IsBindingExpression(ref expression, out factory, this.Settings))
                     {
                         if (this.Mode == ParserConformanceMode.Strict)
@@ -652,6 +713,10 @@ namespace Scryber.Generation
                     else if(this.HasController)
                         TryAttachEventHandlerToController(reader, container, reader.Value, evt, cdef);
                     
+                }
+                else if (TryCaptureMetadataAttribute(container, name, reader.Value))
+                {
+                    LogAdd(reader, TraceLevel.Verbose, "Captured custom metadata attribute '{0}' on type {1}", name, cdef.ClassType);
                 }
                 else if(skipUnknown)
                 {
@@ -667,6 +732,34 @@ namespace Scryber.Generation
 
         #endregion
 
+        #region private bool TryCaptureMetadataAttribute(object container, string name, string value)
+
+        private bool TryCaptureMetadataAttribute(object container, string name, string value)
+        {
+            if (container == null || string.IsNullOrWhiteSpace(name))
+                return false;
+
+            IMetadataContainer metadataContainer = container as IMetadataContainer;
+            if (metadataContainer == null)
+                return false;
+
+            string key;
+            if (name.StartsWith("data-", StringComparison.OrdinalIgnoreCase))
+                key = name.Substring(5);
+            else if (name.StartsWith("meta-", StringComparison.OrdinalIgnoreCase))
+                key = name.Substring(5);
+            else
+                return false;
+
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
+            metadataContainer.SetMetadata(key, value);
+            return true;
+        }
+
+        #endregion
+
         #region private void ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
 
         /// <summary>
@@ -677,12 +770,15 @@ namespace Scryber.Generation
         /// <param name="element">The element name of the current component</param>
         /// <param name="ns">The declared namespace of the current component</param>
         /// <param name="cdef">The class definition of the current component</param>
-        private void ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
+        private async ValueTask ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
         {
-
+            bool alreadyMoved = false;
+            
             LogAdd(reader, TraceLevel.Debug, "Parsing container contents");
-            while (reader.Read())
+            while (alreadyMoved || reader.Read())
             {
+                alreadyMoved = false;
+                
                 if (reader.NodeType == XmlNodeType.EndElement)
                 {
                     if (reader.LocalName == element && reader.NamespaceURI == ns)
@@ -697,11 +793,15 @@ namespace Scryber.Generation
                         if (prop.ParseType == DeclaredParseType.SimpleElement)
                             this.ParseSimpleElement(container, reader, prop, cdef);
                         else if (prop.ParseType == DeclaredParseType.ArrayElement)
-                            this.ParseInnerCollection(container, reader, prop);
+                            await this.ParseInnerCollection(container, reader, prop);
                         else if (prop.ParseType == DeclaredParseType.ComplexElement)
-                            this.ParseComplexType(container, reader, prop);
+                            await this.ParseComplexType(container, reader, prop);
                         else if (prop.ParseType == DeclaredParseType.TempateElement)
+                        {
                             this.ParseTemplateContent(container, reader, prop);
+                            alreadyMoved = true; //The template parsing can consume past the end element node (even though we ready the inner content).
+                            
+                        }
                         else if (this.Mode == ParserConformanceMode.Strict)
                             throw BuildParserXMLException(reader, Errors.ParsedTypeDoesNotContainDefinitionFor, cdef.ClassType, "element", reader.LocalName);
                         else
@@ -710,14 +810,36 @@ namespace Scryber.Generation
                     else if (cdef.DefaultElement != null)
                     {
                         if (cdef.DefaultElement.Name == reader.LocalName && ns == reader.NamespaceURI)
-                            this.ParseComplexType(container, reader, cdef.DefaultElement);
+                            await this.ParseComplexType(container, reader, cdef.DefaultElement);
                         else if (cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
                         {
+                            var empty = reader.NodeType == XmlNodeType.Element && reader.IsEmptyElement;
+
+                            //Capture the child's own identity before parsing it - template-content
+                            //children (e.g. {{#each}}, whose content is captured via
+                            //reader.ReadInnerXml() in ParseTemplateContent) leave the reader
+                            //positioned on whatever follows their own end tag, not on the end tag
+                            //itself, so it can't be identified afterwards by re-reading the
+                            //reader's current position.
+                            string childName = reader.LocalName;
+                            string childNs = reader.NamespaceURI;
 
                             ParserArrayDefinition arry = (ParserArrayDefinition)cdef.DefaultElement;
                             object collection = InitArrayCollection(container, arry);
-                            object component = ParseComponent(reader, false);
+                            object component = await ParseComponent(reader, false);
 
+                            //If the reader is not sitting on the child's own end tag (matched by
+                            //name AND namespace, not just the outer container's element name -
+                            //comparing against the outer name only broke whenever a template-
+                            //content child was immediately followed by a sibling that happened to
+                            //share the outer container's own tag name, e.g. a <div> immediately
+                            //after {{/each}} inside another <div> - the sibling's start tag was
+                            //mistaken for the child's own end tag and silently skipped), the
+                            //reader has already moved past it - the outer loop needs to process
+                            //whatever it's now on directly, rather than calling Read() again.
+                            if (!empty && !(reader.NodeType == XmlNodeType.EndElement && reader.LocalName == childName && reader.NamespaceURI == childNs))
+                                alreadyMoved = true;
+                            
                             if (null != component)
                             {
                                 LogAdd(reader, TraceLevel.Debug, "Adding component '{0}' to default collection in property {1} of type '{2}'", component, arry.PropertyInfo.Name, cdef.ClassType);
@@ -727,7 +849,7 @@ namespace Scryber.Generation
 
                         }
                         else if (String.IsNullOrEmpty(cdef.DefaultElement.Name))
-                            this.ParseComplexType(container, reader, cdef.DefaultElement);
+                            await this.ParseComplexType(container, reader, cdef.DefaultElement);
 
                         else if (reader.NamespaceURI == XmlSchemaNamespace)
                         {
@@ -751,6 +873,12 @@ namespace Scryber.Generation
                     {
                         LogAdd(reader, TraceLevel.Error, "Skipping unknown element '{0}'", reader.Name);
                         reader.Skip();
+                        
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.LocalName == element && reader.NamespaceURI == ns)
+                                break;
+                        }
                     }
 
                 }
@@ -763,14 +891,21 @@ namespace Scryber.Generation
                             ParserSimpleElementDefinition se = (ParserSimpleElementDefinition)cdef.DefaultElement;
                             object value = se.GetValue(reader, this.Settings);
                             this.SetValue(container, value, se);
-                            break; //we have read past the end of the content of this container
+                            
+                            //Move to the end element
+                            while (reader.NodeType != XmlNodeType.EndElement && reader.LocalName != element)
+                            {
+                                reader.Read();
+                            }
+                            
+                            break;
                         }
                         else if (cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
                         {
                             //We are already positioned on the current content so it should be 
                             //included until we end the element
                             bool usecurrenttextnode = true;
-                            ParseInnerCollection(container, element, ns, usecurrenttextnode, reader, cdef.DefaultElement);
+                            await ParseInnerCollection(container, element, ns, usecurrenttextnode, reader, cdef.DefaultElement);
                             //If we have parsed all the content of the element then we need to break off
                             if (reader.NodeType == XmlNodeType.EndElement)
                             {
@@ -795,8 +930,53 @@ namespace Scryber.Generation
                     {
                         LogAdd(reader, TraceLevel.Message, "Skipping unknown element '{0}'", reader.Name);
                         reader.Skip();
+                        //Break out now rather than doing another read to break.
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.LocalName == element && reader.NamespaceURI == ns)
+                                break;
+                        }
                     }
 
+                }
+                else if(reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    //TODO:Add whitespace content to a collection which can be used if the css white-space attribute is preserve (or the xml:space='preserve')
+                    if(cdef.DefaultElement != null && string.IsNullOrEmpty(cdef.DefaultElement.Name) && cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
+                    {
+                        AddWhitespaceString(reader.Value, cdef.DefaultElement, container, TextFormat.XML);
+                    }
+                    else
+                    {
+                        //Do nothing it's not an error, nor is it an issue - we can skip
+                    }
+                }
+                else if(reader.NodeType == XmlNodeType.CDATA)
+                {
+                    if(cdef.DefaultElement != null && string.IsNullOrEmpty(cdef.DefaultElement.Name) && cdef.DefaultElement.AllowCData)
+                    {
+                        LogAdd(reader, TraceLevel.Debug, "Parsing CDATA content for " + cdef.ClassType + " default element content");
+                        if(cdef.DefaultElement.ParseType == DeclaredParseType.SimpleElement)
+                        {
+                            ParserSimpleElementDefinition se = (ParserSimpleElementDefinition)cdef.DefaultElement;
+                            object value = se.GetValue(reader, this.Settings);
+                            this.SetValue(container, value, se);
+                            break;
+                        }
+                        else if (this.Mode == ParserConformanceMode.Strict)
+                            throw this.BuildParserXMLException(reader, Errors.ParserAttributeMustBeSimpleOrCustomParsableType, cdef.DefaultElement.PropertyInfo.Name, cdef.ClassType);
+                        else
+                            LogAdd(reader, TraceLevel.Message, "Skipping text content of property '" + cdef.DefaultElement.PropertyInfo.Name + "' on class '" + cdef.ClassType + ", because it is not a simple or parsable type");
+                    }
+                    else if (this.Mode == ParserConformanceMode.Strict)
+                    {
+                        throw this.BuildParserXMLException(reader, "The default element does not support CDATA content", cdef.ClassType, "element", reader.LocalName);
+                    }
+                    else
+                    {
+                        LogAdd(reader, TraceLevel.Message, "Skipping element '{0}' as the class default property does not support CDATA content", reader.Name);
+                        //reader.Skip();
+                    }
                 }
             }
         }
@@ -823,7 +1003,13 @@ namespace Scryber.Generation
                 reader.Read();
                 string value = reader.Value;
                 
-                IPDFBindingExpressionFactory factory;
+                IBindingExpressionFactory factory;
+                if(ParserHelper.IsEscapedBindingExpression(ref value))
+                {
+                    object converted = prop.GetValue(reader, this.Settings);
+                    if (converted != DBNull.Value)
+                        this.SetValue(container, converted, prop);
+                }
                 if (ParserHelper.IsBindingExpression(ref value, out factory, this.Settings))
                     GenerateBindingExpression(reader, container, cdef, prop, value, factory);
                 else
@@ -846,7 +1032,7 @@ namespace Scryber.Generation
         /// <param name="container"></param>
         /// <param name="reader"></param>
         /// <param name="prop"></param>
-        private void ParseInnerCollection(object container, XmlReader reader, ParserPropertyDefinition prop)
+        private async ValueTask ParseInnerCollection(object container, XmlReader reader, ParserPropertyDefinition prop)
         {
             if (reader.IsEmptyElement)
                 return; //No inner content
@@ -858,7 +1044,7 @@ namespace Scryber.Generation
             //we want to read the inner content
             bool parseCurrentNode = false;
 
-            ParseInnerCollection(container, endname, endns, parseCurrentNode, reader, prop);
+            await ParseInnerCollection(container, endname, endns, parseCurrentNode, reader, prop);
         }
 
         /// <summary>
@@ -871,47 +1057,82 @@ namespace Scryber.Generation
         /// <param name="parsecurrentNode">If true then the current none the reader is positioned at will be parsed (otherwise it will be sipped and the next node will start the parsing</param>
         /// <param name="reader">The current xml reader</param>
         /// <param name="prop">The property definition that refers to the collection to be added to by the parsed contents</param>
-        private void ParseInnerCollection(object container, string endname, string endns, bool parsecurrentNode, XmlReader reader, ParserPropertyDefinition prop)
+        private async ValueTask ParseInnerCollection(object container, string endname, string endns, bool parsecurrentNode, XmlReader reader, ParserPropertyDefinition prop)
         {
             LogAdd(reader, TraceLevel.Debug, "Parsing inner collection from element '{0}' for property '{2}' on class '{3}'", reader.Name, prop.Name, prop.PropertyInfo.Name, prop.PropertyInfo.DeclaringType);
             bool lastwastext = false;
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
+            bool lastWasEnd = false;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
+
             StringBuilder textString = new StringBuilder();
 
             ParserArrayDefinition arraydefn = (ParserArrayDefinition)prop;
 
 
             object collection = InitArrayCollection(container, arraydefn);
+            var icomplist = collection.GetType().GetInterface(nameof(IComponentList));
+            bool isComponentCollection = (null != icomplist);
 
             while (parsecurrentNode || reader.Read())
             {
+                
+                parsecurrentNode = false;
+                
                 if (reader.NodeType == XmlNodeType.Element)
                 {
+                    var empty = reader.IsEmptyElement;
                     if (lastwastext)
                     {
                         AppendTextToCollection(textString, arraydefn, collection);
                         textString.Length = 0;
                         lastwastext = false;
                     }
-                    object inner = this.ParseComponent(reader, false);
+                    object inner = await this.ParseComponent(reader, false);
                     if (null != inner)
                     {
                         arraydefn.AddToCollection(collection, inner);
                     }
+                    if (empty)
+                        lastWasEnd = true;
+                    else if (reader.NodeType == XmlNodeType.EndElement && reader.Name == endname)
+                    {
+                        //we want to read past this
+                    }
+                    else
+                    {
+                        parsecurrentNode = true; //The end node has already been read and we want to process the current node.
+                    }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
                 {
+                    lastWasEnd = true;
                     if (reader.LocalName == endname && reader.NamespaceURI == endns)
-                        break;
+                        break;                       
                 }
                 else if (reader.NodeType == XmlNodeType.Text)
                 {
                     string val = reader.Value;
-                    val = System.Security.SecurityElement.Escape(val);
+                    //val = System.Security.SecurityElement.Escape(val);
 
                     textString.Append(val);
                     lastwastext = true;
                 }
-                parsecurrentNode = false;
+                else if (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    if (isComponentCollection)
+                    {
+                        if (lastwastext && textString.Length > 0)
+                        {
+                            AppendTextToCollection(textString, arraydefn, collection);
+                            textString.Length = 0;
+                            lastwastext = false;
+                        }
+
+                        string space = reader.Value;
+                        AddWhitespaceString(space, prop, container, TextFormat.XML);
+                    }
+                }
             }
 
             if (lastwastext && textString.Length > 0)
@@ -931,7 +1152,7 @@ namespace Scryber.Generation
         /// <param name="container"></param>
         /// <param name="reader"></param>
         /// <param name="prop"></param>
-        private void ParseComplexType(object container, XmlReader reader, ParserPropertyDefinition prop)
+        private async ValueTask ParseComplexType(object container, XmlReader reader, ParserPropertyDefinition prop)
         {
             ParserClassDefinition cdef = ParserDefintionFactory.GetClassDefinition(prop.ValueType);
 
@@ -970,7 +1191,7 @@ namespace Scryber.Generation
                     created = true;
                 }
             }
-            this.ParseComplexComponentXml(value, reader, cdef);
+            await this.ParseComplexComponentXml(value, reader, cdef);
 
             if (created)
                 this.SetValue(container, value, prop);
@@ -994,10 +1215,10 @@ namespace Scryber.Generation
             object gen = CreateInstance(this.Settings.TempateGeneratorType);
             var defn = ParserDefintionFactory.GetClassDefinition(this.Settings.TempateGeneratorType);
 
-            if ((gen is IPDFTemplateGenerator) == false)
+            if ((gen is ITemplateGenerator) == false)
                 throw new InvalidCastException("The returned type for the Settings.TemplateGeneratorType does not implement the IPDFTemplateGenerator interface");
 
-            IPDFTemplateGenerator tempgen = (IPDFTemplateGenerator)gen;
+            ITemplateGenerator tempgen = (ITemplateGenerator)gen;
             tempgen.ElementName = reader.Name;
             tempgen.IsBlock = temp.RenderAsBlock;
 
@@ -1167,7 +1388,7 @@ namespace Scryber.Generation
         /// <param name="path"></param>
         /// <param name="select"></param>
         /// <returns></returns>
-        private object ResolveAndParseRemoteComponent(XmlReader reader, string path, string select)
+        private async ValueTask<object> ResolveAndParseRemoteComponent(XmlReader reader, string path, string select)
         {
             if(string.IsNullOrEmpty(path))
                 throw new ArgumentNullException("path");
@@ -1180,7 +1401,10 @@ namespace Scryber.Generation
 
             try
             {
-                parsed = this.Settings.Resolver(path, select, this.Settings);
+                if (Settings.UseAsync)
+                    parsed = await this.Settings.ResolverAsync(path, select, this.Settings);
+                else
+                    parsed = this.Settings.Resolver(path, select, this.Settings);
             }
             catch (System.IO.FileNotFoundException ex)
             {
@@ -1411,9 +1635,9 @@ namespace Scryber.Generation
 
         #region private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, BindingType bindingtype)
 
-        private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, IPDFBindingExpressionFactory factory)
+        private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, IBindingExpressionFactory factory)
         {
-            using (var recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Expression_Build, factory.BindingKey))
+            using (var recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Expression_Build, expression))
             {
                 if (factory.BindingStage == DocumentGenerationStage.Bound)
                 {
@@ -1546,13 +1770,13 @@ namespace Scryber.Generation
         /// <param name="collection">The instance which has the property to add the text component to</param>
         private void AppendTextToCollection(StringBuilder textString, ParserArrayDefinition arraydefn, object collection)
         {
-            TextFormat format = TextFormat.XML;
+            TextFormat format = TextFormat.XHTML;
             
             //Add any bindings to the text
             string textSubString = textString.ToString();
 
             string[] splits;
-            IPDFBindingExpressionFactory[] factories;
+            IBindingExpressionFactory[] factories;
 
             if(ParserHelper.ContainsBindingExpressions(textSubString, out splits, out factories))
             {
@@ -1566,7 +1790,7 @@ namespace Scryber.Generation
                     }
                     else
                     {
-                        AddTextBindingExpression(content, arraydefn, collection, factory, format);
+                        AddTextBindingExpression(content, arraydefn, collection, factory, TextFormat.Plain);
                     }
                 }
             }
@@ -1577,11 +1801,11 @@ namespace Scryber.Generation
             
         }
 
-        private void AddTextBindingExpression(string expr, ParserArrayDefinition arraydefn, object collection, IPDFBindingExpressionFactory factory, TextFormat format)
+        private void AddTextBindingExpression(string expr, ParserArrayDefinition arraydefn, object collection, IBindingExpressionFactory factory, TextFormat format)
         {
             Type literaltype = this.Settings.TextLiteralType;
 
-            IPDFTextLiteral lit = (IPDFTextLiteral)CreateInstance(literaltype);
+            ITextLiteral lit = (ITextLiteral)CreateInstance(literaltype);
 
             IBindableComponent bindable = (IBindableComponent)lit;
 
@@ -1599,7 +1823,7 @@ namespace Scryber.Generation
 
         }
 
-        private Dictionary<string, char> HtmlEntities = XmlHtmlEntityReader.DefaultKnownHTMLEntities;
+        private IDictionary<string, char> HtmlEntities = Html.HtmlEntities.DefaultKnownHTMLEntities;
         private Regex bindingMatcher = new Regex("&(\\w{1,8});");
 
         private string ReplaceBindingEntitiesNotInQuotes(string bindindExpr)
@@ -1619,7 +1843,7 @@ namespace Scryber.Generation
         private void AddTextString(string text, ParserArrayDefinition arraydefn, object collection, TextFormat format)
         {
             Type literaltype = this.Settings.TextLiteralType;
-            IPDFTextLiteral literal = (IPDFTextLiteral)CreateInstance(literaltype);
+            ITextLiteral literal = (ITextLiteral)CreateInstance(literaltype);
             
             literal.Text = text;
             literal.ReaderFormat = format;
@@ -1637,6 +1861,26 @@ namespace Scryber.Generation
 
         #endregion
 
+        private void AddWhitespaceString(string spacer, ParserPropertyDefinition prop, object container, TextFormat format)
+        {
+            ParserArrayDefinition arraydefn = (ParserArrayDefinition)prop;
+
+
+            object collection = InitArrayCollection(container, arraydefn);
+            var icomplist = collection.GetType().GetInterface(nameof(IComponentList));
+            bool isComponentCollection = (null != icomplist);
+
+            if (isComponentCollection)
+            {
+                Type whitespaceType = this.Settings.WhitespaceType;
+                ITextLiteral whitespace = (ITextLiteral)CreateInstance(whitespaceType);
+                whitespace.Text = spacer;
+                whitespace.ReaderFormat = format;
+
+                arraydefn.AddToCollection(collection, whitespace);
+            }
+
+        }
 
         #region private object InitArrayCollection(object container, ParserArrayDefinition arraydefn)
 
@@ -1918,7 +2162,7 @@ namespace Scryber.Generation
         /// Parses the scryber processing instructions
         /// </summary>
         /// <param name="reader"></param>
-        protected void ParseProcessingInstructions(XmlReader reader)
+        protected void ParseProcessingInstructions(XmlReader reader, string name)
         {
             string value = reader.Value;
 

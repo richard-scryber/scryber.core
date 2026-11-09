@@ -8,7 +8,7 @@ namespace Scryber.Expressive.Expressions.Binary.Conditional
     {
         #region Constructors
 
-        public NullCoalescingExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public NullCoalescingExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Scryber.Expressive.Expressions.Binary.Conditional
 
         /// <inheritdoc />
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) => l ?? r);
+            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) => l ?? r);
 
         #endregion
     }

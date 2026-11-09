@@ -21,7 +21,7 @@ namespace Scryber.Expressive.Tokenisation
         /// <summary>
         /// Gets the current context to tokenise an expression with
         /// </summary>
-        public Context Context
+        public ExpressionContext Context
         {
             get;
             private set;
@@ -77,7 +77,7 @@ namespace Scryber.Expressive.Tokenisation
         /// Creates a new instance of teh 
         /// </summary>
         /// <param name="context"></param>
-        public Tokeniser(Context context)
+        public Tokeniser(ExpressionContext context)
         {
             this.Context = context ?? throw new ArgumentNullException(nameof(context));
             this.CurrentIndex = 0;
@@ -137,6 +137,10 @@ namespace Scryber.Expressive.Tokenisation
                 if (IsWhiteSpace(expression, this.CurrentIndex, out length))
                 {
                     this.IgnoreToken(expression, length);
+                }
+                else if (IsParentReference(expression, this.CurrentIndex, out length))
+                {
+                    TokeniseIsParent(expression, length);
                 }
                 else if (IsKeyword(expression, this.CurrentIndex, out length))
                 {
@@ -241,6 +245,34 @@ namespace Scryber.Expressive.Tokenisation
             this.AddNewToken(start, length, value, ExpressionTokenType.Color);
         }
 
+        protected virtual bool IsParentReference(string expression, int index, out int length)
+        {
+            int start = index;
+            if (expression[start] == '.')
+            {
+                if (expression.Length > 3 && expression[start + 1] == '.' && expression[start + 2] == '/')
+                {
+                    length = 3;
+                    return true;
+                }
+            }
+
+            length = 0;
+            return false;
+        }
+
+        protected virtual bool TokeniseIsParent(string expression, int length)
+        {
+            var str = Expressions.ParentDataExpression.ParentDataVariableName;
+            int start = this.CurrentIndex;
+            this.CurrentIndex += length;
+            
+            this.AddNewToken(start, length, str, ExpressionTokenType.Variable);
+            this.AddNewToken(start+ length, 0, ".", ExpressionTokenType.Operator);
+
+            return true;
+        }
+
         #region IsKeyword + TokeniseKeyword
 
         /// <summary>
@@ -253,11 +285,41 @@ namespace Scryber.Expressive.Tokenisation
         protected virtual bool IsKeyword(string expression, int index, out int length)
         {
             int start = index;
+            
+            if (expression[start] == '@')
+            {
+                //Explicit check for @index, @first and @last special notation.
+                if (expression.Length >= start + 6 && expression.Substring(start, 6) == "@index")
+                {
+                    length = 6;
+                    return true;
+                }
+                else if (expression.Length >= start + 6 && expression.Substring(start, 6) == "@first")
+                {
+                    length = 6;
+                    return true;
+                }
+                else if (expression.Length >= start + 5 && expression.Substring(start, 5) == "@last")
+                {
+                    length = 5;
+                    return true;
+                }
+                else if (expression.Length >= start + 4 && expression.Substring(start, 4) == "@key")
+                {
+                    length = 4;
+                    return true;
+                }
+            }
+            
             while (index < expression.Length)
             {
                 if (char.IsLetter(expression, index))
                 {
                     index++;
+                }
+                else if (index == start && expression[index] == '$')
+                {
+                    index++; //we allow '$' on the first character
                 }
                 else if (index > start && char.IsDigit(expression, index))
                 {
@@ -288,13 +350,14 @@ namespace Scryber.Expressive.Tokenisation
             var name = expression.Substring(start, length);
 
 
+            //A name directly after a '.' is always a property (e.g. model.e or .pi), never one of the constants.
             ExecFunction func;
-            int constLen;
-            if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && expression[start + length] == '(')
+            int constLen = 0;
+            if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && (expression[start + length] == '('))
             {
                 this.AddNewToken(start, length, name, ExpressionTokenType.Function);
             }
-            else if (this.IsConstant(name, out constLen))
+            else if (false == (start > 0 && (expression[start - 1] == '.' || (start > 2 && expression[start - 1] == '/' && expression[start - 2] == '.' && expression[start - 3] == '.'))) && this.IsConstant(name, out constLen))
             {
                 this.AddNewToken(start, constLen, name, ExpressionTokenType.Constant);
             }
@@ -397,6 +460,26 @@ namespace Scryber.Expressive.Tokenisation
                     length = 1;
                     result = true;
                 }
+                else if (name.Equals("@index", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@first", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@last", this.Context.ParsingStringComparison))
+                {
+                    length = 5;
+                    result = true;
+                }
+                else if (name.Equals("@key", this.Context.ParsingStringComparison))
+                {
+                    length = 4;
+                    result = true;
+                }
             }
             else
             {
@@ -436,6 +519,26 @@ namespace Scryber.Expressive.Tokenisation
                     result = true;
                 }
                 else if (name.Equals("E", this.Context.ParsingStringComparison))
+                {
+                    length = 1;
+                    result = true;
+                }
+                else if (name.Equals("@index", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@first", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@last", this.Context.ParsingStringComparison))
+                {
+                    length = 5;
+                    result = true;
+                }
+                else if (name.Equals("@key", this.Context.ParsingStringComparison))
                 {
                     length = 4;
                     result = true;
@@ -563,7 +666,7 @@ namespace Scryber.Expressive.Tokenisation
         /// <returns>True if a date was found</returns>
         protected virtual bool IsDate(string expression, int index, out int length)
         {
-            if (expression[index] == Context.DateSeparator)
+            if (expression[index] == ExpressionContext.DateSeparator)
             {
                 int start = index;
                 index++;
@@ -571,7 +674,7 @@ namespace Scryber.Expressive.Tokenisation
 
                 while (index < expression.Length)
                 {
-                    if (expression[index] == Context.DateSeparator)
+                    if (expression[index] == ExpressionContext.DateSeparator)
                     {
                         index++;
                         foundEnd = true;
@@ -794,17 +897,23 @@ namespace Scryber.Expressive.Tokenisation
 
         #region IsNumber + TokeniseNumber
 
+        private const char BINARYFORMATCHAR = 'b';
+        private const char HEXFORMATCHAR = 'x';
+        
         /// <summary>
         /// Checks if the characters at the specified index is a number returning true, along with the length of the number string.
         /// </summary>
         /// <param name="expression">The expression to check</param>
         /// <param name="index">The index at whick to start checking</param>
         /// <param name="length">The output length of the string that constitutes the number</param>
+        /// <param name="isUnit">Set to true if the token is a css unit (20pt, 100%, etc.) rather than a simple number</param>
         /// <returns>True if it is a number</returns>
         protected virtual bool IsNumber(string expression, int index, out int length, out bool isUnit)
         {
             int start = index;
             isUnit = false;
+            var isBinary = false;
+            var isHex = false;
 
             while (index < expression.Length)
             {
@@ -812,56 +921,45 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     index++;
                 }
+                else if (isHex && ((expression[index] >= 'A' && expression[index] <= 'F') || (expression[index] >= 'a' && expression[index] <= 'f')))
+                {
+                    index++;
+                }
+                else if (isBinary && expression[index] == '_')
+                {
+                    index++;
+                }
                 else if (expression[index] == this.Context.DecimalSeparator)
                 {
                     if (index > start)
                         index++;
+                    else if (index == start && expression.Length > index + 1 && char.IsDigit(expression, index + 1))
+                        index++;
                     else
                         break;
                 }
-                else if(expression[index] == 'p') //1234.5pt
+                else if (expression[start] == '0' && index - start == 1 &&  expression[index] == BINARYFORMATCHAR)
                 {
-                    if (index+1 < expression.Length && expression[index + 1] == 't')
+                    isBinary = true;
+                    index++;
+                }
+                else if (expression[start] == '0' && index - start == 1 &&  expression[index] == HEXFORMATCHAR)
+                {
+                    isHex = true;
+                    index++;
+                }
+                else if (index > start)
+                {
+                    if(IsKnownUnitSuffix(expression, index, out int suffixLen))
                     {
-                        index+= 2;
+                        index += suffixLen;
                         isUnit = true;
                         break;
                     }
                     else
-                        break;
-                }
-                else if(expression[index] == 'm') //1234.5mm
-                {
-                    if (index + 1 < expression.Length && expression[index + 1] == 'm')
                     {
-                        index+= 2;
-                        isUnit = true;
                         break;
                     }
-                    else
-                        break;
-                }
-                else if (expression[index] == 'c') //1234.5cm
-                {
-                    if (index + 1 < expression.Length && expression[index + 1] == 'm')
-                    {
-                        index+= 2;
-                        isUnit = true;
-                        break;
-                    }
-                    else
-                        break;
-                }
-                else if (expression[index] == 'i') //1234.5mm
-                {
-                    if (index + 1 < expression.Length && expression[index + 1] == 'n')
-                    {
-                        index+= 2;
-                        isUnit = true;
-                        break;
-                    }
-                    else
-                        break;
                 }
                 else
                     break;
@@ -870,6 +968,111 @@ namespace Scryber.Expressive.Tokenisation
             length = index - start;
             return length > 0;
 
+        }
+
+        private bool IsKnownUnitSuffix(string expression, int index, out int suffixLen)
+        {
+            suffixLen = 0;
+            if(expression.Length > index + 4) //vmin or vmax
+            {
+                if (expression[index] == 'v' && expression[index + 1] == 'm')
+                {
+                    if (expression[index +2] == 'i' && expression[index+3] == 'n' && IsUnitEndOrWhitespace(expression, index + 4)) //vmin
+                    {
+                        suffixLen = 4;
+                        return true;
+                    }
+                    else if (expression[index + 2] == 'a' && expression[index + 3] == 'x' && IsUnitEndOrWhitespace(expression, index + 4)) //vmax
+                    {
+                        suffixLen = 4;
+                        return true;
+                    }
+                }
+                    
+            }
+
+            if (expression.Length > index + 3) //rem
+            {
+                if (expression[index] == 'r' && expression[index + 1] == 'e' && expression[index + 2] == 'm' && IsUnitEndOrWhitespace(expression, index + 3))
+                {
+                    suffixLen = 3;
+                    return true;
+                }
+            }
+
+            if(expression.Length > index + 2) // em,ex,ch,vw,vh,mm,in,pt,px
+            {
+                switch (expression[index])
+                {
+                    case ('e'): //em,ex
+                        if ((expression[index + 1] == 'm' || expression[index+1] == 'x') && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('c'): //ch
+                        if (expression[index + 1] == 'h' && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('v'): //vw, vh
+                        if ((expression[index + 1] == 'w' || expression[index + 1] == 'h') && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('m'): //mm
+                        if (expression[index + 1] == 'm' && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('i'): //in
+                        if (expression[index + 1] == 'n' && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('p'): //pt,px
+                        if ((expression[index + 1] == 't' || expression[index + 1] == 'x') && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                }
+            }
+
+            if(expression.Length > index) // %
+            {
+                if (expression[index] == '%')
+                {
+                    suffixLen = 1;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static char[] _unitEnds = { ',', ';', ')', ']' };
+
+        private static bool IsUnitEndOrWhitespace(string expression, int index)
+        {
+            if (expression.Length <= index)
+                return true;
+            else if (char.IsWhiteSpace(expression, index))
+                return true;
+            else if (Array.IndexOf(_unitEnds, expression[index]) > -1)
+                return true;
+
+            return false;
         }
 
         /// <summary>

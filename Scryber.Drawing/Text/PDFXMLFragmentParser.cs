@@ -26,6 +26,7 @@ namespace Scryber.Text
     /// <summary>
     /// Parses a block of text with XML elements for styles and classes
     /// </summary>
+    [Obsolete("No longer used for parsing",true)]
     public class PDFXMLFragmentParser
     {
 

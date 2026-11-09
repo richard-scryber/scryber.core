@@ -136,7 +136,7 @@ namespace Scryber.Components
             fs.Font.FontSize = fontsize;
             fs.Font.FontBold = bold;
             fs.Font.FontItalic = italic;
-            fs.Position.PositionMode = PositionMode.Block;
+            fs.Position.DisplayMode = DisplayMode.Block;
             fs.Size.FullWidth = true;
             fs.Overflow.Split = OverflowSplit.Never;
             fs.List.NumberingGroup = groupname;

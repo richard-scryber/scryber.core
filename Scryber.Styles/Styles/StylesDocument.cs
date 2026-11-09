@@ -57,6 +57,14 @@ namespace Scryber.Styles
         {
             if (null != this.DataBound)
                 this.DataBound(this, args);
+
+            if(null != this.Styles)
+            {
+                if (this.Styles.ShouldUseIndex())
+                    args.Context.TraceLog.Add(TraceLevel.Message, "Styles Document", "Document style collection is indexed as count is " + this.Styles.Count);
+                else
+                    args.Context.TraceLog.Add(TraceLevel.Message, "Styles Document", "Document style collection does not need indexing as count is " + this.Styles.Count);
+            }
         }
 
         //
@@ -295,6 +303,15 @@ namespace Scryber.Styles
         }
 
 
+        /// <summary>
+        /// Explicit interface declaration, always returns an empty array
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        IMatchedEnumerable IComponent.FindMatches(string selector)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Merges all the appropriate style item values in this document into the provided style based on the component and it's class.
@@ -340,6 +357,8 @@ namespace Scryber.Styles
             if (includeChildren)
                 this.Styles.Load(context);
         }
+
+
 
         protected virtual void Dispose(bool disposing)
         {

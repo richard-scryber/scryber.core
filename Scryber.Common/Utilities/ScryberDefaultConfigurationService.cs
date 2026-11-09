@@ -12,6 +12,7 @@ namespace Scryber.Utilities
         private ImagingOptions _imaging;
         private OutputOptions _output;
         private TracingOptions _tracelog;
+        private ExpressionOptions _expression;
 
         public ScryberDefaultConfigurationService()
         {
@@ -121,7 +122,24 @@ namespace Scryber.Utilities
             }
         }
 
-        internal bool TryGetConfiguration(out IConfiguration config)
+        public ExpressionOptions ExpressionOptions
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (null == _expression)
+                    {
+                        _expression = this.GetOptions<ExpressionOptions>(Options.ExpressionOptions.ExpressionsSection);
+                        if (null == _expression)
+                            _expression = new ExpressionOptions();
+                    }
+                }
+                return _expression;
+            }
+        }
+
+        internal virtual bool TryGetConfiguration(out IConfiguration config)
         {
             config = ServiceProvider.GetService<IConfiguration>();
             return null != config;

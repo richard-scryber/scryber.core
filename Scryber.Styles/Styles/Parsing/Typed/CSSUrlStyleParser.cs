@@ -25,6 +25,11 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     result = this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, this.DoConvertWithGradient);
                 }
+                else if (TryGetGradientExpression(reader.CurrentTextValue, out var gradientExpression))
+                {
+                    //A gradient that contains var() or calc() values, so needs to be evaluated.
+                    result = this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, gradientExpression, this.DoConvertWithGradient);
+                }
                 else if(this.DoConvertWithGradient(onStyle, reader.CurrentTextValue, out attrvalue))
                 {
                     onStyle.SetValue(this.StyleAttribute, attrvalue);
@@ -43,6 +48,11 @@ namespace Scryber.Styles.Parsing.Typed
             }
             var str = value.ToString();
 
+            if (string.Equals("none", str, StringComparison.InvariantCultureIgnoreCase))
+            {
+                result = string.Empty;
+                return true;
+            }
             if (IsGradient(str, out result) || ParseCSSUrl(str, out result))
             {
                 return true;
@@ -51,7 +61,21 @@ namespace Scryber.Styles.Parsing.Typed
                 return false;
         }
 
-        private bool IsGradient(string value, out string finalValue)
+        /// <summary>
+        /// If the value is a gradient that contains var() or calc() functions, 
+        /// then builds a concat expression that will evaluate those functions within the gradient text.
+        /// </summary>
+        public static bool TryGetGradientExpression(string value, out string expression)
+        {
+            expression = null;
+
+            if (!IsGradient(value, out _))
+                return false;
+
+            return TryGetEmbeddedExpression(value, out expression);
+        }
+
+        public static bool IsGradient(string value, out string finalValue)
         {
             if (!string.IsNullOrEmpty(value))
             {

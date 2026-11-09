@@ -444,7 +444,7 @@ namespace Scryber.UnitLayouts
                         Assert.IsNotNull(first);
                         Assert.AreEqual(3, first.Runs.Count);
                         var chars = first.Runs[1] as PDFTextRunCharacter;
-                        var expected = pg + "." + col + "." + sub;
+                        var expected = pg + "." + col + "." + sub ;
                         Assert.AreEqual(expected, chars.Characters);
                     }
 
@@ -513,7 +513,7 @@ namespace Scryber.UnitLayouts
             section.Contents.Add(new TextLiteral("Sits on the first line"));
             section.Contents.Add(new LineBreak());
             section.Contents.Add(new LineBreak());
-            section.Contents.Add(new TextLiteral("Sits on the second line"));
+            section.Contents.Add(new TextLiteral("Sits on the third line"));
 
 
             using (var ms = DocStreams.GetOutputStream("Breaks_SimpleDoubleLineBreak.pdf"))
@@ -546,7 +546,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(24, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the second line", chars.Characters);
+            Assert.AreEqual("Sits on the third line", chars.Characters);
         }
 
         [TestCategory(TestCategoryName)]
@@ -592,8 +592,6 @@ namespace Scryber.UnitLayouts
 
             for (int i = 1; i < BreakCount; i++)
             {
-
-
                 var space = content.Columns[0].Contents[i] as PDFLayoutLine;
                 Assert.AreEqual(1, space.Runs.Count);
                 Assert.AreEqual(30, space.Height);

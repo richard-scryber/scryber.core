@@ -1,0 +1,423 @@
+{
+  "reportYear": 2024,
+  "globalStats": {
+    "currentPopulation": 5574,
+    "baseline2010": 3200,
+    "percentIncrease": 74,
+    "percentHistoricRange": 8,
+    "rangeLostKm2": 135000,
+    "countriesIncreasing": 6
+  },
+  "introduction": {
+    "openingText": "2024 was marked by biodiversity challenges, but tiger conservation witnessed tangible, heartening progress. The recovery of tiger populations offers a rare beacon of optimism. Tiger conservation successes are a testament to the critical role of Indigenous Peoples and local communities, whose knowledge, stewardship and active involvement in conservation efforts are irreplaceable.",
+    "milestones": [
+      {
+        "title": "Tiger Conservation Coalition Formed",
+        "description": "WWF joined forces with 9 other leading international organizations, marking a new era of collaboration among groups that were once competitors. This represents a groundbreaking partnership in tiger conservation."
+      },
+      {
+        "title": "$1 Billion Commitment for Tiger Conservation",
+        "description": "At the Sustainable Finance for Tiger Landscapes Conference hosted by the Royal Government of Bhutan, partners committed to collectively mobilizing an additional $1 billion for tiger conservation over the next ten years, known as the 'Paro Statement'."
+      }
+    ],
+    "countryTrends": [
+      {
+        "country": "Bhutan",
+        "increasing": true,
+        "notes": "Population recovery ongoing"
+      },
+      {
+        "country": "China",
+        "increasing": true,
+        "notes": "Amur tigers expanding to new territories"
+      },
+      {
+        "country": "India",
+        "increasing": true,
+        "notes": "Largest tiger population continues to grow"
+      },
+      {
+        "country": "Nepal",
+        "increasing": true,
+        "notes": "Nearly tripled since 2009"
+      },
+      {
+        "country": "Russia",
+        "increasing": true,
+        "notes": "Stable Amur tiger population"
+      },
+      {
+        "country": "Thailand",
+        "increasing": true,
+        "notes": "Significant recovery in Western Forest Complex"
+      },
+      {
+        "country": "Southeast Asia (most)",
+        "increasing": false,
+        "notes": "Declining populations in several countries"
+      }
+    ]
+  },
+  "sections": {
+    "expandRange": {
+      "intro": "This section highlights efforts to extend tiger populations into new and historic territories, demonstrating that with proper planning, habitat restoration, and community engagement, tigers can reclaim landscapes they once roamed.",
+      "stories": [
+        {
+          "title": "Kazakhstan Tiger Reintroduction - Historic Achievement",
+          "location": "Ile-Balkhash Nature Reserve, Kazakhstan",
+          "description": "In a historic moment, two captive Amur tigers named Bodhana and Kuma were translocated from the Anna Paulowna Sanctuary in the Netherlands to Kazakhstan's Ile-Balkhash Nature Reserve. These are the first tigers in Kazakhstan in over 70 years, having gone extinct in the 1950s. Released into a semi-natural enclosure in September 2024, by February 2025 the tigers had started mating.",
+          "keyFacts": [
+            "Project began in 2018 with ambitious goals to restore tigers to historic range",
+            "Six years spent restoring the reserve: reforested more than 120 acres with native trees",
+            "Reintroduced prey species including Bukhara deer and Asiatic wild ass",
+            "At least 8 more tigers expected to join in coming years",
+            "WWF and partners worked with the Auyldastar community over six years",
+            "Community-managed compensation scheme being established",
+            "Response team in place to manage potential human-tiger conflict"
+          ],
+          "statisticsTitle": "Kazakhstan Tiger Reintroduction Goals",
+          "statistics": [
+            {
+              "label": "Tigers Reintroduced (2024)",
+              "value": "2"
+            },
+            {
+              "label": "Goal by 2035",
+              "value": "50 wild tigers"
+            },
+            {
+              "label": "Years Since Last Tigers",
+              "value": "70+ years"
+            },
+            {
+              "label": "Habitat Restored",
+              "value": "120+ acres"
+            }
+          ],
+          "quote": {
+            "text": "This is not just about bringing back tigers. It's about restoring an entire ecosystem and creating a model for coexistence between wildlife and local communities.",
+            "author": "Conservation Team Lead",
+            "title": "WWF Kazakhstan"
+          }
+        },
+        {
+          "title": "China - Amur Tigers Moving to New Frontiers",
+          "location": "Changbai Mountains & Northeast China",
+          "description": "In late 2024, a tiger was recorded in the Changbai Mountains, approximately 200 km south of Laoyeling and the Northeast Tiger and Leopard National Park. This marked the first Amur tiger in Changbaishan Biosphere Reserve since 1994, ending a 30-year hiatus. The discovery was made through ranger-identified footprints and subsequent camera trap footage.",
+          "keyFacts": [
+            "Northeast Tiger and Leopard National Park pilot construction began in 2017",
+            "Located in southern Laoyeling, at the border of Jilin and Heilongjiang provinces",
+            "Laoyeling region is the only area with a breeding population",
+            "Demonstrates success of habitat protection and restoration initiatives",
+            "Amur tigers continue to move to new frontiers within WWF priority landscapes"
+          ],
+          "statisticsTitle": "China Tiger Expansion",
+          "statistics": [
+            {
+              "label": "Years Since Last Sighting",
+              "value": "30 years"
+            },
+            {
+              "label": "Distance from Main Population",
+              "value": "200 km"
+            },
+            {
+              "label": "National Park Established",
+              "value": "2017"
+            }
+          ]
+        },
+        {
+          "title": "Thailand - Historic Return to Mae Ping Forest Complex",
+          "location": "Mae Ping Forest Complex, Thailand",
+          "description": "In October 2022, camera traps recorded the first tiger in more than a decade in Mae Ping Forest Complex, located less than 100 km north of Western Forest Complex. The two complexes are linked by forest corridors. In 2024, WWF Thailand initiated a comprehensive project to determine distribution and abundance of tigers and their prey, establish camera trap-based wildlife monitoring, build ranger capacity, and engage communities.",
+          "keyFacts": [
+            "Aligns with Thailand's 12-year National Tiger Action Plan",
+            "Builds on WWF-Thailand's success in Western Forest Complex",
+            "Represents hope that tigers are naturally dispersing to reclaim historic habitats",
+            "Increased patrolling efficiency through ranger training",
+            "Community engagement through conservation and awareness raising"
+          ],
+          "statisticsTitle": "Thailand Tiger Recovery",
+          "statistics": [
+            {
+              "label": "Western Forest Complex (2007)",
+              "value": "40 tigers"
+            },
+            {
+              "label": "Western Forest Complex (2024)",
+              "value": "189-223 tigers"
+            },
+            {
+              "label": "Mae Ping - Years Since Last Tiger",
+              "value": "10+ years"
+            },
+            {
+              "label": "Distance Between Complexes",
+              "value": "<100 km"
+            }
+          ]
+        },
+        {
+          "title": "Laos - National Tiger Recovery Action Plan",
+          "location": "Laos",
+          "description": "In August 2024, the Ministry of Agriculture and Forestry and WWF Laos announced the 2025-2035 National Tiger Recovery Action Plan. While wild tiger populations in Laos are functionally extinct, this plan aims to restore and protect tiger populations through strategies for managing and monitoring tiger populations and exploring the feasibility of reintroducing tigers to natural habitats.",
+          "keyFacts": [
+            "First meeting held in Vientiane on August 15-16, 2024",
+            "Participants included provincial forestry officials, law enforcement agencies, and international conservation organizations",
+            "10-year plan from 2025-2035",
+            "Focus on restoration and protection strategies",
+            "Exploring feasibility of tiger reintroduction"
+          ],
+          "statisticsTitle": "Laos Tiger Recovery Plan",
+          "statistics": [
+            {
+              "label": "Plan Duration",
+              "value": "10 years"
+            },
+            {
+              "label": "Launch Year",
+              "value": "2025"
+            },
+            {
+              "label": "Current Status",
+              "value": "Functionally Extinct"
+            }
+          ]
+        }
+      ]
+    },
+    "secureHabitat": {
+      "intro": "Wildlife corridors are essential for tiger survival, allowing populations to move between protected areas, find mates, and maintain genetic diversity. This section focuses on maintaining and creating these vital connections.",
+      "stories": [
+        {
+          "title": "Nepal - Someshwor Corridor Success",
+          "location": "Someshwor Corridor, Nepal-India Border",
+          "description": "The Someshwor corridor, a vital transboundary corridor located in the buffer zone of Chitwan National Park adjacent to Valmiki Tiger Reserve in India, has shown remarkable tiger population growth. From just 3 tigers in 2018 to 8 tigers in the 2022 National Tiger Survey, recent monitoring has confirmed 14 Royal Bengal tigers in the area.",
+          "keyFacts": [
+            "Located south of Madi Valley where the hill of Someshwor forms the border with India",
+            "Facilitates movement of endangered tigers and other species between Nepal's Chitwan and India's Valmiki Tiger Reserve",
+            "Nepal's overall tiger population nearly tripled: 121 tigers (2009) to 355 tigers (2022)",
+            "Conservation focus shifting to improving habitat connectivity and enhancing coexistence with humans",
+            "Monitoring tiger movements and genetic status across the landscape",
+            "Implementing landscape-level management plans",
+            "Engaging with transboundary partners"
+          ],
+          "statisticsTitle": "Someshwor Corridor Tiger Population",
+          "statistics": [
+            {
+              "label": "2018 Survey",
+              "value": "3 tigers"
+            },
+            {
+              "label": "2022 Survey",
+              "value": "8 tigers"
+            },
+            {
+              "label": "Recent Monitoring",
+              "value": "14 tigers"
+            },
+            {
+              "label": "Nepal Total (2022)",
+              "value": "355 tigers"
+            }
+          ]
+        },
+        {
+          "title": "India-Nepal Transboundary Corridors",
+          "location": "Terai Arc Landscape",
+          "description": "The Terai Arc Landscape covers 74,097 km² of transboundary territory and supports an estimated 1,000 tigers. This landscape consists of 7 corridors and 3 bottlenecks that facilitate connectivity between protected areas on both sides of the India-Nepal border. Key corridors include the Khata Forest Conservation Area (a critical 15-mile pathway connecting Nepal's Bardia National Park and India's Katarniaghat Wildlife Sanctuary) and the Shikaribas corridor.",
+          "keyFacts": [
+            "Khata Forest Conservation Area received Conservation Excellence Award",
+            "Chitwan-Parsa-Valmiki Complex holds approximately 141 tigers, 697+ rhinoceros, and 50+ migrating elephants",
+            "Shikaribas corridor connects all three protected areas in southern part of complex",
+            "WWF Nepal and WWF India collaborate on increasing corridor functionality",
+            "Supports spectacular array of wildlife beyond tigers"
+          ],
+          "statisticsTitle": "Terai Arc Landscape",
+          "statistics": [
+            {
+              "label": "Total Area",
+              "value": "74,097 km²"
+            },
+            {
+              "label": "Estimated Tigers",
+              "value": "~1,000"
+            },
+            {
+              "label": "Corridors",
+              "value": "7"
+            },
+            {
+              "label": "Bottlenecks",
+              "value": "3"
+            }
+          ]
+        },
+        {
+          "title": "India - WWF Conservation Efforts",
+          "location": "India - Multiple Landscapes",
+          "description": "WWF-India monitors and supports tiger monitoring in 20 Protected Areas and Forest Divisions across six conservation landscapes. This comprehensive approach focuses on corridor functionality and connectivity to ensure tiger populations can thrive and expand throughout India's diverse ecosystems.",
+          "keyFacts": [
+            "Works across six conservation landscapes",
+            "Monitors 20 Protected Areas and Forest Divisions",
+            "Focus on corridor functionality and connectivity",
+            "Comprehensive landscape-level approach",
+            "India hosts the largest tiger population globally"
+          ],
+          "statisticsTitle": "WWF-India Conservation Scope",
+          "statistics": [
+            {
+              "label": "Conservation Landscapes",
+              "value": "6"
+            },
+            {
+              "label": "Protected Areas Monitored",
+              "value": "20"
+            }
+          ]
+        }
+      ],
+      "rangerGap": {
+        "additionalNeeded": 12500,
+        "salaryShortfall": 45800000,
+        "studyDate": "June 2024",
+        "studyTitle": "Insufficient numbers and poor working conditions for rangers protecting tigers",
+        "protectedAreaSize": 320000
+      }
+    },
+    "endExploitation": {
+      "intro": "Despite conservation successes, tigers remain threatened by poaching and illegal wildlife trade. This section addresses efforts to combat wildlife crime, strengthen enforcement, and reduce demand for tiger parts.",
+      "stories": [
+        {
+          "title": "Strengthening Anti-Poaching Networks",
+          "location": "Multiple Countries",
+          "description": "WWF continues to work with governments and partners to strengthen anti-poaching efforts through improved law enforcement, ranger training, and intelligence sharing networks. These efforts are critical to protecting tiger populations from exploitation.",
+          "keyFacts": [
+            "Enhanced ranger training and equipment",
+            "Intelligence sharing across borders",
+            "Improved law enforcement capacity",
+            "Community-based monitoring systems",
+            "Technology deployment for patrol efficiency"
+          ]
+        },
+        {
+          "title": "Combating Wildlife Trafficking",
+          "location": "Southeast Asia",
+          "description": "Working with TRAFFIC and other partners, WWF supports efforts to disrupt wildlife trafficking networks, strengthen legal frameworks, and reduce demand for tiger parts through behavior change campaigns.",
+          "keyFacts": [
+            "Disrupting trafficking networks through intelligence operations",
+            "Strengthening legal frameworks and penalties",
+            "Behavior change campaigns to reduce demand",
+            "Collaboration with law enforcement agencies",
+            "Training customs officials for detection"
+          ]
+        }
+      ]
+    },
+    "coexistence": {
+      "intro": "As tiger populations grow and expand into new areas, managing human-tiger conflict becomes increasingly critical. The Conflict to Coexistence (C2C) framework provides a pathway for communities and tigers to thrive together.",
+      "c2cFramework": {
+        "description": "The Conflict to Coexistence (C2C) framework provides methodology for developing tailor-made human-wildlife conflict management strategies based on local cultural, environmental and social context. The approach emphasizes preventive measures and community engagement."
+      },
+      "stories": [
+        {
+          "title": "Nepal - Behaviour Change Communication Champions",
+          "location": "Nepal",
+          "description": "In 2024, Nepal mobilized 114 Behaviour Change Communication Champions who organized 216 local actions, directly engaging 7,656 people. These champions work with herders, women, landless communities, and Community Forest Coordination Committees to design and conduct localized campaigns emphasizing preventive measures for human-wildlife conflict.",
+          "keyFacts": [
+            "114 Champions mobilized across communities",
+            "216 local actions organized in 2024",
+            "7,656 people directly engaged",
+            "Target audiences include herders, women, landless communities",
+            "Focus on community-specific preventive messaging",
+            "Working with Community Forest Coordination Committees"
+          ],
+          "statisticsTitle": "Nepal C2C Implementation (2024)",
+          "statistics": [
+            {
+              "label": "Champions Mobilized",
+              "value": "114"
+            },
+            {
+              "label": "Local Actions",
+              "value": "216"
+            },
+            {
+              "label": "People Reached",
+              "value": "7,656"
+            }
+          ]
+        },
+        {
+          "title": "China - Hunchun Pilot Project",
+          "location": "Hunchun, Northeast China Tiger and Leopard National Park",
+          "description": "Launched in July 2024, this pilot project addresses increasing human-wildlife conflict issues in the Hunchun region, particularly damage caused by wild pigs to crops. The project represents the first implementation of the C2C approach in the Chinese context.",
+          "keyFacts": [
+            "Launched July 2024",
+            "First C2C implementation in Chinese context",
+            "Addresses crop damage from wild pigs",
+            "Located in Northeast China Tiger and Leopard National Park",
+            "Developing locally appropriate conflict management strategies"
+          ]
+        },
+        {
+          "title": "Thailand - Mae Ping Community Collaboration",
+          "location": "Mae Ping Forest Complex, Thailand",
+          "description": "During 2024, WWF Thailand worked closely with 12 local communities, enabling camera trap deployment that confirmed tiger presence. The C2C strategy is being piloted in five districts outside protected areas, with support for improving livestock pastures and other preventive measures.",
+          "keyFacts": [
+            "Collaboration with 12 local communities",
+            "Camera trap deployment enabled by community support",
+            "C2C piloted in 5 districts outside protected areas",
+            "Improving livestock pastures to reduce conflict",
+            "Community-based monitoring systems established"
+          ],
+          "statisticsTitle": "Thailand C2C Pilot",
+          "statistics": [
+            {
+              "label": "Communities Engaged",
+              "value": "12"
+            },
+            {
+              "label": "Pilot Districts",
+              "value": "5"
+            }
+          ]
+        },
+        {
+          "title": "Kazakhstan - Proactive Conflict Management",
+          "location": "Ile-Balkhash Nature Reserve, Kazakhstan",
+          "description": "As part of the tiger reintroduction program, Kazakhstan has established community-based conflict management approaches including a community-managed compensation scheme and a response team to manage potential human-tiger conflict. This proactive approach aims to prevent conflicts before tiger populations fully establish.",
+          "keyFacts": [
+            "Community-managed compensation scheme in development",
+            "Response team formed for rapid conflict resolution",
+            "Proactive approach implemented before population establishes",
+            "Six years of community engagement and preparation",
+            "Integration with tiger reintroduction program"
+          ]
+        }
+      ]
+    }
+  },
+  "conclusion": {
+    "lookingForward": "The recovery of tiger populations offers hope, but challenges remain. Tigers still occupy less than 8% of their historic range, and significant range loss continues. Only through sustained commitment, adequate funding, strong partnerships with Indigenous Peoples and local communities, and continued focus on habitat connectivity and coexistence can we ensure that tiger populations not only survive but thrive in the decades to come.",
+    "closingQuote": {
+      "text": "Only together can we recover and sustain tiger populations that co-exist with people in thriving ecosystems. The future of tigers depends on elevating our partnerships with Indigenous Peoples and local communities, whose knowledge and stewardship are irreplaceable.",
+      "author": "WWF Tigers Alive Initiative"
+    },
+    "commitments": [
+      "$1 billion in funding mobilized over the next decade (Paro Statement)",
+      "Addressing the critical shortage of 12,500 rangers in tiger protected areas",
+      "Expanding the Conflict to Coexistence framework to all tiger range countries",
+      "Strengthening transboundary cooperation and corridor connectivity",
+      "Supporting Indigenous Peoples and local communities as essential conservation partners",
+      "Continuing anti-poaching efforts and combating wildlife trafficking",
+      "Exploring tiger reintroduction opportunities in historic range areas"
+    ]
+  },
+  "footer": {
+    "organizationInfo": "WWF is one of the world's largest and most respected independent conservation organizations, with over 5 million supporters and a global network active in over 100 countries.",
+    "publishDate": "2024-12-01T00:00:00",
+    "website": "tigers.panda.org"
+  }
+}

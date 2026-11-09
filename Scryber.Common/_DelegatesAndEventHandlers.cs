@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Scryber
 {
@@ -166,5 +167,14 @@ namespace Scryber
     /// <param name="path">The path to resolve and parse</param>
     /// <returns>The parsed component from the specified path</returns>
     public delegate IComponent PDFReferenceResolver(string filename, string xpath, Generation.ParserSettings settings);
+    
+    
+    /// <summary>
+    /// Delegate that can accept a relative or absolute path and return the parsed component from the path asynchronously.
+    /// </summary>
+    /// <param name="filename">The absolute or relative path to resolve</param>
+    /// <param name="xpath">An xpath selector, to only parse a portion of the whole file.</param>
+    /// <param name="settings">The settings to use to parse the file.</param>
+    public delegate Task<IComponent> PDFReferenceResolverAsync(string filename, string xpath, Generation.ParserSettings settings);
 
 }

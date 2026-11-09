@@ -59,11 +59,13 @@ namespace Scryber
         public static readonly ObjectType ExtGState = (ObjectType)"gxst";
         public static readonly ObjectType GraphicsPath = (ObjectType)"gpth";
         public static readonly ObjectType Pattern = (ObjectType)"patt";
+        public static readonly ObjectType PatternLayout = (ObjectType)"patl";
 
         //Components
 
         public static readonly ObjectType Document = (ObjectType)"doc_";
         public static readonly ObjectType Text = (ObjectType)"text";
+        public static readonly ObjectType Whitespace = (ObjectType)"whsp";
         public static readonly ObjectType Label = (ObjectType)"labl";
         public static readonly ObjectType Field = (ObjectType)"fild";
         public static readonly ObjectType Page = (ObjectType)"page";
@@ -99,6 +101,9 @@ namespace Scryber
         public static readonly ObjectType Canvas = (ObjectType)"canv";
         public static readonly ObjectType Panel = (ObjectType)"panl";
         public static readonly ObjectType Span = (ObjectType)"span";
+        public static readonly ObjectType ItalicSpan = (ObjectType)"ital";
+        public static readonly ObjectType BoldSpan = (ObjectType)"bold";
+        public static readonly ObjectType UnderlineSpan = (ObjectType)"undl";
         public static readonly ObjectType Div = (ObjectType)"div_";
         public static readonly ObjectType BlockQuote = (ObjectType)"bkqu";
         public static readonly ObjectType Paragraph = (ObjectType)"para";
@@ -116,6 +121,10 @@ namespace Scryber
         public static readonly ObjectType NumberComp = (ObjectType)"numb";
         public static readonly ObjectType Barcode = (ObjectType)"barc";
         public static readonly ObjectType PlaceHolder = (ObjectType)"plac";
+        public static readonly ObjectType ComponentHeader = (ObjectType)"cphd";
+        public static readonly ObjectType ComponentFooter = (ObjectType)"cpft";
+
+        public static readonly ObjectType ComponentLogEntry = (ObjectType)"clog";
 
         // Data Sources
 
@@ -169,6 +178,8 @@ namespace Scryber
         public static readonly ObjectType StyleOutline = (ObjectType)"sout";
         public static readonly ObjectType Style = (ObjectType)"styl";
         public static readonly ObjectType StyleColumns = (ObjectType)"scol";
+        public static readonly ObjectType StyleFlex = (ObjectType)"sflx";
+        public static readonly ObjectType StyleGrid = (ObjectType)"sgrd";
         public static readonly ObjectType StylePadding = (ObjectType)"spad";
         public static readonly ObjectType StyleGroup = (ObjectType)"sgrp";
         public static readonly ObjectType StyleRef = (ObjectType)"sref";
@@ -177,8 +188,8 @@ namespace Scryber
         public static readonly ObjectType StyleBarcode = (ObjectType)"sbar";
         public static readonly ObjectType StyleList = (ObjectType)"slst";
         public static readonly ObjectType StyleListItem = (ObjectType)"slli";
-        public static ObjectType StyleModify = (ObjectType)"smod";
-
+        public static readonly ObjectType StyleModify = (ObjectType)"smod";
+        public static readonly ObjectType StyleSVGGeometry = (ObjectType)"svgm";
 
         //Shapes
 
@@ -188,10 +199,28 @@ namespace Scryber
         public static readonly ObjectType ShapeElipse = (ObjectType)"elps";
         public static readonly ObjectType ShapePath = (ObjectType)"path";
         public static readonly ObjectType ShapePolygon = (ObjectType)"poly";
+        public static readonly ObjectType ShapePolyline = (ObjectType)"poll";
         public static readonly ObjectType ShapePolygram = (ObjectType)"polg";
         public static readonly ObjectType ShapeTriangle = (ObjectType)"tria";
         public static readonly ObjectType ShapeRectangle = (ObjectType)"rect";
 
+        public static readonly ObjectType LinearGradient = (ObjectType)"ling";
+        public static readonly ObjectType RadialGradient = (ObjectType)"radg";
+        public static readonly ObjectType GradientStop = (ObjectType)"ggst";
+        
+        public static readonly ObjectType GraphicPattern = (ObjectType)"gpat";
+
+        public static readonly ObjectType Marker = (ObjectType)"mker";
+
+        // Modifications
+        
+        public static readonly ObjectType ModifyFrame = (ObjectType)"mFrm";
+        public static readonly ObjectType ModifyFrameSet = (ObjectType)"mFrs";
+
+        public static readonly ObjectType ModifyInsertPage = (ObjectType)"mPgi";
+        public static readonly ObjectType ModifyAppendPage = (ObjectType)"mPga";
+        public static readonly ObjectType ModifyDeletePage = (ObjectType)"mPgd";
+        public static readonly ObjectType ModifyUpdatePage = (ObjectType)"mPgu";
 
 
     }

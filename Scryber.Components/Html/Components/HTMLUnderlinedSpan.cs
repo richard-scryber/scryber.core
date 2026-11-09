@@ -46,14 +46,16 @@ namespace Scryber.Html.Components
         }
 
         public HTMLUnderlinedSpan()
-            : base()
+            : base(HTMLObjectTypes.Underline)
         {
+        }
+
+        protected HTMLUnderlinedSpan(ObjectType type)
+            : base(type)
+        {
+
         }
     }
 
-    [PDFParsableComponent("ins")]
-    public class HTMLInsertSpan : HTMLUnderlinedSpan
-    {
-
-    }
+   
 }

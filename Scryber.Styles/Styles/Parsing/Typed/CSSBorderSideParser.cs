@@ -39,17 +39,17 @@ namespace Scryber.Styles.Parsing.Typed
                     //Order Is Important - expecting Width, Style, Color in that order
                     if (count == 1)
                     {
-                        if (!AttachExpressionBindingHandler(style, StyleKeys.BorderWidthKey, reader.CurrentTextValue, DoConvertBorderWidth))
+                        if (!AttachExpressionBindingHandler(style, _width, reader.CurrentTextValue, DoConvertBorderWidth))
                             failed++;
                     }
                     else if (count == 2)
                     {
-                        if (!AttachExpressionBindingHandler(style, StyleKeys.BorderStyleKey, reader.CurrentTextValue, DoConvertBorderStyle))
+                        if (!AttachExpressionBindingHandler(style, _style, reader.CurrentTextValue, DoConvertBorderStyle))
                             failed++;
                     }
                     else if (count == 3)
                     {
-                        if (!AttachExpressionBindingHandler(style, StyleKeys.BorderColorKey, reader.CurrentTextValue, DoConvertBorderColor))
+                        if (!AttachExpressionBindingHandler(style, _color, reader.CurrentTextValue, DoConvertBorderColor))
                             failed++;
                     }
                 }

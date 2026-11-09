@@ -20,15 +20,15 @@ namespace Scryber.Expressive.Functions.Coalesce
 
         private static readonly object[] Empty = {};
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 2, 2);
 
             IExpression each = parameters[0];
-            IExpression check = parameters[1];
+            IExpression check = Helpers.Lookups.Resolve(parameters[1], context);
 
             object value = each.Evaluate(variables);
-            ArrayList matched = new ArrayList();
+            ArrayList matched = new ResultList();
             IEnumerable entries;
 
             if (Helpers.Collections.TryIsCollection(value, out entries))
@@ -42,7 +42,7 @@ namespace Scryber.Expressive.Functions.Coalesce
 
                 }
 
-                return matched;
+                return matched.ToArray();
             }
             else
             {

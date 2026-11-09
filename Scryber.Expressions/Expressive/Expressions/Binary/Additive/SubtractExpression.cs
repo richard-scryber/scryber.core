@@ -7,7 +7,7 @@ namespace Scryber.Expressive.Expressions.Binary.Additive
     {
         #region Constructors
 
-        public SubtractExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public SubtractExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 

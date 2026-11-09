@@ -59,9 +59,14 @@ namespace Scryber.PDF.Layout
             if (this.Context.ShouldLogVerbose)
                 this.Context.TraceLog.Begin(TraceLevel.Verbose, "Panel Layout Engine", "Beginning layout of component '" + this.Component + "' as a viewport component");
 
-            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions columns = this.FullStyle.CreateColumnOptions();
-            if (pos.PositionMode != Drawing.PositionMode.Inline)
+
+            //when measuring the content width (e.g. of a flex item) blocks without a width are the width of their content, rather than filling the space.
+            if (this.Context.IsMeasuring && !pos.Width.HasValue)
+                pos.FillWidth = false;
+
+            if (pos.DisplayMode != Drawing.DisplayMode.Inline)
             {
                 this.DoLayoutBlockComponent(pos, columns);
             }
@@ -86,7 +91,8 @@ namespace Scryber.PDF.Layout
             if (containerRegion.HasOpenItem == false)
                 containerRegion.BeginNewLine();
             PDFLayoutLine currline = containerRegion.CurrentItem as PDFLayoutLine;
-            PDFLayoutInlineBegin begin = currline.AddInlineRunStart(this, this.Component, pos, this.FullStyle);
+            PDFTextRenderOptions text = this.FullStyle.CreateTextOptions();
+            PDFLayoutInlineBegin begin = currline.AddInlineRunStart(this, this.Component, pos, text, this.FullStyle);
             return begin;
         }
 
@@ -110,7 +116,7 @@ namespace Scryber.PDF.Layout
         /// <param name="position"></param>
         protected virtual void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            PDFLayoutBlock containerBlock = CreateContinerBlock(position);
+            PDFLayoutBlock containerBlock = CreateContainerBlock(position);
             if (null == containerBlock)
                 return;
 
@@ -120,111 +126,16 @@ namespace Scryber.PDF.Layout
             this.DoLayoutChildren();
 
             EnsureContentsFit();
+            
         }
 
         
 
-        protected virtual void CreateBlockRegions(PDFLayoutBlock containerBlock, PDFPositionOptions position, PDFColumnOptions columnOptions)
-        {
-            Rect unused = containerBlock.CurrentRegion.UnusedBounds;
-            Unit yoffset = containerBlock.CurrentRegion.Height;
+        
 
-            Rect total = new Rect(Unit.Zero, yoffset, unused.Width, unused.Height);
+        
 
-            if (position.Width.HasValue)
-                total.Width = position.Width.Value;
-            //ADDED for min/max sizes. Include the margins as we are making this the available width.
-            else if (position.MaximumWidth.HasValue)
-                total.Width = position.MaximumWidth.Value + position.Margins.Left + position.Margins.Right;
-
-
-            if (position.Height.HasValue)
-                total.Height = position.Height.Value;
-            //ADDED for min/max sizes. Include the margins as we are making this the available height.
-            else if (position.MaximumHeight.HasValue)
-                total.Height = position.MaximumHeight.Value + position.Margins.Top + position.Margins.Bottom;
-
-            CurrentBlock.InitRegions(total, position, columnOptions, this.Context);
-        }
-
-        protected virtual PDFLayoutBlock CreateContinerBlock(PDFPositionOptions position)
-        {
-            bool newPageOrRegion = false;
-            PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
-            PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;
-
-            if (containerRegion.HasOpenItem)
-                containerRegion.CloseCurrentItem();
-
-            Unit required = Unit.Zero;
-
-            if (position.Height.HasValue)
-                required = position.Height.Value + position.Margins.Top + position.Margins.Bottom;
-            else if (position.MinimumHeight.HasValue)
-                required = position.MinimumHeight.Value + position.Margins.Top + position.Margins.Bottom;
-
-            //Do we have space
-            if (containerRegion.AvailableHeight <= 0 || (containerRegion.AvailableHeight < required))
-            {
-                var origRegion = containerRegion;
-                var origBlock = containerBlock;
-
-                if (this.IsLastInClippedBlock(containerRegion))
-                {
-                    //We are ok to continue in a clipped block.
-                }
-                else if (this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPageOrRegion))
-                {
-                    if (this.IsJustAnEmptyPositionedRegion(origRegion, origBlock))
-                        origBlock.ExcludeFromOutput = true;
-                    //We have moved to a new region or page
-                }
-                else
-                {
-                    this.Context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Cannot fit the block for component " + this.Component.UniqueID + " in the avilable height (required = '" + position.Height + "', available = '" + containerRegion.AvailableHeight + "'), and we cannot overflow to a new region. Layout of component stopped and returning.");
-                    this.ContinueLayout = false;
-                    return null;
-                }
-
-            }
-
-
-            if (newPageOrRegion && position.PositionMode == PositionMode.Relative)
-            {
-
-                CurrentBlock = containerBlock;
-                //containerRegion = this.BeginNewRelativeRegionForChild(position, this.Component, this.FullStyle);
-                containerRegion = containerBlock.BeginNewPositionedRegion(position, this.CurrentBlock.GetLayoutPage(), this.Component, this.FullStyle, isfloating: false, addAssociatedRun: true);
-                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
-                return containerBlock;
-
-            }
-            else if (newPageOrRegion && position.FloatMode != FloatMode.None)
-            {
-                return null;
-            }
-            else
-            {
-                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
-                CurrentBlock.BlockRepeatIndex = 0;
-                return containerBlock;
-            }
-        }
-
-        private bool IsJustAnEmptyPositionedRegion(PDFLayoutRegion origRegion, PDFLayoutBlock origBlock)
-        {
-
-            if (origBlock.Columns.Length == 1 && origBlock.Columns[0].Contents.Count == 1)
-            {
-                var line = origBlock.Columns[0].Contents[0] as PDFLayoutLine;
-
-                if (null != line && line.Runs.Count == 1 && line.Runs[0] is PDFLayoutPositionedRegionRun)
-                    return true;
-
-            }
-
-            return false;
-        }
+        
 
         
 
@@ -241,9 +152,10 @@ namespace Scryber.PDF.Layout
                 block.Close();
 
             bool updateSize = false;
+            bool widthOverridden = false;
             Size updated = block.Size;
 
-            
+
 
             if (block.Position.MinimumHeight.HasValue && block.Height < block.Position.MinimumHeight.Value)
             {
@@ -255,12 +167,25 @@ namespace Scryber.PDF.Layout
             {
                 updated.Width = block.Position.MinimumWidth.Value - (block.Position.Padding.Left + block.Position.Padding.Right);
                 updateSize = true;
+                widthOverridden = true;
             }
 
-            
+
 
             if (updateSize)
-                block.SetContentSize(updated.Width,updated.Height);
+            {
+                Unit contentW = updated.Width;
+                if (!widthOverridden)
+                {
+                    // block.Size.Width after Close() is TotalBounds.Width (content + padding + margin).
+                    // SetContentSize expects content-only and re-adds them, so strip first.
+                    if (!block.Position.Margins.IsEmpty)
+                        contentW -= block.Position.Margins.Left + block.Position.Margins.Right;
+                    if (!block.Position.Padding.IsEmpty)
+                        contentW -= block.Position.Padding.Left + block.Position.Padding.Right;
+                }
+                block.SetContentSize(contentW, updated.Height);
+            }
 
             
 
@@ -275,7 +200,7 @@ namespace Scryber.PDF.Layout
             bool canfitvertical = req <= vspace;
 
 
-            if (!canfitvertical && containerRegion.Contents.Count > 1)
+            if (!canfitvertical && containerRegion.Contents.Count > 1 && !this.Context.IsMeasuring)
             {
                 
                 PDFLayoutRegion prev = containerRegion;

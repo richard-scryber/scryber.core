@@ -32,6 +32,7 @@ namespace Scryber.Styles
         
 
         private List<Style> _styles;
+        private List<StyleKey> _keyHolder;
 
         public int Count
         {
@@ -53,6 +54,7 @@ namespace Scryber.Styles
         {
             this._styles = new List<Style>();
             this._styles.Add(root);
+            this._keyHolder = new List<StyleKey>();
         }
 
         public void Push(Style style)
@@ -72,33 +74,63 @@ namespace Scryber.Styles
         }
 
         /// <summary>
-        /// Creates a new style, populates all based upon the current styles
+        /// Creates a new style, populates all based upon the current styles and flattens any relative values (percent, em, etc.) to absolute values based on the provided parameters.
         /// </summary>
-        /// <param name="Component"></param>
+        /// <param name="component"></param>
         /// <returns></returns>
-        public Style GetFullStyle(IComponent Component, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        public Style GetFullStyle(IComponent component, Size pageSize, ParentComponentSizer sizer, Size fontSize, Unit rootFontSize)
         {
-            Style style = BuildFullStyle(Component);
-            style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
+            Style style = BuildComponentStyle(component);
+            PositionMode mode = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
+            Size containerSize;
+            if(mode == PositionMode.Absolute)
+            {
+                containerSize = sizer(component, style, PositionMode.Relative);
+            }
+            else if(mode == PositionMode.Fixed)
+            {
+                containerSize = pageSize; // sizer(component, style, PositionMode.Fixed);
+            }
+            else
+            {
+                containerSize = sizer(component, style, PositionMode.Static);
+            }
+
+            this._keyHolder.Clear();
+            style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize, this._keyHolder);
             return style;
         }
 
 
+        /// <summary>
+        /// Creates a new style, populates all based upon the current styles and flattens any relative values (percent, em, etc.) to absolute values based on the provided parameters.
+        /// Specific to a page style as there is no container.
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="defaultPageSize"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="rootFont"></param>
+        /// <returns></returns>
         public Style GetFullStyleForPage(IDocumentPage page, Size defaultPageSize, Size fontSize, Unit rootFont)
         {
-            Style style = BuildFullStyle(page);
+            Style style = BuildComponentStyle(page);
 
             Size newPageSize = defaultPageSize;
             newPageSize.Width = style.GetValue(StyleKeys.PageWidthKey, defaultPageSize.Width);
             newPageSize.Height = style.GetValue(StyleKeys.PageHeightKey, defaultPageSize.Height);
 
-            style = style.Flatten(newPageSize, newPageSize, fontSize, rootFont);
+            style = style.Flatten(newPageSize, newPageSize, fontSize, rootFont, _keyHolder);
 
             return style;
         }
         
 
-        private Style BuildFullStyle(IComponent Component)
+        /// <summary>
+        /// Returns the full style for a specific component based on the current stack. NOTE this will not be flattened (relative values will still be maintained).
+        /// </summary>
+        /// <param name="Component"></param>
+        /// <returns></returns>
+        public Style BuildComponentStyle(IComponent Component)
         {
             Style style = new StyleFull();
             StyleVariableSet variables = null;

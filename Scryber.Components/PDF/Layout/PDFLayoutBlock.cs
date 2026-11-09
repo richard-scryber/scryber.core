@@ -24,7 +24,9 @@ using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF.Native;
 using Scryber.Components;
+using Scryber.Data;
 using Scryber.PDF.Graphics;
+using Scryber.Svg.Components;
 
 namespace Scryber.PDF.Layout
 {
@@ -34,6 +36,8 @@ namespace Scryber.PDF.Layout
     /// </summary>
     public class PDFLayoutBlock : PDFLayoutContainerItem
     {
+        
+
         //
         // properties
         //
@@ -122,14 +126,14 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public bool IsFormXObject { get; set; }
-
-        /// <summary>
-        /// Returns true if this block should be rendered as an xObject (independent of the main content stream (or out xObject)
-        /// </summary>
-        public bool IsFormXObject { get; set; }
-
-        #endregion
+        // #region public bool IsFormXObject { get; set; }
+        //
+        // /// <summary>
+        // /// Returns true if this block should be rendered as an xObject (independent of the main content stream (or out xObject)
+        // /// </summary>
+        // public bool IsFormXObject { get; set; }
+        //
+        // #endregion
 
         #region public PDFRect XObjectViewPort {get;set;}
 
@@ -157,15 +161,15 @@ namespace Scryber.PDF.Layout
 
         #region public PDFRect TotalBounds { get; set;}
 
-        private Rect _total = Rect.Empty;
+        private Rect _tot = Rect.Empty;
 
         /// <summary>
         /// Gets the absolute bounds (inc margins and padding) for this block
         /// </summary>
         public Rect TotalBounds 
         {
-            get { return _total; }
-            set { _total = value; }
+            get { return _tot; }
+            set { _tot = value; }
         }
 
         #endregion
@@ -205,7 +209,11 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the position options for this block
         /// </summary>
-        public PDFPositionOptions Position { get; protected set; }
+        public PDFPositionOptions Position
+        {
+            get; 
+            protected set;
+        }
 
         #endregion
 
@@ -214,7 +222,10 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the total used size
         /// </summary>
-        public Size Size { get; set; }
+        public Size Size { 
+            get; 
+            set; 
+        }
 
         #endregion
 
@@ -314,6 +325,60 @@ namespace Scryber.PDF.Layout
 
         
 
+        #region private PDFPenBorders ApplyDecorationBreak(PDFPenBorders border)
+
+        /// <summary>
+        /// With box-decoration-break: slice the border is cut where the block is split, so a continuation has no top border
+        /// (or top corners) and a block that continues has no bottom border (or bottom corners). With clone (the default) each part has the full border.
+        /// </summary>
+        /// <returns>The border to draw - a copy if it is cut, as the original can be shared with the other parts</returns>
+        private PDFPenBorders ApplyDecorationBreak(PDFPenBorders border)
+        {
+            if (null == border || this.FullStyle.GetValue(StyleKeys.BorderDecorationBreakKey, BoxDecorationBreak.Clone) != BoxDecorationBreak.Slice)
+                return border;
+
+            bool cutTop = this.BlockRepeatIndex > 0;
+            bool cutBottom = this.IsContinued;
+
+            if (!cutTop && !cutBottom)
+                return border;
+
+            var cut = new PDFPenBorders()
+            {
+                AllPen = border.AllPen,
+                AllSides = border.AllSides,
+                LeftPen = border.LeftPen,
+                TopPen = border.TopPen,
+                RightPen = border.RightPen,
+                BottomPen = border.BottomPen,
+                CornerRadius = border.CornerRadius,
+                TopLeftRadius = border.TopLeftRadius,
+                TopRightRadius = border.TopRightRadius,
+                BottomLeftRadius = border.BottomLeftRadius,
+                BottomRightRadius = border.BottomRightRadius
+            };
+
+            if (cutTop)
+            {
+                cut.AllSides &= ~Sides.Top;
+                cut.TopPen = null;
+                cut.TopLeftRadius = Unit.Zero;
+                cut.TopRightRadius = Unit.Zero;
+            }
+
+            if (cutBottom)
+            {
+                cut.AllSides &= ~Sides.Bottom;
+                cut.BottomPen = null;
+                cut.BottomLeftRadius = Unit.Zero;
+                cut.BottomRightRadius = Unit.Zero;
+            }
+
+            return cut;
+        }
+
+        #endregion
+
         #region public int BlockRepeatIndex { get; set; }
 
         /// <summary>
@@ -322,6 +387,15 @@ namespace Scryber.PDF.Layout
         /// <remarks>PanelLayoutEngine uses this to count the number 
         /// of individual blocks generated for each panel</remarks>
         public int BlockRepeatIndex { get; set; }
+
+        #endregion
+
+        #region public bool IsContinued { get; set; }
+
+        /// <summary>
+        /// Gets or sets the flag to indicate if the content of this block continues in another block (on the next page or column).
+        /// </summary>
+        public bool IsContinued { get; set; }
 
         #endregion
 
@@ -366,6 +440,26 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+        
+        /// <summary>
+        /// Gets or sets the flag for this block - if it is part of the normal document flow
+        /// </summary>
+        public bool IsInlineContent { get; set; }
+        
+#if DEBUG
+
+        /// <summary>
+        /// This is the final matrix used for rendering - used to validate the properties in unit testing, but currently not required for production
+        /// </summary>
+        public PDFTransformationMatrix RenderMatrix { get; set; }
+        
+        /// <summary>
+        /// This is the final orgin for the matrix used for rendering - used to validate the properties in unit testing, but currently not required for production
+        /// </summary>
+        public TransformOrigin RenderOrigin { get; set; }
+
+
+#endif
 
         //
         // ctor(s)
@@ -383,6 +477,7 @@ namespace Scryber.PDF.Layout
             : base(parent, owner, engine, fullstyle)
         {
             this.OverflowSplit = split;
+            this.IsInlineContent = true;
         }
 
         #endregion
@@ -570,25 +665,24 @@ namespace Scryber.PDF.Layout
                 if (null != childlast)
                     last = childlast;
             }
+
+            //Check the last positioned region.
+            if (this.HasPositionedRegions)
+            {
+                reg = this.PositionedRegions[this.PositionedRegions.Count - 1];
+                if(!reg.IsClosed)
+                {
+                    PDFLayoutBlock childlast = reg.LastOpenBlock();
+                    if (null != childlast)
+                        last = childlast;
+                }
+            }
             return last;
         }
 
         #endregion
 
-        /*
-        public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
-        {
-            if (mode == FloatMode.Left)
-            {
-                this.Floats = new PDFFloatLeftAddition(inset, height, offsetY, this.Floats);
-            }
-            else if (mode == FloatMode.Right)
-            {
-                this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
-            }
-        }
-
-        */
+        
 
         #region public override bool MoveToNextRegion(PDFUnit requiredHeight, PDFLayoutContext context)
 
@@ -646,7 +740,7 @@ namespace Scryber.PDF.Layout
             }
 
             this.Size = this.TotalBounds.Size;
-            this.Size = this.Size.Subtract(this.Position.Padding);
+            //this.Size = this.Size.Subtract(this.Position.Padding);
 
             xoffset = 0;
             yoffset = 0;
@@ -673,7 +767,10 @@ namespace Scryber.PDF.Layout
         private bool MovesWithLayout()
         {
             PositionMode mode = this.Position.PositionMode;
-            return mode != PositionMode.Absolute;
+            if (mode == PositionMode.Absolute || mode == PositionMode.Fixed)
+                return false;
+            else
+                return true;
         }
 
         #endregion
@@ -731,9 +828,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         private void ShrinkToFit()
         {
-            if(this.ColumnOptions.ColumnCount > 0 && this.ColumnOptions.AutoFlow == true)
+            if(this.ColumnOptions.ColumnCount > 1 && this.ColumnOptions.AutoFlow == true
+               && this.ColumnOptions.FillMode == ColumnFillMode.Balance)
             {
-                //TODO:Try and balance the columns.
+                this.BalanceColumns();
             }
 
             bool explicitWidth, explicitHeight;
@@ -816,6 +914,311 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        
+        #region private void BalanceColumns()
+
+        /// <summary>
+        /// Redistributes items across columns so each column has approximately equal height.
+        /// Called from ShrinkToFit when FillMode == Balance.
+        /// </summary>
+        private void BalanceColumns()
+        {
+            int colCount = this.Columns.Length;
+            if (colCount <= 1) return;
+
+            // Collect all top-level items from all columns in order, clearing as we go
+            var allItems = new List<PDFLayoutItem>();
+            var allFloats = new List<PDFFloatAddition>();
+            var allFLoatColumns = new List<int>();
+            
+            foreach (var col in this.Columns)
+            {
+                if (col.Contents != null && col.Contents.Count > 0)
+                {
+                    allItems.AddRange(col.Contents);
+                    col.Contents.Clear();
+                    col.UsedSize = Size.Empty;
+                }
+
+                if (col.Floats != null)
+                {
+                    var f = col.Floats;
+                    while (null != f)
+                    {
+                        allFloats.Add(f);
+                        allFLoatColumns.Add(col.ColumnIndex);
+                        f = f.Next;
+                    }
+                    col.Floats = null;
+                }
+            }
+
+            if (allItems.Count == 0) return;
+
+            // Calculate total height across all items
+            Unit totalHeight = Unit.Zero;
+            foreach (var item in allItems)
+                totalHeight += item.Height;
+
+            if (totalHeight <= Unit.Zero) return;
+
+            // Target height per column
+            Unit targetHeight = new Unit(totalHeight.PointsValue / colCount);
+
+            // Redistribute items greedily: fill each column up to targetHeight,
+            // then spill to the next — never split a single item across columns.
+            int colIndex = 0;
+            Unit currentColHeight = Unit.Zero;
+            
+            for(var l = 0; l < allItems.Count; l++)
+            {
+                var item = allItems[l];
+                bool isLastCol = colIndex == colCount - 1;
+
+                // Spill to next column if target exceeded and column has content
+                if (!isLastCol && currentColHeight > Unit.Zero
+                    && currentColHeight + item.Height > targetHeight)
+                {
+                    colIndex++;
+                    currentColHeight = Unit.Zero;
+                    //we update this for floats so make sure it is reset now.
+                    targetHeight = new Unit(totalHeight.PointsValue / colCount);
+                }
+
+                var col = this.Columns[colIndex];
+                if (item is PDFLayoutBlock block)
+                    col.AddExistingItem(block);
+                else if (item is PDFLayoutLine line)
+                {
+                    col.AddExistingItem(line);
+                    // After AddExistingItem updates line.OffsetY, sync runs whose render
+                    // position is derived from their own stored Y rather than the line offset.
+                    foreach (var run in line.Runs)
+                    {
+                        if (run is PDFTextRunBegin begin)
+                        {
+                            begin.SetOffsetY(line.OffsetY);
+                            break;
+                        }
+                        else if (run is PDFLayoutComponentRun componentRun)
+                        {
+                            var bounds = componentRun.TotalBounds;
+                            bounds.Y = line.OffsetY;
+                            componentRun.TotalBounds = bounds;
+                        }
+                        else if (run is PDFLayoutPositionedRegionRun posRun && posRun.IsFloating
+                                 && posRun.Region is PDFLayoutPositionedRegion posRegion)
+                        {
+                            // PushComponentLayout (which runs after BalanceColumns) recalculates
+                            // TotalBounds.Y from RelativeOffset.Y. Update RelativeOffset.Y so the
+                            // float renders at its new position in the redistributed column.
+                            var offset = posRegion.RelativeOffset;
+                            offset.Y = line.OffsetY;
+
+                            if(line.Runs[0] != run)
+                                offset.Y += (line.Height + 1);
+                            
+                            var floater = allFloats.First((f) => f.AssociatedRegion == posRegion);
+                            if (null == floater)
+                            {
+                                //cannot find the float, so ignore
+                            }
+                            else
+                            {
+                                var index = allFloats.IndexOf(floater);
+                                index = allFLoatColumns[index]; // Get the original column index of the float
+                                Unit w = Unit.Zero;
+
+                                if (offset.Y + floater.FloatHeight > targetHeight && !isLastCol && l > 0)
+                                {
+                                    //We have a float that pushes beyond the target height
+                                    //logic is we increase the target height to fit the entire float
+                                    //and this is reset when we move to the next column.
+                                    targetHeight = offset.Y + floater.FloatHeight;
+                                    
+                                    if(line.Runs[0] != run)
+                                        targetHeight += (line.Height + 1);
+                                }
+
+
+
+
+                                while (index < colIndex)
+                                {
+                                    w += this.Columns[index].Width +
+                                         this.Position.AlleyWidth; //TODO account for gap
+                                    index++;
+                                }
+
+                                offset.X = posRegion.RelativeOffset.X + w;
+                                posRegion.RelativeOffset = offset;
+
+                                //Re-add a new floatAddition to the current column at the offset.
+                                col.AddFloatingInset(floater.Mode, floater.FloatWidth, floater.FloatInset,
+                                    offset.Y,
+                                    floater.FloatHeight, posRegion);
+
+                            }
+                        }
+                    }
+                }
+
+                currentColHeight += item.Height;
+            }
+
+            // Fix text blocks that were split across column boundaries
+            RepairSplitTextBlocks();
+        }
+
+        /// <summary>
+        /// After balancing, repairs text blocks whose lines were split across column boundaries.
+        /// For each PDFTextRunBegin whose lines are now in more than one column:
+        ///   - Adds a PDFTextRunEnd at the end of each non-final column's last line
+        ///   - Inserts a new PDFTextRunBegin at the start of each subsequent column's first line
+        ///   - Updates each begin's Lines list to reflect only its own column's lines
+        /// </summary>
+        private void RepairSplitTextBlocks()
+        {
+            int colCount = this.Columns.Length;
+
+            // Gather all PDFTextRunBegin instances across all columns
+            var allBegins = new List<PDFTextRunBegin>();
+            for (int ci = 0; ci < colCount; ci++)
+            {
+                foreach (var item in this.Columns[ci].Contents)
+                {
+                    if (item is PDFLayoutLine l)
+                    {
+                        foreach (var run in l.Runs)
+                        {
+                            if (run is PDFTextRunBegin b && !allBegins.Contains(b))
+                                allBegins.Add(b);
+                        }
+                    }
+                }
+            }
+
+            foreach (var originalBegin in allBegins)
+            {
+                // Map each line to its current column index
+                var linesByColIndex = new Dictionary<int, List<PDFLayoutLine>>();
+                foreach (var line in originalBegin.Lines)
+                {
+                    for (int ci = 0; ci < colCount; ci++)
+                    {
+                        if (line.Region == this.Columns[ci])
+                        {
+                            if (!linesByColIndex.ContainsKey(ci))
+                                linesByColIndex[ci] = new List<PDFLayoutLine>();
+                            linesByColIndex[ci].Add(line);
+                            break;
+                        }
+                    }
+                }
+
+                if (linesByColIndex.Count <= 1) continue; // all in one column — nothing to do
+
+                var sortedCols = linesByColIndex.Keys.OrderBy(k => k).ToList();
+
+                // Restrict originalBegin.Lines to only the first column's lines
+                int firstCi = sortedCols[0];
+                originalBegin.Lines.Clear();
+                originalBegin.Lines.AddRange(linesByColIndex[firstCi]);
+
+                // Find and remove the original PDFTextRunEnd (it is on the last line of the full block,
+                // which after balancing is in the last column)
+                int lastCi = sortedCols[sortedCols.Count - 1];
+                PDFLayoutLine originalEndLine = null;
+                int originalEndRunIndex = -1;
+                foreach (var line in linesByColIndex[lastCi])
+                {
+                    for (int r = 0; r < line.Runs.Count; r++)
+                    {
+                        if (line.Runs[r] is PDFTextRunEnd e && e.Start == originalBegin)
+                        {
+                            originalEndLine = line;
+                            originalEndRunIndex = r;
+                            break;
+                        }
+                    }
+                    if (originalEndLine != null) break;
+                }
+                if (originalEndLine != null)
+                    originalEndLine.Runs.RemoveAt(originalEndRunIndex);
+
+                // Add a PDFTextRunEnd to the last line of the first column
+                var lastLineFirstCol = linesByColIndex[firstCi].Last();
+                AddTextRunEndBeforeNextBegins(lastLineFirstCol, new PDFTextRunEnd(originalBegin, lastLineFirstCol, originalBegin.Owner));
+
+                // Create new begins and ends for each subsequent column
+                PDFTextRunBegin prevBegin = originalBegin;
+                for (int si = 1; si < sortedCols.Count; si++)
+                {
+                    int colIdx = sortedCols[si];
+                    var colLines = linesByColIndex[colIdx];
+                    var firstLineThisCol = colLines[0];
+
+                    // Create a new PDFTextRunBegin for this column's segment
+                    var newBegin = new PDFTextRunBegin(prevBegin.TextRenderOptions, firstLineThisCol, prevBegin.Owner);
+
+                    // Remove the zero-width newline spacer placed at the start of column-continuation
+                    // lines. A non-zero spacer is a float-indent spacer — it must remain so that
+                    // PDFTextRunNewLine.NextLineSpacer is still pushed during rendering and its width
+                    // cancels the xoffset added to NewLineOffset, keeping text aligned to the float.
+                    if (firstLineThisCol.Runs.Count > 0
+                        && firstLineThisCol.Runs[0] is PDFTextRunSpacer spacer
+                        && spacer.IsNewLineSpacer
+                        && spacer.Width == Unit.Zero)
+                        firstLineThisCol.Runs.RemoveAt(0);
+
+                    firstLineThisCol.Runs.Insert(0, newBegin);
+
+                    // Runs.Insert bypasses AddRun, so BaseLineOffset is not updated.
+                    // Without this the text cursor is placed at the line top instead of the baseline.
+                    {
+                        var beginAscent = newBegin.TextRenderOptions.GetAscent();
+                        var beginDescent = newBegin.TextRenderOptions.GetDescender();
+                        var beginLineH = newBegin.TextRenderOptions.GetLineHeight();
+                        var beginLead = beginLineH - (beginAscent + beginDescent);
+                        var halfLead = beginLead / 2;
+                        var baselineOff = halfLead + beginAscent;
+                        if (baselineOff > firstLineThisCol.BaseLineOffset)
+                        {
+                            firstLineThisCol.BaseLineOffset = baselineOff;
+                            firstLineThisCol.BaseLineToBottom = halfLead + beginDescent;
+                        }
+                    }
+
+                    newBegin.SetOffsetY(firstLineThisCol.OffsetY);
+
+                    // Set the Lines list: constructor already added firstLineThisCol, add the rest
+                    newBegin.Lines.Clear();
+                    newBegin.Lines.AddRange(colLines);
+
+                    // Add a PDFTextRunEnd to the last line of this column's segment
+                    var lastLineThisCol = colLines.Last();
+                    AddTextRunEndBeforeNextBegins(lastLineThisCol, new PDFTextRunEnd(newBegin, lastLineThisCol, newBegin.Owner));
+
+                    prevBegin = newBegin;
+                }
+            }
+        }
+
+        private static void AddTextRunEndBeforeNextBegins(PDFLayoutLine line, PDFTextRunEnd end)
+        {
+            for (int i = 0; i < line.Runs.Count; i++)
+            {
+                if (line.Runs[i] is PDFTextRunBegin b && b != end.Start)
+                {
+                    line.Runs.Insert(i, end);
+                    return;
+                }
+            }
+            line.Runs.Add(end);
+        }
+
+        #endregion
+
         #region public void SetContentSize(PDFUnit width, PDFUnit height)
 
         /// <summary>
@@ -870,9 +1273,9 @@ namespace Scryber.PDF.Layout
         /// <param name="owner"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewBlock(IComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewBlock(IComponent owner, IPDFLayoutEngine engine, Style fullstyle, DisplayMode mode)
         {
-            if (mode == PositionMode.Inline)
+            if (mode == DisplayMode.Inline)
                 throw RecordAndRaise.ArgumentOutOfRange("mode", Errors.CannotBeginABlockThatIsInline);
             //else if (mode == PositionMode.Absolute)
             //    throw RecordAndRaise.ArgumentOutOfRange("mode",Errors.AbsolutePositioningBlocksRegisterWithTheLayoutPage);
@@ -903,7 +1306,7 @@ namespace Scryber.PDF.Layout
         /// <param name="fullstyle"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, Style fullstyle, DisplayMode mode)
         {
             PDFLayoutBlock block = this.BeginNewBlock(owner, engine, fullstyle, mode);
             block.IsContainer = true;
@@ -924,43 +1327,111 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IComponent comp, Style full, bool isfloating, bool addAssociatedRun = true)
         {
+            
+            //TODO: IMPORTANT -  Move this to the Layout engine - as we have already done the segregation on the position mode - so we can size it from there.
+            
             PDFLayoutRegion before = this.CurrentRegion;
             PDFLayoutLine beforeline = before.CurrentItem as PDFLayoutLine;
             if (null == beforeline)
                 beforeline = before.BeginNewLine();
 
+            var addTo = this;
+            
             Rect space;
-            if (pos.PositionMode == PositionMode.Absolute)
+            if(pos.PositionMode == PositionMode.Fixed)
+            {
+                space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
+            }
+            else if (pos.PositionMode == PositionMode.Absolute)
+            {
                 //Page sizing
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
+
+            }
+             else if (pos.DisplayMode == DisplayMode.InlineBlock)
+             {
+                 space = new Rect(Point.Empty, AvailableBounds.Size);
+                 
+                 if (this.Columns.Length > 1)
+                     space.Width = this.CurrentRegion.Width;
+
+                 // if (this.CurrentRegion != null && this.CurrentRegion.CurrentItem != null &&
+                 //     this.CurrentRegion.CurrentItem is PDFLayoutLine currLine)
+                 // {
+                 //     if (pos.Width.HasValue)
+                 //         space.Width = pos.Width.Value;
+                 //     else if (pos.MinimumWidth.HasValue == false)
+                 //     {
+                 //         //As an inline block on a current line without specific widths
+                 //         space.Width = currLine.AvailableWidth;
+                 //     }
+                 // }
+             }
             else
                 //Block sizing
                 space = new Rect(Point.Empty, this.AvailableBounds.Size);
 
-            //Calculate the available space
-
-            if (pos.X.HasValue)
+            //Calculate the available space if we are not a flao
+            if (!isfloating)
             {
-                if (pos.PositionMode == PositionMode.InlineBlock)
-                    pos.X = null;
-                else
+                if (pos.X.HasValue)
                 {
-                    space.X += pos.X.Value;
+                    if (pos.PositionMode == PositionMode.Static)
+                        pos.X = null;
+                    else
+                    {
+                        space.X += pos.X.Value;
+                        space.Width -= pos.X.Value;
+
+                        //with a left and a right, the space is between them.
+                        if (pos.Right.HasValue)
+                            space.Width -= pos.Right.Value;
+                    }
+                }
+                else if (pos.Right.HasValue)
+                {
+                    if (pos.PositionMode == PositionMode.Static)
+                        pos.X = null;
+                    else
+                    {
+                        //space.Y += pos.Y.Value; Needs sorting
+                        space.Width -= pos.Right.Value;
+                    }
+                }
+
+                if (pos.Y.HasValue)
+                {
+                    if (pos.PositionMode == PositionMode.Static)
+                        pos.Y = null;
+                    else
+                    {
+                        space.Y += pos.Y.Value;
+                        space.Height -= pos.Y.Value;
+                    }
+                }
+                else if (pos.Bottom.HasValue)
+                {
+                    if (pos.PositionMode == PositionMode.Static)
+                        pos.Y = null;
+                    else
+                    {
+                        //space.Y += pos.Y.Value; Needs Sorting
+                        space.Height -= pos.Bottom.Value;
+                    }
+                }
+            }
+            else
+            {
+                if (pos.X.HasValue)
+                {
+                    space.X = pos.X.Value;
                     space.Width -= pos.X.Value;
                 }
-            }
-
-            if (pos.Y.HasValue)
-            {
-                if (pos.PositionMode == PositionMode.InlineBlock)
-                    pos.Y = null;
-                else
+                else if (pos.Right.HasValue)
                 {
-                    space.Y += pos.Y.Value;
-                    space.Height -= pos.Y.Value;
+                    space.Width -= pos.Right.Value;
                 }
             }
-            
             //if (pos.HasWidth)
             //{
             //    space.Width = pos.Width;
@@ -973,18 +1444,31 @@ namespace Scryber.PDF.Layout
 
             int index = -(this.PositionedRegions.Count + 1); //use a negative value for the positioned items
 
+
             PDFLayoutPositionedRegion created = new PDFLayoutPositionedRegion(this, comp, space, index, pos);
-            this.PositionedRegions.Add(created);
+            
+            addTo.PositionedRegions.Add(created);
 
             if (addAssociatedRun)
             {
-                PDFLayoutPositionedRegionRun run; 
-                if (pos.PositionMode == PositionMode.InlineBlock)
+                PDFLayoutPositionedRegionRun run;
+                if ((pos.PositionMode == PositionMode.Static || pos.PositionMode == PositionMode.Relative) && pos.DisplayMode == DisplayMode.InlineBlock)
                     run = beforeline.AddInlineBlockRun(created, comp);
                 else
                 {
                     run = beforeline.AddPositionedRun(created, comp);
                     run.IsFloating = isfloating;
+                }
+
+                created.AssociatedRun = run;
+
+                if (pos.XObjectRender)
+                {
+                    run.RenderAsXObject = true;
+                    run.OutputName = (PDFName)this.Owner.Document.GetIncrementID(ObjectTypes.CanvasXObject);
+                    var rsrc = new Resources.PDFLayoutXObjectResource(Resources.PDFResource.XObjectResourceType, this.ToString(), run);;
+                    addTo.GetLayoutPage().PageOwner.Register(rsrc);
+                    this.Owner.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
                 }
             }
             return created;
@@ -1023,6 +1507,7 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+            
             bool logdebug = context.ShouldLogDebug;
             
             Component component = this.Owner as Component;
@@ -1041,11 +1526,13 @@ namespace Scryber.PDF.Layout
             Style fullstyle = this.FullStyle;
             if (null == fullstyle)
                 throw new NullReferenceException(Errors.ThisBlockDoesNotHaveAnyStyle);
+            
             PDFPositionOptions position = this.Position;
             if (null == position)
                 throw new NullReferenceException(Errors.ThisBlockDoesNotHaveAnyPostionOptions);
 
             bool render = this.ShouldOutput(context);
+            
             //Check that this content should be rendered
             if (!render)
             {
@@ -1053,171 +1540,209 @@ namespace Scryber.PDF.Layout
                     context.TraceLog.End(TraceLevel.Debug, "Layout Block", "Skipping the output of block " + this.ToString() + " because it has height '0' or it is not marked as visible.");
                 return null;
             }
+            
+            var oref = this.DoOutputAsBlock(context, writer);
+            return oref;
+            
+        }
 
+        
+        #endregion
+
+        protected virtual PDFObjectRef DoOutputToXObject(PDFRenderContext context, PDFWriter writer)
+        {
+            using (var renderer = this.CreateXObject(context, writer))
+            {
+                var bounds = this.TotalBounds;
+                var pos = this.FullStyle.CreatePostionOptions(true);
+                
+                if (pos.ViewPort.HasValue)
+                {
+                    var vp = pos.ViewPort.Value;
+                    bounds.Width = vp.Width;
+                    bounds.Height = vp.Height;
+                    this.TotalBounds = bounds;
+                }
+                else
+                {
+                    bounds.Width -= this.Position.Margins.Left + this.Position.Margins.Right;
+                    bounds.Height -= this.Position.Margins.Top + this.Position.Margins.Bottom;
+                }
+                
+                renderer.SetupGraphics(this.Position, bounds);
+                
+                this.OutputInnerContent(context, writer);
+
+                renderer.ReleaseGraphics();
+                
+                return renderer.RenderReference;
+                
+            }
+        }
+
+        private PDFXObjectRenderer CreateXObject(PDFRenderContext context, PDFWriter writer)
+        {
+            var isInline = this.IsInlineContent;
+            var xobj = new PDFXObjectRenderer(this.Owner, this, this.Position, isInline, context, writer);
+            
+            return xobj;
+        }
+
+        protected virtual PDFObjectRef DoOutputAsBlock(PDFRenderContext context, PDFWriter writer)
+        {
+            bool logdebug = context.ShouldLogDebug;
+            bool hasTransform = false;
+            bool hasClipping = false;
             Style prevStyle = context.FullStyle;
             Size prevSize = context.Space;
             Point prevLoc = context.Offset;
-            //PDFObjectRef xobj = null;
-
+            var component = this.Owner as Component;
+            
+            PDFObjectRef oref = null;
+            
             try
             {
-                context.FullStyle = fullstyle;
-                
-                
+                context.FullStyle = this.FullStyle;
 
-                //If we have a transformation matrix applied.
-                if(position.HasTransformation)
+                //a relative block is moved first, then any transformation is around its moved position
+                if (this.Position.PositionMode == PositionMode.Relative)
                 {
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Begin(TraceLevel.Verbose, LOG_CATEGORY, "Setting the transformation matrix (including offsets) for " + this.Owner.ToString() + " and any ");
-
-                    else if (context.ShouldLogVerbose)
-                        context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Setting the Graphics state transformation matrix for " + this.Owner.ToString() + " and any children to " + this.Position.TransformMatrix);
-                    
-                    context.Graphics.SaveGraphicsState();
-
-                    //Start with the original transformation matrix
-                    PDFTransformationMatrix full = this.Position.TransformMatrix.Clone(); // offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
-
-
-                    //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
-                    Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
-                    Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
-                    //offsetToOriginY -= context.PageSize.Height.PointsValue;
-                    if (position.X.HasValue)
-                        offsetToOriginX += 0.0; // position.X.Value;
-                    if (position.Y.HasValue)
-                        offsetToOriginY += 0.0;// position.Y.Value;
-
-                    //Defaulting to transforming around the centre of the shape.
-                    offsetToOriginX += this.TotalBounds.Width / 2;
-                    offsetToOriginY -= this.TotalBounds.Height / 2;
-
-                    float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
-                    float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
-
-                    
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
-
-                    
-                    
-                    float posOffsetX = 0.0F;
-                    float posOffsetY = 0.0F;
-
-                    //set any explicit position offsets
-
-                    if (position.X.HasValue)
-                    {
-                        posOffsetX = ((float)position.X.Value.PointsValue);
-                    }
-                    if (position.Y.HasValue)
-                    {
-                        posOffsetY = ((float)position.Y.Value.PointsValue);
-                    }
-
-                    //Set the translation to the origin and the explicit position
-                    full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
-
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Final transformation matrix to move to, transform, and move back from origin calculated to " + full);
-
-                    //mark all future drawing offsets - as these will happen from the page origin now (bottom left)
-                    //within the centre of the container
-
-                    context.Graphics.SaveTranslationOffset(
-                        actualOffsetX,
-                        actualOffsetY);
-
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
-
-                    //apply the actual transformation
-                    context.Graphics.SetTransformationMatrix(full, true, true);
-                    //save state
-
-                    //Save the newly caclulated values back on the block.
-                    this.Position.TransformMatrix = full;
-                    this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
-
-
+                    this.UpdateOffsetForRelativeBlock(context, writer);
                 }
 
-
-
+                if (this.Position.HasTransformation)
+                {
+                    hasTransform = this.SetupBlockTransformation(context, writer);
+                }
+                
                 Rect total = this.TotalBounds;
-                total = total.Offset(context.Offset);
+
+                if (this.Owner is SVGText svgText)
+                {
+                    if (svgText.DeltaX != Unit.Zero)
+                    {
+                        total.X += svgText.DeltaX;
+                    }
+
+                    if (svgText.DeltaY != Unit.Zero)
+                    {
+                        total.Y += svgText.DeltaY;
+                    }
+                }
+                else
+                {
+                    total = total.Offset(context.Offset);
+                }
 
                 Rect borderRect = total.Inset(this.Position.Margins);
                 Rect contentRect = borderRect.Inset(this.Position.Padding);
-
+                
+                //save this location before rendering any inner content as the actual point on the page.
+                this.PagePosition = total.Location;
+                
                 //Get the border to draw
                 PDFPenBorders border = this.FullStyle.CreateBorderPen();
+                border = this.ApplyDecorationBreak(border);
+                //Get the background brush
+                PDFBrush background = this.FullStyle.CreateBackgroundBrush();
                 
-
+                //set up any clipping
                 if (this.Position.OverflowAction == OverflowAction.Clip)
                 {
                     if (logdebug)
-                       context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
-                    this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
+                    
+                    Unit tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+
+                    hasClipping = this.OutputClipping(context, borderRect, tl, tr, bl, br, border.BorderSides, this.Position.ClipInset);
+                    
                 }
                 else if(this.Position.ClipInset.IsEmpty == false)
                 {
                     if (logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect + " as we have a non-zero clipping rect");
-                    this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                    
+                    Unit tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+
+                    hasClipping  = this.OutputClipping(context, borderRect, tl, tr, bl, br, border.BorderSides, this.Position.ClipInset);
                 }
 
-                //Get the background brush
-                PDFBrush background = this.FullStyle.CreateBackgroundBrush();
-
-
-                if (null != background)
-                {
-                    this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, context, borderRect);
-                }
-
-                context.Offset = contentRect.Location;
-                context.Space = contentRect.Size;
-
-                if (logdebug)
-                    context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Adjusted bounds of context for block " + this.ToString() + " with offset " + context.Offset + " and space " + context.Space + ", now rendering contents");
+                var paintOrder = this.FullStyle.GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default);
+                //output the content based on the order defined for painting.
                 
+                var firstOref = this.OutputContentForPaintOrder(paintOrder.First, background, border, borderRect, contentRect, context, writer);
+                var secondOref = this.OutputContentForPaintOrder(paintOrder.Second, background, border, borderRect, contentRect, context, writer);
+                var thirdOref = this.OutputContentForPaintOrder(paintOrder.Third, background, border, borderRect, contentRect, context, writer);
                 
-
-                //Perform the atual wrting of this blocks inner conntent
-                OutputInnerContent(context, writer);
-
-                if (this.Position.OverflowAction == OverflowAction.Clip)
+                if(paintOrder.First  == PaintOrders.Markers)
+                    oref = firstOref;
+                else if(paintOrder.Second == PaintOrders.Markers)
+                    oref = secondOref;
+                else if(paintOrder.Third == PaintOrders.Markers)
+                    oref = thirdOref;
+                
+                if (hasClipping)
                 {
                     if (logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Releasing the clipping rectangle " + borderRect);
+                    
                     this.ReleaseClipping(context);
                 }
 
-                if (null != border)
-                {
-                    if(logdebug)
-                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
-                    this.OutputBorder(background, border, context, borderRect);
-                }
-
-                if (render && null != component)
+                //The outline is drawn last, outside the border and over any content
+                this.OutputOutline(context, borderRect, border, this.FullStyle);
+                
+                if (null != component)
                 {
                     if (logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the arrangement of block " + this.ToString() + " back with component " + component.UniqueID + " for content rectangle " + contentRect.ToString());
 
-                    component.SetArrangement(context, fullstyle, contentRect);
-                }
+                    if (null != context.RenderMatrix)
+                        borderRect = context.RenderMatrix.TransformBounds(borderRect);
 
+                    var block = this.GetParentBlock();
+
+                    if (null != block && block.IsExplicitLayout)
+                    {
+                        //we are explicit so we are always zero - need to take into account page locations
+
+                        borderRect.X += block.PagePosition.X + block.Position.Margins.Left;
+                        borderRect.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                    }
+
+                    component.SetArrangement(context, this.FullStyle, borderRect);
+                }
+                
+                
                 PDFPen grid = this.FullStyle.CreateOverlayGridPen();
+                //If we need to draw the overlay grid - do it last
+                
                 if (null != grid)
                 {
+                    PDFPen major = this.FullStyle.CreateOverlayGridPen(forMajor: true);
+                    
                     OverlayGridStyle over = this.FullStyle.OverlayGrid;
-                    this.OutputOverlayGrid(grid, over, context, total);
+                    
+                    this.OutputOverlayGrid(grid, major, over, context, total);
                     if (over.HighlightColumns)
                         this.OutputRegionOverlay(over, context, contentRect);
                 }
+                
+                
+                if (hasTransform)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Restoring the transformation matrix for " + this.ToString());
+                    
+                    this.TeardownBlockTransformation(context, writer);
+                }
+
             }
             catch (PDFRenderException)
             {
@@ -1225,23 +1750,16 @@ namespace Scryber.PDF.Layout
             }
             catch (Exception ex)
             {
-                throw new PDFRenderException("Could not output the block '" + this.ToString() + "'. " + ex.Message, ex);
+                throw new PDFRenderException(
+                    "Could not output the block '" + this.ToString() + "'. See the inner exception for more details.",
+                    ex);
             }
-
-            if (position.HasTransformation)
+            finally
             {
-                //We have a transformation, so restore it to the original state
-                context.Graphics.RestoreTranslationOffset();
-                context.Graphics.RestoreGraphicsState();
-                
-
-                if (context.ShouldLogDebug)
-                    context.TraceLog.End(TraceLevel.Warning, LOG_CATEGORY, "Reset the graphics state transformation for " + this.Owner.ToString());
+                context.Space = prevSize;
+                context.Offset = prevLoc;
+                context.FullStyle = prevStyle;
             }
-
-            context.Space = prevSize;
-            context.Offset = prevLoc;
-            context.FullStyle = prevStyle;
 
             if (logdebug)
             {
@@ -1251,34 +1769,146 @@ namespace Scryber.PDF.Layout
                     context.TraceLog.End(TraceLevel.Debug, "Layout Block", "Finished writing un-owned Block");
             }
 
-            return null;
+            return oref;
         }
 
-        
-#endregion
-
-        #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
-
-        /// <summary>
-        /// Renders the inner content in this block
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="writer"></param>
-        protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
+        private PDFObjectRef OutputContentForPaintOrder(PaintOrders paintType, PDFBrush background, PDFPenBorders border, Rect borderRect, Rect contentRect, PDFRenderContext context, PDFWriter writer)
         {
-            
-            Point prev = context.Offset;
+            PDFObjectRef oRef = null;
 
-            if (this.Columns.Length > 1)
+            if (paintType == PaintOrders.Fill)
             {
-                foreach (PDFLayoutRegion region in this.Columns)
+                //Shadows are drawn behind the background
+                this.OutputBoxShadows(context, borderRect, border, this.FullStyle);
+
+                if (null != background)
                 {
-                    region.OutputToPDF(context, writer);
+                    this.OutputBackground(background, border,
+                        context, borderRect);
+                }
+
+            }
+            else if (paintType == PaintOrders.Markers)
+            {
+                context.Offset = contentRect.Location;
+                context.Space = contentRect.Size;
+
+                //Perform the atual writing of this blocks inner conntent
+                if (this.ShouldOutputAsXObject(context))
+                {
+                    oRef = this.DoOutputToXObject(context, writer);
+                }
+                else
+                {
+                    this.OutputInnerContent(context, writer);
                 }
             }
             else
             {
+                if (null != border)
+                {
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block",
+                            "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
+
+                    this.OutputBorder(background, border, context, borderRect);
+
+                    if(this.ColumnOptions.ColumnCount > 1 && this.ColumnOptions.ColumnRule != null)
+                    {
+                        var pen = this.ColumnOptions.ColumnRule;
+                        pen.SetUpGraphics(context.Graphics,borderRect);
+
+                        try
+                        {
+                        //Draw the column rules
+                            for (int i = 1; i < this.Columns.Length; i++)
+                            {
+                                PDFLayoutRegion col = this.Columns[i];
+                                Unit x = col.TotalBounds.X - this.ColumnOptions.AlleyWidth / 2;
+                                x += borderRect.X; //Need to take into account the border rect location as we are drawing on the main graphics context here.
+                                Point start = new Point(x, borderRect.Y);
+                                Point end = new Point(x, borderRect.Y + borderRect.Height);
+
+                                context.Graphics.DrawLine(start, end);
+                                
+                            }
+                        }
+                        finally
+                        {   
+                            pen.ReleaseGraphics(context.Graphics, borderRect);
+                        }
+                    }
+                }
+            }
+
+            return oRef;
+        }
+
+
+        #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
+
+        /// <summary>
+        /// Renders the inner content regions in this block, respecting z-index ordering for positioned children.
+        /// Negative z-index regions are rendered before the column content; positive z-index regions after.
+        /// </summary>
+        protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
+        {
+            List<PDFLayoutPositionedRegion> negativeZ = null;
+            List<PDFLayoutPositionedRegion> positiveZ = null;
+
+            if (this.HasPositionedRegions)
+            {
+                foreach (PDFLayoutPositionedRegion reg in this.PositionedRegions)
+                {
+                    int z = reg.PositionOptions.ZIndex;
+                    if (z == 0 || reg.AssociatedRun == null)
+                        continue;
+
+                    reg.AssociatedRun.SkipRender = true;
+
+                    if (z < 0)
+                    {
+                        if (negativeZ == null) negativeZ = new List<PDFLayoutPositionedRegion>();
+                        negativeZ.Add(reg);
+                    }
+                    else
+                    {
+                        if (positiveZ == null) positiveZ = new List<PDFLayoutPositionedRegion>();
+                        positiveZ.Add(reg);
+                    }
+                }
+            }
+
+            if (negativeZ != null)
+            {
+                negativeZ.Sort((a, b) => a.PositionOptions.ZIndex.CompareTo(b.PositionOptions.ZIndex));
+                foreach (var reg in negativeZ)
+                {
+                    reg.AssociatedRun.SkipRender = false;
+                    reg.AssociatedRun.OutputToPDF(context, writer);
+                    reg.AssociatedRun.SkipRender = true;
+                }
+            }
+
+            if (this.Columns.Length > 1)
+            {
+                foreach (PDFLayoutRegion region in this.Columns)
+                    region.OutputToPDF(context, writer);
+            }
+            else
+            {
                 this.Columns[0].OutputToPDF(context, writer);
+            }
+
+            if (positiveZ != null)
+            {
+                positiveZ.Sort((a, b) => a.PositionOptions.ZIndex.CompareTo(b.PositionOptions.ZIndex));
+                foreach (var reg in positiveZ)
+                {
+                    reg.AssociatedRun.SkipRender = false;
+                    reg.AssociatedRun.OutputToPDF(context, writer);
+                    reg.AssociatedRun.SkipRender = true;
+                }
             }
         }
 
@@ -1293,6 +1923,12 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool ShouldOutput(PDFRenderContext context)
         {
+            if (this.Position.Visibility == Visibility.Hidden || this.Position.Visibility == Visibility.Collapse || this.Position.Visibility == Visibility.None)
+                return false;
+
+            if (this.Owner != null && this.Owner is ICanvas)
+                return true;
+            
             if (this.Position.Visibility == Visibility.Visible && this.ExcludeFromOutput == false)
             {
                 if (this.Height > 0)
@@ -1315,6 +1951,231 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        /// <summary>
+        /// Checks the state of the position and render options, and returns true, if this block should be rendered as an xObject (outside of the current stream of drawing instructions)
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool ShouldOutputAsXObject(PDFRenderContext context)
+        {
+            var xObj = false;
+            
+            if (this.Position.XObjectRender)
+            {
+                xObj = true;
+            }
+
+            return xObj;
+        }
+
+        #region protected virtual void UpdateOffsetForRelativeBlock(PDFRenderContext context, PDFWriter writer)
+
+        /// <summary>
+        /// Applies any relative mode positioning to the current context offset, so further rendering will be done at the changed location.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        protected virtual void UpdateOffsetForRelativeBlock(PDFRenderContext context, PDFWriter writer)
+        {
+            var position = this.Position;
+            var offset = context.Offset;
+
+            if (position.X.HasValue)
+            {
+                offset.X += position.X.Value;
+            }
+            else if (position.Right.HasValue)
+            {
+                offset.X -= position.Right.Value;
+            }
+
+            if (position.Y.HasValue)
+            {
+                if (this.Position.DisplayMode == DisplayMode.Block) //special case - otherwise this is usually taken care of in the positioned region run
+                    offset.Y += position.Y.Value; //when we are block display mode then we don't have a positioned region
+            }
+            else if (position.Bottom.HasValue)
+            {
+                offset.Y -= position.Bottom.Value;
+            }
+
+
+            context.Offset = offset;
+        }
+
+        #endregion
+        
+        #region SetupBlockTransformation / TeardownBlockTransformation
+
+        /// <summary>
+        /// Sets up the current transformation matrix on the 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
+        protected bool SetupBlockTransformation(PDFRenderContext context, PDFWriter writer)
+        {
+            var transformed = false;
+            
+            if (context.ShouldLogDebug)
+                context.TraceLog.Begin(TraceLevel.Verbose, LOG_CATEGORY,
+                    "Setting the transformation matrix (including offsets) for " + this.Owner.ToString() + " and any ");
+
+            else if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY,
+                    "Setting the Graphics state transformation matrix for " + this.Owner.ToString() +
+                    " and any children to " + this.Position.Transformations);
+
+            if (null == this.Position.Transformations)
+                throw new NullReferenceException(
+                    "The was no PDF Transformation matrix on the position to set up the Block transformation - method should not be called in this state.");
+
+            //Start with the original transformation matrix
+            TransformOperationSet
+                full = this.Position.Transformations;
+                    
+            
+            if (full.IsIdentity)
+            {
+                //Do Nothing
+            }
+            else if (this.Owner is Svg.Components.SVGText)
+            {
+                
+                var origin = this.Position.TransformationOrigin;
+                var matrix = full.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
+                
+                //throw new NotImplementedException("Need to sort or atleast check the transformation of the SVGText");
+                
+                //TODO: Take this out and make the SVGText a Component run rather than a block.
+                //Just a translation of some text so quicker to just offset the translation by the height of the block
+                
+
+
+                //save the graphics state
+                context.Graphics.SaveGraphicsState();
+                
+                
+                context.Graphics.SetTransformationMatrix(matrix, true, true);
+                
+                //we want to return true - to tear it down afterwards
+                transformed = true;
+            }
+            else
+            {
+
+                //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
+                // Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
+                // Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
+                // //offsetToOriginY -= context.PageSize.Height.PointsValue;
+                // if (this.Position.X.HasValue)
+                //     offsetToOriginX += 0.0; // position.X.Value;
+                // if (this.Position.Y.HasValue)
+                //     offsetToOriginY += 0.0; // position.Y.Value;
+                //
+                // //Defaulting to transforming around the centre of the shape if we have a rotation
+                //
+                // offsetToOriginX += this.TotalBounds.Width / 2;
+                // offsetToOriginY -= this.TotalBounds.Height / 2;
+                //
+                //
+                // float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
+                // float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
+                //
+                //
+                // if (context.ShouldLogDebug)
+                //     context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY,
+                //         "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " +
+                //         actualOffsetY + ")");
+                //
+                //
+                //
+                // float posOffsetX = 0.0F;
+                // float posOffsetY = 0.0F;
+
+                //set any explicit position offsets
+
+                // if (this.Position.X.HasValue)
+                // {
+                //     posOffsetX = ((float)this.Position.X.Value.PointsValue);
+                // }
+                //
+                // if (this.Position.Y.HasValue)
+                // {
+                //     posOffsetY = ((float)this.Position.Y.Value.PointsValue);
+                // }
+
+                //the transformation is around the origin within the border box of this block on the page,
+                //the centre by default. A new origin, so the position's own origin is not changed.
+                var borderBox = this.TotalBounds.Offset(context.Offset).Inset(this.Position.Margins);
+                var origin = TransformOrigin.GetOriginWithin(this.Position.TransformationOrigin, borderBox);
+
+                //translate percentages are of the border box too
+                full = full.CloneForBox(borderBox.Size);
+                var matrix = full.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
+                var pageBounds = this.TotalBounds.Offset(context.Offset);
+                var transformedBounds = matrix.TransformBounds(pageBounds);
+                
+                
+                if (context.ShouldLogVerbose)
+                    context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY,
+                        "Final transformation matrix to move to, transform, and move back from origin calculated to " +
+                        matrix);
+
+                //save the current state
+                context.Graphics.SaveGraphicsState();
+                
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY,
+                        "Translation offset set to " + origin.HorizontalOrigin.ToString() + ", " + origin.VerticalOrigin.ToString());
+
+                //apply the actual transformation
+                context.Graphics.SetTransformationMatrix(matrix, true, true);
+                //save state
+
+                
+                //Save the newly caclulated values back on the block.
+                //this.Position.TransformMatrix = full;
+                
+#if DEBUG
+                //Used in the unit tests, but not needed in production
+                this.RenderMatrix = matrix;
+                this.RenderOrigin = origin;
+                
+#endif
+                
+                transformed = true;
+            }
+
+            return transformed;
+        }
+        
+        /// <summary>
+        /// Tears down any previous transformation - should only be called if the SetupBlockTransformation returned true
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        protected void TeardownBlockTransformation(PDFRenderContext context, PDFWriter writer)
+        {
+            try
+            {
+                context.Graphics.RestoreTranslationOffset();
+                context.Graphics.RestoreGraphicsState();
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.End(TraceLevel.Warning, LOG_CATEGORY,
+                        "Reset the graphics state transformation for " + this.Owner.ToString());
+            }
+            catch (Exception)
+            {
+                ;//suck it up - we don't want this to propogate
+            }
+        }
+        
+        #endregion
+        
 
         #region private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
 
@@ -1353,17 +2214,17 @@ namespace Scryber.PDF.Layout
         /// <param name="grid">The grid to render</param>
         /// <param name="context"></param>
         /// <param name="rect">The rectangle to use to render the grid within</param>
-        private void OutputOverlayGrid(PDFPen pen, OverlayGridStyle grid, PDFRenderContext context, Rect rect)
+        private void OutputOverlayGrid(PDFPen minor, PDFPen major, OverlayGridStyle grid, PDFRenderContext context, Rect rect)
         {
-            if (null == pen)
+            if (null == minor)
                 return;
 
             if (null == grid)
                 throw new ArgumentNullException("grid");
 
             var graphics = context.Graphics;
-            
 
+            
             //Will paint a 50% opacity colour over the columns in a panel
             //so they can be identified
             graphics.SaveGraphicsState();
@@ -1371,10 +2232,12 @@ namespace Scryber.PDF.Layout
             
 
             Rect absolutebounds = rect;
-            pen.SetUpGraphics(graphics, absolutebounds);
+            minor.SetUpGraphics(graphics, absolutebounds);
+            var factor = grid.GridMajorCount > 0 ?  grid.GridMajorCount : int.MaxValue;
             
             //vertical lines first
             Unit space = grid.GridSpacing;
+            
             if (space <= 0)
                 throw new ArgumentOutOfRangeException("Cannot render a grid with zero or less spacing");
 
@@ -1383,23 +2246,77 @@ namespace Scryber.PDF.Layout
             Unit y2 = absolutebounds.Y + absolutebounds.Height;
             Unit x2 = x1 + absolutebounds.Width;
 
+            int index = 0;
             while (x1 < x2)
             {
-                graphics.DrawLine(x1, y1, x1, y2);
+                if (index % factor != 0)
+                {
+                    graphics.DrawLine(x1, y1, x1, y2);
+                }
                 x1 += space;
+                index++;
             }
 
             x1 = absolutebounds.X;
             y1 = absolutebounds.Y + grid.GridYOffset;
-
+            index = 0;
+            
             while (y1 < y2)
             {
-                graphics.DrawLine(x1, y1, x2, y1);
+                if (index % factor != 0)
+                {
+                    graphics.DrawLine(x1, y1, x2, y1);
+                }
+
                 y1 += space;
+                index++;
             }
 
-            pen.ReleaseGraphics(graphics, absolutebounds);
+            minor.ReleaseGraphics(graphics, absolutebounds);
             graphics.RestoreGraphicsState();
+
+            if (major != null && factor < int.MaxValue)
+            {
+                graphics.SaveGraphicsState();
+                major.SetUpGraphics(graphics, absolutebounds);
+                
+                x1 = absolutebounds.X + grid.GridXOffset;
+                y1 = absolutebounds.Y;
+                y2 = absolutebounds.Y + absolutebounds.Height;
+                x2 = x1 + absolutebounds.Width;
+
+                index = 0;
+                while (x1 < x2)
+                {
+                    if (index % factor == 0)
+                    {
+                        graphics.DrawLine(x1, y1, x1, y2);
+                    }
+
+                    x1 += space;
+                    index++;
+                }
+
+                x1 = absolutebounds.X;
+                y1 = absolutebounds.Y + grid.GridYOffset;
+                index = 0;
+
+                while (y1 < y2)
+                {
+                    if (index % factor == 0)
+                    {
+                        graphics.DrawLine(x1, y1, x2, y1);
+                    }
+
+                    y1 += space;
+                    index++;
+                }
+                
+                minor.ReleaseGraphics(graphics, absolutebounds);
+                graphics.RestoreGraphicsState();
+            }
+
+
         }
 
         #endregion
@@ -1462,11 +2379,4 @@ namespace Scryber.PDF.Layout
 
     }
 
-    /// <summary>
-    /// Represents a collection of blocks
-    /// </summary>
-    public class PDFLayoutBlockCollection : List<PDFLayoutBlock>
-    {
-
-    }
 }

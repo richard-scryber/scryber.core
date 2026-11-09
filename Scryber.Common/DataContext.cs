@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using Scryber.Logging;
 
@@ -40,6 +41,7 @@ namespace Scryber
         public DataStack DataStack
         {
             get { return _datastack; }
+            set { _datastack = value; }
         }
 
         #endregion
@@ -49,7 +51,7 @@ namespace Scryber
         private int _currindex;
 
         /// <summary>
-        /// Gets or sets the current databinding index
+        /// Gets or sets the current data-binding index
         /// </summary>
         public int CurrentIndex
         {
@@ -57,6 +59,30 @@ namespace Scryber
             set { _currindex = value; }
         }
 
+        #endregion
+
+        #region public bool CurrentIsLast {get;set;}
+
+        /// <summary>
+        /// Gets or sets the flag that identifies the current data-binding item is the last in the collection (the @last expression)
+        /// </summary>
+        public bool CurrentIsLast { get; set; }
+
+        #endregion
+
+        #region public string CurrentKey {get; set;}
+        
+        private string _currentKey;
+
+        /// <summary>
+        /// Gets or sets the current data-binding key (or object property) name
+        /// </summary>
+        public string CurrentKey
+        {
+            get { return this._currentKey; }
+            set { this._currentKey = value; }
+        }
+        
         #endregion
 
         #region public System.Xml.Xsl.XsltContext NamespaceResolver {get;set;}
@@ -86,6 +112,7 @@ namespace Scryber
         /// </summary>
         /// <param name="items"></param>
         /// <param name="log"></param>
+        /// <param name="perfmon"></param>
         public DataContext(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
             : this(items, log, perfmon, new DataStack(), document, format)
         {

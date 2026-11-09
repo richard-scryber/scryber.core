@@ -23,6 +23,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF;
 using System.CodeDom;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Scryber.Drawing
 {
@@ -44,6 +45,17 @@ namespace Scryber.Drawing
         {
             get { return _len; }
             set { _len = value; }
+        }
+
+        public int PatternTotal
+        {
+            get
+            {
+                var sum = 0;
+                for (var i = 0; i < _pattern.Length; i++)
+                    sum += _pattern[i];
+                return sum;
+            }
         }
 
         public Dash()

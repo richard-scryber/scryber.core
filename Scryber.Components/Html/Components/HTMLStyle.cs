@@ -11,7 +11,7 @@ using Scryber.PDF;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("style")]
-    public class HTMLStyle : Scryber.Components.Component
+    public class HTMLStyle : Scryber.Components.Component, IStyledComponent
     {
         private string _contents;
         private StyleGroup _parsedGroup = null;
@@ -27,7 +27,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        #region protected PDFStyleCollection InnerItems
+        #region protected StyleCollection InnerItems
 
         private StyleCollection _innerItems;
 
@@ -45,7 +45,7 @@ namespace Scryber.Html.Components
 
         #endregion
 
-        #region public PDFStyleCollection Styles
+        #region public StyleCollection Styles
 
         /// <summary>
         /// Gets all the styles in this group
@@ -72,6 +72,34 @@ namespace Scryber.Html.Components
             get;
             set;
         }
+        
+        #region explicit IStyledComponent implementation
+        
+        private Style _innerStyle = null;
+
+
+        bool IStyledComponent.HasStyle
+        {
+            get
+            {
+                if (null == this._innerStyle || this._innerStyle.ValueCount == 0) 
+                    return false;
+                
+                return true;
+            }
+        }
+
+        Style IStyledComponent.Style
+        {
+            get
+            {
+                if(null == this._innerStyle)
+                    this._innerStyle = new Style();
+                return this._innerStyle;
+            }
+        }
+        
+        #endregion
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -95,13 +123,31 @@ namespace Scryber.Html.Components
             }
         }
 
-        public HTMLStyle() : base((ObjectType)"htmS")
+        public override bool Visible
         {
-            
+            get{ return base.Visible; }
+            set
+            { 
+                base.Visible = value;
+                if (value == true)
+                    this.EnableInnerStyles();
+                else
+                {
+                    this.DisableInnerStyles();
+                }
+            }
         }
+
+        public HTMLStyle() : this(HTMLObjectTypes.StyleTag)
+        {
+        }
+
+        protected HTMLStyle(ObjectType type) : base(type)
+        { }
 
         private void AssertInnerStyles(ContextBase context)
         {
+            //TODO: Check with the hidden attribute whether it should be included
             if(!string.IsNullOrEmpty(this.Contents))
             {
                 if (null == this._innerItems)
@@ -156,9 +202,15 @@ namespace Scryber.Html.Components
 
         protected virtual void AddStylesToDocument()
         {
-            if (this.Visible && null != this.Styles)
+            if (null != this.Styles)
             {
-                StyleGroup grp = new StyleGroup();
+                StyleGroup grp;
+
+                if (!string.IsNullOrEmpty(this.LoadedSource))
+                    grp = new StyleRemoteGroup() { LoadedSource = this.LoadedSource };
+                else
+                    grp = new StyleGroup();
+
                 foreach (var style in this.Styles)
                 {
                     grp.Styles.Add(style);
@@ -166,6 +218,11 @@ namespace Scryber.Html.Components
 
                 this.Document.Styles.Add(grp);
                 this._parsedGroup = grp;
+                
+                if(this.Visible)
+                    this.EnableInnerStyles();
+                else
+                    this.DisableInnerStyles();
             }
         }
 
@@ -198,6 +255,18 @@ namespace Scryber.Html.Components
                     collection.Add(style);
             }
 
+        }
+
+        protected virtual void EnableInnerStyles()
+        {
+            if(null != this._parsedGroup)
+                this._parsedGroup.Enabled = true;
+        }
+
+        protected virtual void DisableInnerStyles()
+        {
+            if (null != this._parsedGroup)
+                this._parsedGroup.Enabled = false;
         }
 
         public override string MapPath(string source, out bool isfile)

@@ -24,6 +24,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.ComponentModel;
+using System.Net.Mime;
 using Scryber.Drawing;
 
 namespace Scryber.PDF.Graphics
@@ -108,6 +109,7 @@ namespace Scryber.PDF.Graphics
         public PDFFullImageBrush(string source)
         {
             this._source = source;
+            this._op = 1.0;
         }
 
 
@@ -146,41 +148,24 @@ namespace Scryber.PDF.Graphics
                 tile.PaintType = PatternPaintType.ColoredTile;
                 tile.TilingType = PatternTilingType.NoDistortion;
 
+                if (this.Opacity < 1.0 && this.Opacity >= 0.0)
+                    tile.Opacity = this.Opacity.Value;
+                else 
+                    tile.Opacity = 1.0;
+                
                 //Calculate the bounds of the pattern
 
-                Unit width;
-                Unit height;
                 Size imgsize = CalculateAppropriateImageSize(imagex.ImageData, bounds);
-                width = imgsize.Width;
-                height = imgsize.Height;
-
-
-                //Patterns are drawn from the bottom of the page so Y is the container height minus the vertical position and offset
-                Unit y = 0;// g.ContainerSize.Height - (bounds.Y);// g.ContainerSize.Height - (bounds.Y + height + this.YPostion);
-                //X is simply the horizontal position plus offset
-                Unit x = 0;// bounds.X + this.XPostion;
-
+                
                 tile.ImageSize = imgsize;
 
-                Size step = new Size();
-                if (this.XStep == 0)
-                    step.Width = width;
-                else
-                    step.Width = this.XStep;
-
-                if (this.YStep == 0)
-                    step.Height = height;
-                else
-                    step.Height = this.YStep;
+                //Make the step the maximum of either the bounds or the image size - so no visible repeat.
+                Size step = CalculateAppropriateImageStep(bounds, imgsize);
+                
                 tile.Step = step;
 
-                Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
-
-                if (g.Origin == DrawingOrigin.TopLeft)
-                {
-                    start.Y = g.ContainerSize.Height - start.Y;
-                }
-                tile.Start = start;
+                
+                tile.Start = CalculateAppropriateImageStart(bounds, imgsize, g.Origin, g.ContainerSize);
 
                 string name = g.Container.Register(tile);
 
@@ -191,16 +176,36 @@ namespace Scryber.PDF.Graphics
                 return false;
         }
 
-        private Size CalculateAppropriateImageSize(ImageData imgdata, Rect bounds)
+        protected virtual Size CalculateAppropriateImageStep(Rect bounds, Size size)
+        {
+            return new Size(Unit.Max(bounds.Width, size.Width), Unit.Max(bounds.Height, size.Height));
+        }
+
+        protected virtual Point CalculateAppropriateImageStart(Rect bounds, Size size, DrawingOrigin origin, Size container)
+        {
+            Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
+                
+            if (origin == DrawingOrigin.TopLeft)
+            {
+                start.Y = container.Height - start.Y;
+            }
+            
+            return start;
+        }
+
+        
+        protected virtual Size CalculateAppropriateImageSize(ImageData imgdata, Rect bounds)
         {
             //Find the dimension that makes sure the bounds are fully covered
-            double scale = (bounds.Width.PointsValue / imgdata.DisplayWidth.PointsValue);
-            double resultHeight = imgdata.DisplayHeight.PointsValue * scale;
+            var size = imgdata.GetSize();
+            
+            double scale = (bounds.Width.PointsValue /size.Width.PointsValue);
+            double resultHeight = size.Height.PointsValue * scale;
             if (resultHeight < bounds.Height)
-                scale = bounds.Height.PointsValue / imgdata.DisplayHeight.PointsValue;
+                scale = bounds.Height.PointsValue / size.Height.PointsValue;
 
-            Unit imgw = imgdata.DisplayWidth.PointsValue * scale;
-            Unit imgh = imgdata.DisplayHeight.PointsValue * scale;
+            Unit imgw = size.Width.PointsValue * scale;
+            Unit imgh = size.Height.PointsValue * scale;
 
             if(imgw > bounds.Width)
             {

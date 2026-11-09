@@ -5,7 +5,7 @@ namespace Scryber.Html.Components
     public class HTMLArticle : HTMLHeadFootContainer
     {
         public HTMLArticle()
-        : this((ObjectType)"htAr")
+        : this(HTMLObjectTypes.Article)
         {
         }
 

@@ -8,8 +8,11 @@ namespace Scryber.Html.Components
     {
         
 
-        public HTMLInput()
+        public HTMLInput() : this(HTMLObjectTypes.FormInput)
         {
         }
+
+        protected HTMLInput(ObjectType type): base(type)
+        { }
     }
 }

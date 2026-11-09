@@ -35,6 +35,10 @@ namespace Scryber.Styles.Parsing.Typed
                     onStyle.SetValue(StyleKeys.PositionHAlignKey, align);
                     success = true;
                 }
+                else
+                {
+                    success = false;
+                }
                 
             }
             return success;

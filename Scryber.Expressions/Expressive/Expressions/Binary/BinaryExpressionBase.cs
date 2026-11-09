@@ -21,7 +21,7 @@ namespace Scryber.Expressive.Expressions.Binary
         /// <summary>
         /// Gets the underlying <see cref="Context"/>.
         /// </summary>
-        protected Context Context { get; }
+        protected ExpressionContext Context { get; }
 
         #region Constructors
 
@@ -31,7 +31,7 @@ namespace Scryber.Expressive.Expressions.Binary
         /// <param name="lhs">The left hand <see cref="IExpression"/>.</param>
         /// <param name="rhs">The right hand <see cref="IExpression"/>.</param>
         /// <param name="context">The <see cref="Context"/> used during the evaluation.</param>
-        protected BinaryExpressionBase(IExpression lhs, IExpression rhs, Context context)
+        protected BinaryExpressionBase(IExpression lhs, IExpression rhs, ExpressionContext context)
         {
             this.leftHandSide = lhs;
             this.Context = context;
@@ -85,7 +85,7 @@ namespace Scryber.Expressive.Expressions.Binary
         /// <param name="variables">The list of variables for use in evaluating.</param>
         /// <param name="resultSelector">How to return the result(s). <remarks>NOTE this will be called once per aggregate value if they exist.</remarks></param>
         /// <returns>The result of the evaluation.</returns>
-        public static object EvaluateAggregates(object lhsResult, IExpression rhs, IDictionary<string, object> variables, Func<object, object, object> resultSelector)
+        public static object EvaluateAggregates(object lhsResult, IExpression rhs, IDictionary<string, object> variables, ExpressionResultSelector resultSelector)
         {
             if (rhs is null)
             {
@@ -97,15 +97,15 @@ namespace Scryber.Expressive.Expressions.Binary
                 throw new ArgumentNullException(nameof(resultSelector));
             }
 
-            IList<object> lhsParticipants = new List<object>();
-            IList<object> rhsParticipants = new List<object>();
-
             var rhsResult = rhs.Evaluate(variables);
 
             if (!(lhsResult is ICollection) && !(rhsResult is ICollection))
             {
-                return resultSelector(lhsResult, rhsResult);
+                return resultSelector(lhsResult, rhsResult, variables);
             }
+
+            IList<object> lhsParticipants = new List<object>();
+            IList<object> rhsParticipants = new List<object>();
 
             if (lhsResult is ICollection leftCollection)
             {
@@ -130,7 +130,7 @@ namespace Scryber.Expressive.Expressions.Binary
 
                 for (var i = 0; i < lhsParticipants.Count; i++)
                 {
-                    resultList.Add(resultSelector(lhsParticipants[i], rhsParticipants[i]));
+                    resultList.Add(resultSelector(lhsParticipants[i], rhsParticipants[i], variables));
                 }
 
                 result = resultList.ToArray();
@@ -141,7 +141,7 @@ namespace Scryber.Expressive.Expressions.Binary
 
                 for (var i = 0; i < rhsParticipants.Count; i++)
                 {
-                    resultList.Add(resultSelector(lhsResult, rhsParticipants[i]));
+                    resultList.Add(resultSelector(lhsResult, rhsParticipants[i], variables));
                 }
 
                 result = resultList.ToArray();
@@ -152,7 +152,7 @@ namespace Scryber.Expressive.Expressions.Binary
 
                 for (var i = 0; i < lhsParticipants.Count; i++)
                 {
-                    resultList.Add(resultSelector(lhsParticipants[i], rhsResult));
+                    resultList.Add(resultSelector(lhsParticipants[i], rhsResult, variables));
                 }
 
                 result = resultList.ToArray();

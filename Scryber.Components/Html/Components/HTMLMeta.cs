@@ -43,7 +43,10 @@ namespace Scryber.Html.Components
 
         
 
-        public HTMLMeta() : base((ObjectType)"htmM")
+        public HTMLMeta() : this(HTMLObjectTypes.Meta)
+        { }
+
+        protected HTMLMeta(ObjectType type) : base(type)
         { }
     }
 }

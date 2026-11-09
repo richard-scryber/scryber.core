@@ -105,6 +105,11 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
         {
             return source;
         }
+        
+        public IMatchedEnumerable FindMatches(string selector)
+        {
+            return null;
+        }
 
         ObjectType ITypedObject.Type
         {
@@ -239,6 +244,11 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
         string IComponent.MapPath(string source)
         {
             return source;
+        }
+        
+        public IMatchedEnumerable FindMatches(string selector)
+        {
+            return null;
         }
 
         ObjectType ITypedObject.Type

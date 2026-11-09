@@ -10,6 +10,7 @@ using Scryber.Html.Parsing;
 
 namespace Scryber.Components
 {
+    [Obsolete("HtmlFragment is deprecated - html content is parsed directly into the component tree (or use the object, embed and iframe elements, or data-content binding). It will be removed in a future release.")]
     [PDFParsableComponent("HtmlFragment")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_htmlFragment")]
     public class HtmlFragment : Scryber.Components.VisualComponent
@@ -248,7 +249,9 @@ namespace Scryber.Components
                 html = md.Transform(html);
                 
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             HTMLFragmentParser parser = new HTMLFragmentParser(html, settings);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             Stack<IComponent> route = new Stack<IComponent>();
 

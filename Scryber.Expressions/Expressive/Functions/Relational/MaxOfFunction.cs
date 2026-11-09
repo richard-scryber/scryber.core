@@ -20,20 +20,20 @@ namespace Scryber.Expressive.Functions.Relational
 		{
 		}
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
 			this.ValidateParameterCount(parameters, 2, 2);
 
 			object value;
-			IExpression lookup = parameters[1];
+			IExpression lookup = Helpers.Lookups.Resolve(parameters[1], context);
 
 			IExpression each = parameters[0];
 
 			value = each.Evaluate(variables);
 
-			IComparable max = null;
+			object max = null;
 
-			if(value is IEnumerable enumerate)
+			if(Helpers.Collections.TryIsCollection(value, out IEnumerable enumerate))
 			{
 				foreach (var item in enumerate)
 				{
@@ -41,16 +41,37 @@ namespace Scryber.Expressive.Functions.Relational
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
 
-					if(one is IComparable compare)
+					if (null == max)
 					{
-						if (null == max)
-							max = compare;
-						else
-							max = (max.CompareTo(compare) < 0 ? compare : max);
+						max = one;
 					}
+					else if (null == one)
+					{
+						continue;
+					}
+                    else if (max is string || one is string)
+                    {
+	                    if (string.Compare(max.ToString(), one.ToString(), context.EqualityStringComparison) < 0)
+		                    max = one.ToString();
+                    }
+                    else
+                        max = Comparison.CompareUsingMostPreciseType(max, one, context) > 0 ? max : one;
+
+					//if (one is IComparable compare)
+					//{
+					//	if (null == max)
+					//		max = compare;
+					//	else
+					//		max = (max.CompareTo(compare) < 0 ? compare : max);
+					//}
 					
 					
 				}
+			}
+			else
+			{
+				CurrentDataExpression.SetCurrentData(value, variables);
+				max = lookup.Evaluate(variables);
 			}
 
 			return max;

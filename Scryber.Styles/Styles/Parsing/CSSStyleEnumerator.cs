@@ -185,6 +185,10 @@ namespace Scryber.Styles.Parsing
                 }
 
             }
+            catch (CSSExpressionParseException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 this._log.Add(TraceLevel.Error, "CSS", "Parsing of css failed with message : " + ex.Message, ex);
@@ -311,6 +315,10 @@ namespace Scryber.Styles.Parsing
                 ff = this.ReadFontFace(next, innerEnd);
                 success = true;
             }
+            catch (CSSExpressionParseException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 this._log.Add(TraceLevel.Error, "CSS", "Could not parse the inner styles for '" + selector + "' as an error occurred : " + ex.Message, ex);
@@ -349,6 +357,10 @@ namespace Scryber.Styles.Parsing
                 group = this.ReadPageQuery(selector, next, innerEnd);
                 success = true;
             }
+            catch (CSSExpressionParseException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 this._log.Add(TraceLevel.Error, "CSS", "Could not parse the inner styles for '" + selector + "' as an error occurred : " + ex.Message, ex);
@@ -361,7 +373,7 @@ namespace Scryber.Styles.Parsing
 
         private StylePageGroup ReadPageQuery(string selector, int next, int innerEnd)
         {
-            var match = Selectors.PageMatcher.Parse(selector);
+            var match = string.IsNullOrEmpty(selector) ? new Selectors.PageMatcher() : Selectors.PageMatcher.Parse(selector);
             StylePageGroup pg = new StylePageGroup(match);
 
 
@@ -385,6 +397,10 @@ namespace Scryber.Styles.Parsing
             {
                 this.ParseInnerStyles(group, grpStart, grpLen);
                 success = true;
+            }
+            catch (CSSExpressionParseException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -421,6 +437,10 @@ namespace Scryber.Styles.Parsing
             {
                 defn = ReadStyleDefinition(selector, next, end);
                 success = true;
+            }
+            catch (CSSExpressionParseException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

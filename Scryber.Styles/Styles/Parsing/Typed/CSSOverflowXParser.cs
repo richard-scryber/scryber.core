@@ -30,11 +30,13 @@ namespace Scryber.Styles.Parsing.Typed
                     {
                         onStyle.SetValue(StyleKeys.ClipLeftKey, (Unit)0.1);
                         onStyle.SetValue(StyleKeys.ClipRightKey, (Unit)0.1);
+                        result = true;
                     }
                     else
                     {
                         onStyle.RemoveValue(StyleKeys.ClipLeftKey);
                         onStyle.RemoveValue(StyleKeys.ClipRightKey);
+                        result = true;
                     }
                 }
                 
@@ -82,6 +84,7 @@ namespace Scryber.Styles.Parsing.Typed
             switch (value)
             {
                 case ("hidden"):
+                case ("clip"):    
                     setClip = true;
                     parsed = true;
                     break;

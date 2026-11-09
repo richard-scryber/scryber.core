@@ -474,6 +474,11 @@ namespace Scryber.Core.UnitTests.Styles
 
             result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
             Assert.IsTrue(result, "Did not match on the applied class of " + div.StyleClass);
+            
+            div.StyleClass = "redred";
+
+            result = red.IsMatchedTo(div, ComponentState.Normal, out priority);
+            Assert.IsFalse(result, "Should not match on the applied class of " + div.StyleClass);
 
         }
 

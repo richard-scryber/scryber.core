@@ -1,125 +1,302 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+    <LangVersion>12.0</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.2.1-beta</PackageVersion>
+    <PackageVersion>9.9.0</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
-    <Copyright>Richard Hewitson 2023</Copyright>
+    <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>
-6.0.2.1-beta
-Added fix for large inline images. Tested SaveAsPDFAsync.
+    <PackageReleaseNotes>9.9.0
+Breaking change: a css transform no longer changes the layout. A transformed element keeps its place and space in the flow (it was taken out as position: absolute, and its space was resized to the transformed bounds), and is drawn transformed around the centre of its own border box. Before, the centre was worked out from the wrong place, so a rotated element (e.g. rotate(-90deg)) was drawn away from where it should be. A relative element is moved by its left and top, then transformed around its moved centre. An absolute or fixed element stays absolute or fixed.
+New: the transform-origin css property, with keywords (left, center, right, top, bottom), lengths and percentages. Percentages are of the element's own border box.
+Breaking change: translate() percentages are of the element's own border box (they were of the containing block), so translate(-50%, -50%) centres an element on its position.
+Breaking change: a translate after another operation is along the transformed axes, as css (e.g. rotate(90deg) translate(50pt, 0) moves 50pt down the page). It was always along the page axes. This is the same for an svg transform attribute.
+Fixed: flattening a transform with more than one operation changed the shared style rather than the copy, so elements with the same class could use the values of another element.
 
-6.0.1.1-alfa
-Support for SaveAsPDFTimer, to check for asyncronous execution in a single threaded
-application - blazor (or windows forms?), using asyncronous loading of http requests for css images, fonts etc).
+9.8.2
+The package description and NuGet readme now introduce Paperwork.Core as the successor to Scryber.Core, with Scryber.Core as its engine - still maintained and supported. No code changes from 9.8.1.
 
-6.0.1.0-beta
+9.8.1
+The 9.8.1 release: everything in the 9.8.0 betas below, including document permissions and passwords, encryption in the browser (Blazor WASM), and the CSS layout additions.
 
-We now support html - in many of its flavours, through the HTMLAgilityPack
+9.8.0-beta.12
+Fixed: a secured (encrypted) document failed in the browser (Blazor WASM), as MD5 is not available there - the PDF security handler now uses its own managed MD5 on every platform.
 
-Added parsing non-formal html documents and components from local and remote files (using the ParseHtml and ParseHtmlDocument on the Document class)
-Added the data-content and data-content-type attributes to visual components so that html and xhtml content can be data bound into pages.
-Added support for the hyphens css property and it's use in hypenating long text.
+9.8.0-beta.11
+Fixed: allowing modifications (document assembly) in a secured document also allowed high quality printing, and cleared a reserved permission bit.
+Fixed: allowing forms in a secured document also allowed annotations.
+Fixed: a document password longer than 32 characters failed the document - only the first 32 characters are used, as in the PDF specification. A password with characters outside Latin-1 is a clear error.
 
-6.0.0.16-beta
+9.8.0-beta.10
+Fixed: flex items without a width that hold a block, a flex column or a flex row are the width of their content (they were the full width of the row, so justify-content had no space to share and items overlapped, wrapped or ran off the page). An empty flex item has no width.
+Fixed: justify-content takes the flex container's own margins from its width, and the gaps are part of the space used, so the last item is on the right edge.
+Fixed: position: absolute with a left and a right but no width is stretched between them. A max-width still limits it.
+Fixed: counter-increment on a display: grid or display: table element is counted.
+New: a trace log warning when a counter-increment finds no counter-reset on the element or a containing element.
+Changed: the background shorthand sets all the background values (any not given are back to their defaults), reads none, position and size (center / cover), accepts and ignores scroll, fixed and the box keywords, draws a color under an image, and is ignored as a whole if any part cannot be read.
+New: box-decoration-break (and -webkit-box-decoration-break) - clone (the default, a full border on each part of a split block) or slice (the border is cut at the break).
 
-Some Big additions and fixes
+9.8.0-beta.9
+Fixed: a gradient that cannot be drawn (e.g. a stop with 2 positions) is not drawn and the background-color is kept, with a warning in the trace log, rather than failing the document with No boundaries were provided.
+Fixed: transparent in a gradient is drawn as black, with a warning in the trace log, rather than failing the document with Cannot convert colorspace None to RGB.
+Fixed: the line height in the font shorthand (e.g. font: 10.5pt/1.65 sans-serif) is read as a css number, not in the language of the machine or browser.
+Fixed: numbers held as text (e.g. json or field values) are read the same as numbers in the expression, in calculations, functions and comparisons, whatever the language of the machine or browser. Numbers and dates written out as text still use that language.
+Fixed: decimal values in transform, svg transform and orient, and picture sizes are read as css numbers.
 
-Added support for the css counters (reset, increment and the counter(s) functions)
-Added support for css content properties
-Added support for css ::before and ::after selectors
-Added support for relative units in styles e.g. 30% and 0.5em - not supported in calc() with multiple units e.g calc(50% - 5px) will not work.
+9.8.0-beta.8
+Fixed: linear-gradient color stops can be a length (e.g. var(--accent) 112pt), so two colors at the same position are a hard stop; rgb() stops with a position keep their color.
+Fixed: box-shadow with a var() in the value (e.g. 9pt 9pt 0 var(--accent)) is drawn.
+Fixed: an image with only a height in a flex header or continuation-header is shown on the first page the header is used.
+Fixed: letter-spacing and word-spacing in em are of the element's own font size, not the inherited one.
+New: display inline-flex, inline-grid and inline-table - an inline block with flex, grid or table content.
+Changed: a word that is longer than the line is kept whole and overflows (as a browser). Use overflow-wrap: break-word to break it.
 
-A lot of layout tests to get everything working - precisely.
+9.8.0-beta.7
+Fixed: flex items without a width, flex-basis or flex-grow are the width of their content (measured by a layout that is discarded - counters, ::before/::after, names, outlines and page breaks are not affected). They had no width, so next to a growing item they disappeared.
+Changed: a flex row of only content width items is packed at the start (as css) rather than split into equal columns.
 
+9.8.0-beta.6
+New css: margin-block, padding-block (and -start, -end), inset, inset-block and inset-inline (and -start, -end). cursor, pointer-events, will-change, scroll-behavior, user-select, transition and animation are accepted and ignored.
+Changed: overflow: hidden on text that does not wrap cuts the text back to the last whole word that fits (overflow: clip is still a clipping rectangle).
+Fixed: the items in a flex row stretch to the height of the row (align-items: stretch, the default), unless they have a height or align-self/align-items says otherwise.
+Fixed: inline flex items (span) are blockified - width, margins, filling the column, stacking in a column and align-items centring now work.
+Fixed: a percentage border-radius is of the width of the box (not the container) and radii are limited so they are never larger than a side - 50% on a square is a circle, not a star.
+Fixed: counter-increment and counter-reset on table rows (tr) are updated once per row.
 
-6.0.0.14-beta
+9.8.0-beta.5
+New css: word-break (break-all fills each line, breaking a word at any character with no hyphen), overflow-wrap and word-wrap (accepted, long words are always broken), and text-overflow (ellipsis, clip or a string, for non-wrapping text in a block with overflow hidden or clip).
+Fixed: a negative text-indent is a hanging indent. The first line only starts out, and the following lines (and any text after a line break) start at the edge of the content.
 
-Added support for transformations including css transform property.
+9.8.0-beta.4
+Fixed: visibility: collapse on a table row (or thead, tbody, tfoot) removes the rows and their space, as display: none does. On other elements it is the same as hidden.
+Fixed: border-collapse and border-spacing are inherited as in css, so they can be set on a container or the body. Added the table cellspacing attribute (a number is pixels), overridden by any css border-spacing.
+Fixed: box-shadow and outline are drawn for images (inline and block), they were only drawn for blocks and tables.
 
-6.0.0.12-beta
+9.8.0-beta.3
+New css: text-decoration-color, text-decoration-style (solid, double, dotted, dashed, wavy) and text-decoration-thickness, also in the text-decoration shorthand; outline, outline-color, outline-style, outline-width and outline-offset; box-shadow (offset, blur, spread, colour, multiple, rounded corners); text-shadow.
+Fixed: an inline image (or other drawn component) with a margin was drawn at its size plus the margins, over the margin area. It is now drawn at its own size inside the margin.
+New: sortBy(values) and sortBy(values, 'desc') sort plain values such as the result of keys().
+Fixed: sortBy with items that have the same sort value threw an error. They are now kept in their original order.
 
-Changed the reference for ImageSharp to the 2.1.3 Nuget package, rather than the dll.
-Checks added for support on thread culture in dates and numbers.
+9.8.0-beta.2
+New: keys() function - the keys of a dictionary or the property names of an object, as an array that can be counted, sorted and enumerated.
+New css: text-indent; box-sizing (content-box is the opt-in, the default already includes the padding in the width); border-collapse and border-spacing for tables; object-fit and object-position for raster images; visibility (hidden content keeps its space but is not drawn).
+Fixed: collection functions (sortBy, sumOf, averageOf, minOf, maxOf, countOf, eachOf, selectWhere, firstWhere) accept a quoted property name ('price', 'owner.city') as well as .price.
+Fixed: a property named e, pi, true, false or null after '.' or '../' (e.g. model.e) is read as the property, not the constant.
+Fixed: join() accepts join(collection, separator) as well as join(separator, items...).
 
-6.0.0.10-beta
+9.8.0-beta
+New: text-transform css property (none, uppercase, lowercase, capitalize) - inherited, and usable with expressions.
+New: @first and @last loop variables alongside @index, usable in output, {{#if}}, if() and css expressions. @last is correct for arrays, lists, dictionaries and Linq iterators.
+New: @key loop variable - the key or property name when iterating a dictionary or json object, or the index for a collection. It is restored after each (nested) loop.
+Changed: {{#each}} over a Dictionary, a Newtonsoft JObject or a System.Text.Json object now iterates the entries (as in Handlebars) rather than binding the object once. The template element and ForEach component still bind an object once.
+Fixed: ../ inside {{#each}} now refers to the outer item (or {{#with}} object) rather than the collection being enumerated. It is a single level only.
+Fixed: {{#each}} over a non-resettable enumerable (e.g. a Linq Select) threw 'Specified method is not supported' in strict mode.
+Fixed: var() and calc() inside linear-gradient() and radial-gradient() dropped the gradient, and the background shorthand now accepts gradients.
+Fixed: Fonts:Register entries now apply their Weight and Style, rather than the weight and style of the font file.
+Fixed: the HTML5 parser now accepts the paperwork processing instruction as well as scryber. Added Document.ParseDocument and ParseHtmlDocument overloads (and async) that take ParserSettings.
+Fixed: configured image factory handlers (ImageFactoryCustom) can now decode streams supplied by a requestor on a custom path.
+Fixed: parsed collections accept an Add method of a base type (e.g. [PDFArray(typeof(Panel))] on a ComponentList), and components derived from Panel keep their child content.
+Obsolete: the HtmlFragment component.
 
-Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions and templates too.
-Along with adding SoryBy, MaxOf, EachOf, SelectWhere collection functions.
+9.7.5
+Consistent error handling in strict and lax mode - invalid syntax is invalid completely, missing data is not a syntax error.
+Invalid expression syntax now always throws, in strict and lax: an expression that is incomplete when evaluated (e.g. model.items[0), a function with the wrong number of parameters, and an invalid expression inside a repeating or conditional template ({{#each}}, {{#if}}). Lax previously logged these and carried on.
+A root variable that is not set (or is null) logs a single error in both modes (strict previously threw). A null part way along, or at the end of, a path (e.g. model.missing.value where missing or value is null) is silent and just results in null.
+CSS var() and calc() follow the same rules: var(model.x, default) uses the default when there is no value, and invalid css expressions are validated and raised when the css is parsed.
+Document.CreateParserSettings() and CreateParserSettingsAsync() now default to Lax, matching Document.ParseDocument().
+Added int() as a short name for integer(). Corrected the function documentation to the registered names monthOf, deg, rad, isMatch, matches and swap.
 
-6.0.0.5-beta
+9.7.4.4
+Fixed a colspan cell's nested content (paragraphs, text) being squeezed into its starting column's width instead of the full spanned width - the cell's outer box was already sized correctly, but content layout took a stale single-column width at face value.
+Removed Overflow.Split = Never from &lt;figure&gt;, which forced any figure content (not just an image+caption pair) to be treated as an unsplittable block and crashed when a wrapped table was too tall to fit on one page.
 
-Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
-Some TTC and TTF font files do not render glyfs correctly, but working for many fonts.
+9.7.4.3
+Fixed a colspan cell silently losing the width of any &lt;col&gt;/&lt;colgroup&gt; column that is never singly occupied by a cell in any row (e.g. a 3-column percentage colgroup where every row crosses the middle column with a colspan) - that column's width is now resolved through the normal style pipeline, so percent/em/rem/viewport units, calc() and var() all work correctly.
 
-5.1.0.2-beta
+9.7.4.2
+Fixed image aspect-ratio sizing to also honour max-width/max-height/min-width/min-height clamping and re-derive the other dimension from aspect-ratio when both width and height were already resolved (e.g. an img sized only via its HTML width/height attributes inside a percentage-width figure) - previously that combination bypassed clamping and aspect-ratio entirely.
+Rebuilt &lt;hr&gt; as a genuine box-model block element (border-*, background-color, height, width, margin) instead of a stroked diagonal-line path - standard CSS resets like `border: none; height: 4pt; background-color: ...;` now render a proper coloured bar instead of a diagonal line, while a bare &lt;hr&gt; keeps its familiar default 1pt solid black border-bottom.
 
-A major update that now fully supports expressions in attributes, css var and clac along with text, using the handlebars notation - {{...}}
-This includes support for simple mathematical expressions from the document variables as welll as functions such as 'concat', 'if(value, 'true', 'false')' or 'index() + model.property'
+9.7.4.1
+Minor fix to HTML5 layout engine bindings: display:table/grid now correctly wrap loose content generated by {{#each}}/{{#with}}/{{#if}} instead of dropping it or leaving a spurious empty cell, and a loose display:inline-block child is treated leniently as block rather than rendering blank. Also adds support for the CSS Display Module 3 two-value display syntax (e.g. "block flex", "inline flow-root") alongside the existing single-keyword values.
 
-5.0.7
+9.7.4
+Fixed a data race in PDFFontWidths (font glyph registration) that could corrupt concurrently-rendered documents' text under multi-threaded rendering, sometimes silently writing wrong glyphs with no exception raised. Contributed by twofatmonkeys (PR #186).
+Updated the Scryber.Core.OpenType dependency to 9.7.4, fixing a companion data race in TTFStringMeasurer's glyph metric cache under the same multi-threaded rendering conditions. Neither fix alone makes concurrent rendering safe - both are required.
 
-Adding support for the float left and right within blocks along with css linear and radial gradients
+9.7.3
+Fixed a display:table container (e.g. a designer-authored figure wrapping an image) silently dropping any loose non table-row/table-cell child from layout, including never registering it as a PDF image resource.
 
-5.0.6.3
+9.7.2
+Fixed :nth-child/:nth-of-type not correctly counting siblings across an IInvisibleContainer wrapper (e.g. {{#each}}-generated content), which previously made every generated item compute itself as an isolated "1 of 1".
+Fixed flex row items requiring a Panel-derived component - non-container children (e.g. bare text nodes) are now wrapped in a new InvisibleFlexContainer so they get a proper block-layout box.
+Fixed an XML/HTML parser bug where an element immediately (no whitespace) after {{/each}} could be silently dropped from the component tree when it shared its outer container's tag name.
 
-Fixes an issue with some TTF fonts on Windows (specifically azure) to look for the best character mapping table, and multi-span text not flowing well due to some changes to try and get float working.
+9.7.0
+BREAKING CHANGE: &lt;img width&gt;/&lt;img height&gt; already accepted integer pixels only (from 9.6.0.7-beta); now correctly documented as a breaking change for this major version bump.
+Added CSS aspect-ratio support for images and block elements.
+Added colgroup/col table column support with width, background-color, and span.
+Added CSS grid: grid-template-areas, grid-area, named grid lines, auto-fill/auto-fit in repeat(), grid-auto-columns/rows, justify-content and align-content.
+Added flex align-items for column-direction flex containers.
+Added CSS var()/calc() support in flex and grid CSS properties.
+Fixed SVG image min/max-width/height sizing across all four sizing strategies, with correct aspect-ratio preservation.
+Fixed SVG image 300x150 clipping bug for unsized SVG images (canvas now sized from page).
+Fixed page-break-after followed by page-break-before producing a redundant blank page.
+Fixed CSS var()/calc() silent failures (no longer drops entire style block on unbound expressions).
+Various flex, grid, list, font, and layout bug fixes.
 
-5.0.6
+9.6.0.14-beta
+Fixed a defect in PDFFontDefinition (GitHub issue #183) where the bfrange table's glyph offset array was sized by the count of registered characters rather than the count of glyph offsets, producing incorrect font width/ToUnicode output for composite and OpenType fonts.
+Fixed a CSS parsing defect where a var()/calc() expression on certain properties (e.g. column-gap) could throw during premature evaluation, silently discarding the entire enclosing CSS style block - including every other property already parsed in it.
+Added var()/calc() expression support to the Flex and Grid CSS property parsers (flex-direction, flex-wrap, justify-content, align-items/content/self, flex-grow/shrink/basis, order, gap, row-gap, grid-column/row (and start/end), grid-template-columns/rows, grid-auto-columns/rows, grid-auto-flow, and named grid-area), so these properties can now be driven by CSS custom properties and calc() expressions.
 
-The April release is a bit of a catch up and fix with updates for:
+9.6.0.13-beta
+CSS grid auto-fill/auto-fit: repeat(auto-fill, size) and repeat(auto-fit, size) now compute the column count from the container width at layout time. When no explicit width is set on the grid container, the count is resolved from the parent engine's available block width. Grid containers without an explicit CSS width now render as block-level boxes, filling the full parent available width (matching browser behaviour), including on overflow/continuation pages.
+CSS grid explicit placement with auto-fill: grid-column/grid-row explicit placements now work correctly when auto-fill tracks are used.
 
-Supporting parsed JSON objects in binding - along with std types and dynamic objects.
-margin:value is applied to all margins even if explicit left, right etc. has been previously applied.
-Conformance is now carried through to templates, so errors are not indavertantly raised inside the template.
-Missing background images will not raise an error.
-Support for data images (src='data:image/..') within content - thanks Dan Rusu!
-Images are not duplicated within the output for the same source.
+9.6.0.12-beta
+CSS grid row-span and row-gap border rendering: grid cells now fill their spanning row height via a post-layout stretch pass. The inner grid-item block is updated to the cell block's final height minus the top margin (row-gap), preventing items overflowing into the gap area and causing missing borders on rows 2+.
+CSS grid explicit placement: fixed gap/column-gap cascade so both shorthand and longhand properties are respected in the correct CSS order. Column-gap visual spacing is now injected as left margin on non-first-column cells so cells render in the correct position. Added Grid_21 through Grid_29 unit tests covering line-based placement, grid-column/grid-row, grid-area with spans, and row-spanning cells.
+flex-direction:column: added justify-content support for column-direction flex containers; fixed align-items when an explicit height is set on the container.
+flex align-items: added support for align-items (flex-start, flex-end, center, stretch, baseline) on flex containers; fixed overflow when the container has multiple columns.
+flex layout in multi-column parents: fixed containerW calculation so percentage-width flex items resolve against the actual flex container width rather than the page width when the container is inside a multi-column layout.
+flex wrap fixes: fixed CSS class-based border suppression (was checking BorderItemKey instead of BorderStyleKey); fixed ghost blank rows and blank pages when flex wrap produces a partial last row; fixed CSS percentage padding/margin axis resolution in wrapped flex rows.
 
+9.6.0.11-beta
+Fixed flex layout percentage-width items being re-resolved against the page width (instead of the flex container) when a child block opened its layout options. Explicit percentage or absolute widths are now correctly pinned to the flex algorithm's container-relative resolved value. Grow-only items (no explicit width) continue to use fill-width behaviour so their padding/border stays within column bounds.
+Fixed flex wrap row-breaking with percentage item widths: GetItemMinWidth previously returned the raw number from a Unit (e.g. 45 for 45%) instead of resolving it against the container, causing all items to appear to fit in one row regardless of their actual pt widths.
+Added Flex_61, Flex_62, Flex_63, Flex_64 layout unit tests covering: flex-grow distribution, explicit fixed widths with no grow, percentage widths resolved against the flex container, and 3-row wrap layout with 45%+100%+45% items.
 
-5.0.5
+9.6.0.10-beta
+Pre-load header/footer template components during the DataBind phase so that remote image requests in headers and footers are registered before Layout runs. In WASM (and other async-only environments) there is no synchronous HTTP fallback, so images whose requests are only registered at Layout time are never fulfilled. Fixed HasAdornments to check the template properties directly instead of the post-bind list (which was always empty, preventing the fix from running). Removed the now-unnecessary LayoutEngineHTMLBody override.
 
-Multiple enhancements including
+9.6.0.9-beta
+Fixed flex layout bug where min-height on a flex item caused its width to be inflated by the item's left margin (double-margin application in EnsureContentsFit when SetContentSize was called after Close).
+Fixed flex-grow, flex-shrink and flex-basis set via CSS class rules (not inline style) being ignored in ComputeColumnWidths — now uses the full computed style via GetAppliedStyle + StyleStack + BuildFullStyle so CSS class-driven flex sizing works correctly.
 
-Embed and iFrame support.
-Binding speed improvements for longer documents.
-Support for border-left, border-right, etc
-Support for encryption and restrictions
-Support for base href in template files.
-Classes and styles on templates are supported.
-Added em, strong, strike, del, ins elements
-Html column width and break inside
-CSS and HTML Logging
-Fixed application of multiple styles with the same word inside
-Allow missing images on the document is now supported.
-Contain fill style for background images.
+9.6.0.8-beta
+Added support for the CSS aspect-ratio property (e.g. aspect-ratio: 16/9), including deriving it from an &lt;img&gt; element's width/height attributes as a natural-size hint. When CSS explicitly sets only one of width/height, the other dimension is now derived from the aspect-ratio (explicit CSS or intrinsic attributes) instead of being forced to a literal pixel size that could fight the styled dimension and distort the image. Applies to both raster and SVG image sizing.
 
-See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 6;</PackageTags>
+9.6.0.7-beta
+BREAKING CHANGE: &lt;img width&gt; / &lt;img height&gt; attributes now match the HTML5 spec - they set the image's intrinsic pixel size (a plain non-negative integer) instead of accepting arbitrary CSS units directly. A bare width="50%" or width="40pt" attribute on &lt;img&gt; will now throw a parse exception; move percentage or point-based sizing into style="width:...; height:..." instead. Also added a style attribute mapping to &lt;colgroup&gt;/&lt;col&gt;.
+
+9.6.0.6-beta
+Fixed LayoutEngineFlexGrid column widths for spanned cells - a cell spanning multiple grid columns now sums the widths of all the tracks it spans, instead of only receiving a single track's width.
+
+9.6.0.5-beta
+Added full support for HTML table colgroup/col elements - column width, background, alignment and class styles now apply per-column to matching cells in the table layout engine, without overwriting a cell's own explicit style. Fixed the col/colgroup span calculation (a span of N now covers exactly N columns). Added CSS grid-column/grid-row parsing and span support, flexbox align-self and order properties, the flex-shrink algorithm for overflowing flex rows, and the CSS anonymous box algorithm for display:table/table-row/table-cell content that isn't explicitly wrapped. Fixed legacy &lt;font size&gt; handling for values pasted from Apple Pages.
+
+9.6.0.4-beta
+Fixed an infinite pagination/stack overflow bug where a page-break request (e.g. break-after: always) originating from within a page header or footer's own content would repeatedly regenerate new pages without end. Header/footer content can no longer trigger page breaks.
+
+9.6.0.3-beta
+Rolled back Microsoft.Extensions.Configuration/Logging dependencies to 8.x - the 10.x versions introduced in 9.6.0.2-beta pulled in a .NET 10 requirement that broke WASM compatibility.
+
+9.6.0.2-beta
+Added support for asynchronous document and component parsing
+
+9.6.0.1-beta
+NEW: Added support for display flex layout.
+NEW: Added support for display grid layout
+NEW: Added support for table-x layout
+NEW: Added support for z-index rendering
+NEW: Added support for column balancing
+
+Added jQuery-esque FindMatches with CSS selectors and support chained queries.
+Added updates to support to preserve meta-* and data-* attributes (PR #173 Damir Liask)
+Added fallback to model and values if property is not found (PR #173 Damir Liask)
+Improved data-url resiliance for parsing and case in-sensitivity (PR #173 Damir Liask)
+Improved config options changing to a list rather than array and allowing coded updates
+
+Fixed an issue with with multiple returns
+Fixed issue with CSS var default values being treated as properties
+Fixed issue with display grid layout for and cascading CSS
+Fixed issue with floats after balanced columns
+        
+        
+        
+9.5.0.1
+BREAKING RELEASE
+Removed support for Net Standard 2.0, and Image Sharp updated to 3.1.2
+All libraries updated to include dotnet 8/9/10
+Added support image format webP 
+Improved support for referenced SVG img
+Clean up codebase to remove compiler warnings
+
+9.3.1.0
+Fixes for break-before/after to take proiority over page-break-before
+Fixes for @page to support margins, along with :first, :left and :right pseudo classes
+
+9.3.0.0
+CSS updates for rowspan on table cells, column-rules, contain on background images, border-radius on individual corners and CSS variables can now be modified in document properties.
+Fixed page sizing in groups with fallback on following pages, whitespace hadling in soft returns, and SVG img placement and sizing.
+Added *initial* implementation for flex-box, flex-grid, and table-xxx display
+Configuration improvements incuding cusom image factories and custom expression functions.
+        
+9.2.0.3
+Fixed styling issue when components are hidden using css.
+
+9.2.0.2
+Fixed repeating raster background images with cover size
+
+9.2.0.1
+Added support for repeating SVG background images from Data urls
+        
+9.2.0.0
+Public release will all added features from the betas. Too many to list, but consult the documentation here https://www.paperworkday.info/learning/ and the refererence section here https://www.paperworkday.info/reference/
+        
+9.1.2-rc.5/6
+Couple of fixes for overflowing tables in a kept together parent, and svg font-weight bold and light are now supported and fixed an issue with the reverse function.
+        
+9.1.2-rc.4
+Working modification of PDFs and templates using framesets and frames and support for SVG background images with opacity. 
+
+9.1.0.7-beta
+First release of framesets for trimming and merging documents. Also hiding variables that do not have any content.
+
+9.0.0.1-rc.3
+Added extra html entity values to match available sources.
+
+9.0.0.1-rc.2
+Fixes for template parsing and added data-content to the template element, plus minor fixes and unit test updates. Second release candidate.
+
+9.0.0.1-rc.1
+Minor fixes for layout. First release candidate.
+        
+9.0.0.1-beta
+Fixed a minor layout issue with multiple footer elementnamed components being applite to a page footer, and also header.
+        
+9.0.0.0-beta
+Completely updated version for .NET 9.0 with support for html, css, svg and binding in a WASM compatible package with remote asset and content requests.
+NOTE: If upgrading, PLEASE CHECK THE OUTPUT of your documents before releasing.
+
+See: https://paperwork.help/changelog/scryber_core.html for a full break down.</PackageReleaseNotes>
+    <Summary>The open-source PDF rendering engine behind Paperwork.Core: HTML templates with CSS and SVG, bound to your data, into PDF documents on .NET 10, 9 and 8 and in Blazor WASM. Paperwork.Core is its successor.</Summary>
+    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 10;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
+    <Description>Scryber.Core is the open-source PDF rendering engine behind Paperwork.Core. It turns HTML templates with CSS styles and SVG drawing, bound to your data, into PDF documents - with flowing pages, data binding, and referenced images, stylesheets and fonts - on .NET and in Blazor WASM.
 
-Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+Paperwork.Core is its successor and the recommended package for new projects. It adds a fluent builder, dependency injection and code configuration on top of this same engine, and your templates carry straight across.
 
-This framework is built entirely in .NET6 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+Scryber.Core still works as it always has, and will continue to be maintained and supported. It is released under the LGPL licence, so you can use it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>1.0.1-alpha</Version>
+    <Version>9.9.0.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
+    <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <FileVersion>9.8.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
-    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
@@ -128,14 +305,32 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <DebugType></DebugType>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0|AnyCPU'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Web\**" />
     <EmbeddedResource Remove="Web\**" />
     <None Remove="Web\**" />
-    <None Include="..\ScyberLogo2_alpha_small.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+<!--    <None Include="PaperworkLogoTransparent.png">-->
+<!--      <Pack>True</Pack>-->
+<!--      <PackagePath></PackagePath>-->
+<!--    </None>-->
     <None Remove="PDF\" />
     <None Remove="PDF\Layout\" />
     <None Remove="PDF\Secure\" />
@@ -186,10 +381,13 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Scryber.Core.OpenType" />
+    <PackageReference Include="System.Resources.Extensions" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="HtmlAgilityPack" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -200,9 +398,12 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
   </ItemGroup>
     
   <ItemGroup>
-    <None Include="readme.txt" Pack="true">
-      <IncludeInPackage>true</IncludeInPackage>
+    <None Include="../README.nuget.md" Pack="true" PackagePath="\">
+        <IncludeInPackage>true</IncludeInPackage>
     </None>
+      <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
+          <IncludeInPackage>true</IncludeInPackage>
+      </None>
     <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
@@ -210,11 +411,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
   
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="Svg\Layout\" />
-    <Folder Include="PDF\" />
-    <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
-    <Folder Include="Options\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

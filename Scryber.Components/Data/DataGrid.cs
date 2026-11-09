@@ -211,12 +211,18 @@ namespace Scryber.Data
         //
 
         #region public PDFDataGrid()
+        
+        private static readonly DataBindingBehaviour gridBehaviour = new DataBindingBehaviour(
+            enumerate: true,
+            expandObject: false,
+            setContextData: true,
+            incrementIndex: true);
 
         /// <summary>
         /// 
         /// </summary>
         public DataGrid()
-            : this((ObjectType)"DGrd")
+            : this((ObjectType)"DGrd", gridBehaviour)
         {
         }
 
@@ -228,8 +234,8 @@ namespace Scryber.Data
         /// 
         /// </summary>
         /// <param name="type"></param>
-        protected DataGrid(ObjectType type)
-            : base(type)
+        protected DataGrid(ObjectType type, DataBindingBehaviour behaviour)
+            : base(type, behaviour)
         {
         }
 

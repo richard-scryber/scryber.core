@@ -6,16 +6,54 @@ using Scryber.PDF;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("polyline")]
-    public class SVGPolyLine : SVGShape
+    public class SVGPolyLine : SVGIrregularShape
     {
+        
+        private PDFPointList _points;
+        
+        /// <summary>
+        /// Gets or sets the list of points that this shape should render out based on teh style.
+        /// </summary>
         [PDFAttribute("points")]
-        public PDFPointList Points { get; set; }
+        public PDFPointList Points 
+        {
+            get
+            {
+                if(null == _points)
+                    _points = new PDFPointList();
+                return _points;
+            }
+            set
+            {
+                _points = value;
+            } 
+        }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
         public SVGPolyLine()
-            : base(ObjectTypes.ShapePolygon)
+            : this(ObjectTypes.ShapePolyline)
         {
         }
 
+        protected SVGPolyLine(ObjectType type) : base(type)
+        {
+            
+        }
 
         protected override void OnPreLayout(LayoutContext context)
         {
@@ -32,8 +70,9 @@ namespace Scryber.Svg.Components
         {
             var bounds = this.GetBounds();
 
-            var xoffset = bounds.X.PointsValue;
-            var yoffset = bounds.Y.PointsValue;
+            var xoffset = this.ShapeOffset.X;
+            var yoffset = this.ShapeOffset.Y;
+            
 
             GraphicsPath path = new GraphicsPath();
 
@@ -42,7 +81,8 @@ namespace Scryber.Svg.Components
                 for (int i = 0; i < this.Points.Count; i++)
                 {
                     var pt = this.Points[i];
-                    pt = pt.Offset(-xoffset, -yoffset);
+                    
+                    pt = pt.Offset(xoffset, yoffset);
 
                     if (i == 0)
                         path.MoveTo(pt);
@@ -75,26 +115,41 @@ namespace Scryber.Svg.Components
             }
 
             return new Rect(minx, miny, maxx - minx, maxy - miny);
-
             
         }
-    }
 
-
-    [PDFParsableComponent("polygon")]
-    public class SVGPolygon : SVGPolyLine
-    {
-
-
-        public SVGPolygon(): base()
-        { }
-
-        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
-            GraphicsPath path = base.CreatePath(available, fullstyle);
-            path.ClosePath(true);
+            var path = this.Path;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
 
-            return path;
+                if (null != this.DrawingTransformMatrix)
+                {
+                    bounds = this.DrawingTransformBounds;
+                    var tl = new Point(bounds.X, bounds.Y);
+                    var tr = new Point(bounds.X + bounds.Width, bounds.Y);
+                    var bl = new Point(bounds.X, bounds.Y + bounds.Height);
+                    var br = new Point(bounds.X + bounds.Width, bounds.Y + bounds.Height);
+
+                    bounds = Rect.Bounds(tl, tr, bl, br);
+                }
+
+                if (null != context.RenderMatrix)
+                    bounds = context.RenderMatrix.TransformBounds(bounds);
+                
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange, context);
         }
     }
+
+
+    
 }

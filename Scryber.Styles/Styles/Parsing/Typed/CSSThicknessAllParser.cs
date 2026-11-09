@@ -11,6 +11,7 @@ namespace Scryber.Styles.Parsing.Typed
         private StyleKey<Unit> _top;
         private StyleKey<Unit> _bottom;
 
+        
         public CSSThicknessAllParser(string cssAttr, StyleKey<Unit> all, StyleKey<Unit> left, StyleKey<Unit> top, StyleKey<Unit> right, StyleKey<Unit> bottom)
             : base(cssAttr)
         {
@@ -37,7 +38,7 @@ namespace Scryber.Styles.Parsing.Typed
                     exprs[count] = str;
                     count++;
                 }
-                else if (CSSThicknessValueParser.ParseThicknessValue(str, Unit.Zero, out found))
+                else if (CSSThicknessValueParser.ParseThicknessValue(str, Unit.AutoValue, out found))
                 {
                     all[count] = found;
                     count++;
@@ -105,6 +106,8 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else if (count == 3)
             {
+                result = true;
+
                 // top then left and right and finally bottom
                 if (!string.IsNullOrEmpty(exprs[0]))
                 {
@@ -140,6 +143,8 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else if (count == 4)
             {
+                result = true;
+
                 // all 4 individually top then right and then bottom and finally left
                 if (!string.IsNullOrEmpty(exprs[0]))
                 {
@@ -197,7 +202,12 @@ namespace Scryber.Styles.Parsing.Typed
                 converted = unit;
                 return true;
             }
-            else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), Unit.Zero, out converted))
+            else if (value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return CSSThicknessValueParser.ParseThicknessValue(str, Unit.AutoValue, out converted);
+            }
+            else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), Unit.AutoValue, out converted))
             {
                 return true;
             }

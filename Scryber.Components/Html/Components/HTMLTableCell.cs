@@ -20,6 +20,9 @@ namespace Scryber.Html.Components
         [PDFAttribute("colspan")]
         public override int CellColumnSpan { get => base.CellColumnSpan; set => base.CellColumnSpan = value; }
 
+        [PDFAttribute("rowspan")]
+        public override int CellRowSpan { get => base.CellRowSpan; set => base.CellRowSpan = value; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>
@@ -63,10 +66,27 @@ namespace Scryber.Html.Components
 
         #endregion
 
+        [PDFAttribute("align")]
+        public override HorizontalAlignment HorizontalAlignment
+        {
+            get => base.HorizontalAlignment;
+            set => base.HorizontalAlignment = value;
+        }
+
+        [PDFAttribute("valign")]
+        public override VerticalAlignment VerticalAlignment
+        {
+            get => base.VerticalAlignment;
+            set => base.VerticalAlignment = value;
+        }
+        
         public HTMLTableCell()
-            : base()
+            : this(HTMLObjectTypes.TableCell)
         {
         }
+
+        protected HTMLTableCell(ObjectType type) : base(type)
+        { }
     }
 
     [PDFParsableComponent("th")]
@@ -117,11 +137,34 @@ namespace Scryber.Html.Components
             get;
             set;
         }
+        
+        [PDFAttribute("align")]
+        public override HorizontalAlignment HorizontalAlignment
+        {
+            get => base.HorizontalAlignment;
+            set => base.HorizontalAlignment = value;
+        }
+
+        [PDFAttribute("valign")]
+        public override VerticalAlignment VerticalAlignment
+        {
+            get => base.VerticalAlignment;
+            set => base.VerticalAlignment = value;
+        }
+        
+        [PDFAttribute("colspan")]
+        public override int CellColumnSpan { get => base.CellColumnSpan; set => base.CellColumnSpan = value; }
+
+        [PDFAttribute("rowspan")]
+        public override int CellRowSpan { get => base.CellRowSpan; set => base.CellRowSpan = value; }
 
         public HTMLTableHeaderCell()
-            : base()
+            : this(HTMLObjectTypes.TableHeaderCell)
         {
         }
+
+        protected HTMLTableHeaderCell(ObjectType type) : base(type)
+        { }
     }
 
 }

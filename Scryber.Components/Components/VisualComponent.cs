@@ -22,6 +22,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 using Scryber.Text;
 
 namespace Scryber.Components
@@ -234,6 +235,80 @@ namespace Scryber.Components
 
         #endregion
 
+        
+        #region public PDFUnit Right {get;set;} + public bool HasRight {get;}
+
+        /// <summary>
+        /// Gets or Sets the Right (Horizontal) position of this page Component
+        /// </summary>
+        [PDFAttribute("right", Const.PDFStylesNamespace)]
+        [PDFDesignable("Right", Ignore = true, Category ="Position",Priority = 1,Type ="PDFUnit")]
+        [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"left\"")]
+        public virtual Unit Right
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionRightKey, Unit.Empty);
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionRightKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the flag to identify if the X position has been set for this Page Component
+        /// </summary>
+        public virtual bool HasRight
+        {
+            get
+            {
+                StyleValue<Unit> x;
+                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionRightKey, out x);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit Bottom {get;set;} + public bool HasBottom {get;}
+
+        /// <summary>
+        /// Gets or sets the Y (vertical) position of the Page Component
+        /// </summary>
+        [PDFAttribute("bottom", Const.PDFStylesNamespace)]
+        [PDFDesignable("Bottom", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"top\"")]
+        public virtual Unit Bottom
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionBottomKey, Unit.Empty);
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionBottomKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the flag to identifiy is the Y value has been set on this page Component
+        /// </summary>
+        public virtual bool HasBottom
+        {
+            get
+            {
+                StyleValue<Unit> x;
+                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionBottomKey, out x);
+            }
+        }
+
+        #endregion
 
         #region public PDFUnit MinimumWidth {get;set;} + public bool HasMinimumWidth {get;}
 
@@ -449,7 +524,7 @@ namespace Scryber.Components
         [PDFAttribute("bg-color",Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"background-color\"")]
         [PDFDesignable("Color", Category = "Background", Priority = 1, Type = "Color")]
-        public Drawing.Color BackgroundColor
+        public virtual Drawing.Color BackgroundColor
         {
             get
             {
@@ -692,6 +767,98 @@ namespace Scryber.Components
             set
             {
                 this.Style.SetValue(StyleKeys.BorderCornerRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderTopLeftRadius
+
+        /// <summary>
+        /// Gets or sets the border top left corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-top-left-radius", Const.PDFStylesNamespace)]
+        public Unit BorderTopLeftRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderTopLeftRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderTopLeftRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderTopRightRadius
+
+        /// <summary>
+        /// Gets or sets the border top right corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-top-right-radius", Const.PDFStylesNamespace)]
+        public Unit BorderTopRightRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderTopRightRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderTopRightRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderBottomLeftRadius
+
+        /// <summary>
+        /// Gets or sets the border bottom left corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-bottom-left-radius", Const.PDFStylesNamespace)]
+        public Unit BorderBottomLeftRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderBottomLeftRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderBottomLeftRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderBottomRightRadius
+
+        /// <summary>
+        /// Gets or sets the border bottom right corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-bottom-right-radius", Const.PDFStylesNamespace)]
+        public Unit BorderBottomRightRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderBottomRightRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderBottomRightRadiusKey, value);
             }
         }
 
@@ -1145,13 +1312,38 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
+                    return this.Style.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
                 else
-                    return PositionMode.Block;
+                    return PositionMode.Static;
             }
             set
             {
                 this.Style.SetValue(StyleKeys.PositionModeKey, value);
+            }
+        }
+
+        #endregion
+        
+        #region public DisplayMode DisplayMode
+
+        /// <summary>
+        /// Gets or sets the position mode of this component (flow, relative, absolute)
+        /// </summary>
+        [PDFAttribute("display-mode", Const.PDFStylesNamespace)]
+        [PDFDesignable("Display", Category = "Layout", Priority = 1, Type = "DisplayMode")]
+        [PDFJSConvertor("scryber.studio.design.convertors.displayMode_css")]
+        public DisplayMode DisplayMode
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                else
+                    return DisplayMode.Block;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionDisplayKey, value);
             }
         }
 
@@ -1574,14 +1766,27 @@ namespace Scryber.Components
         {
             get
             {
+                BreakContentType type;
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.ColumnBreakBeforeKey, false);
-                else
-                    return false;
+                {
+                    type = this.Style.GetValue(StyleKeys.ColumnBreakBeforeKey, BreakContentType.Auto);
+                    if (type == BreakContentType.Column)
+                        return true;
+                } 
+                return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.ColumnBreakBeforeKey, value);
+                if (value)
+                {
+                    BreakContentType type = BreakContentType.Column;
+                    this.Style.SetValue(StyleKeys.ColumnBreakBeforeKey, type);
+                }
+                else
+                {
+                    if (this.ColumnBreakBefore)
+                        this.Style.RemoveValue(StyleKeys.ColumnBreakBeforeKey);
+                }
             }
         }
 
@@ -1598,14 +1803,19 @@ namespace Scryber.Components
         {
             get
             {
+                BreakContentType type;
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.ColumnBreakAfterKey, false);
-                else
-                    return false;
+                {
+                    type = this.Style.GetValue(StyleKeys.ColumnBreakAfterKey, BreakContentType.Auto);
+                    if (type == BreakContentType.Column)
+                        return true;
+                } 
+                return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.ColumnBreakAfterKey, value);
+                if (this.ColumnBreakAfter)
+                    this.Style.RemoveValue(StyleKeys.ColumnBreakAfterKey);
             }
         }
 
@@ -1615,9 +1825,9 @@ namespace Scryber.Components
         #region public TransformOperation TransformOperation {get;set;}
 
         /// <summary>
-        /// Gets or sets the transform operation. NOTE setting will prepend the value onto the chain of any existing values. Set to null or use RemoveTransformOperation() to clear completely.
+        /// Gets or sets the transform operation.
         /// </summary>
-        public TransformOperation TransformOperation
+        public virtual Scryber.Drawing.TransformOperationSet TransformOperation
         {
             get
             {
@@ -1632,8 +1842,6 @@ namespace Scryber.Components
                     this.Style.RemoveValue(StyleKeys.TransformOperationKey);
                 else
                 {
-                    var prev = this.Style.GetValue(StyleKeys.TransformOperationKey, null);
-                    value.Append(prev);
                     this.Style.SetValue(StyleKeys.TransformOperationKey, value);
                 }
                     
@@ -1819,63 +2027,79 @@ namespace Scryber.Components
             if (string.IsNullOrEmpty(data.Content))
             {
                 if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Warning, "Binding", "Binding data-content value was null or empty on the '" + this.ID + " component, even though other options had been set");
+                    context.TraceLog.Add(TraceLevel.Warning, "Binding",
+                        "Binding data-content value was null or empty on the '" + this.ID +
+                        " component, even though other options had been set");
 
                 return;
             }
 
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Binding",
+                    "Binding data-content value onto the '" + this.ID + " component, with mime-type " +
+                    data.Type.ToString());
 
+            var component = this.ParseDataContent(data);
+
+            //We clear out even if the returned content is null
+            if (data.Action == DataContentAction.Replace)
+            {
+                this.InnerContent.Clear();
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Debug, "Binding",
+                        "Cleared inner content of the '" + this.ID +
+                        " component, as data-content-action is set to replace.");
+            }
+
+            if (null != component)
+            {
+                if (data.Action == DataContentAction.PrePend)
+                {
+                    this.InnerContent.Insert(0, component);
+
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Binding",
+                            "Inserted bound content of the '" + this.ID +
+                            " component at index 0, as data-content-action is set to prepend.");
+                }
+                else
+                {
+                    this.InnerContent.Add(component);
+
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Binding",
+                            "Added bound content of the '" + this.ID + " component, to the end.");
+                }
+                
+
+                component.DataBind(context);
+            }
+            else if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Binding",
+                    "No component was retruned from the parser with data-content value '" +
+                    (data.Content.Length > 50 ? data.Content.Substring(45) + "..." : data.Content) + " on the '" +
+                    this.ID + " component");
+
+
+        }
+
+        #endregion
+
+        protected virtual Component ParseDataContent(Data.DataBindingContent data)
+        {
             if (null == data.Type)
                 data.Type = this.Document.GetDefaultContentMimeType();
 
             //Load the parser from the document - will throw an error if not known
             var parser = this.Document.EnsureParser(data.Type);
-
-            if (context.ShouldLogVerbose)
-                context.TraceLog.Add(TraceLevel.Verbose, "Binding", "Binding data-content value onto the '" + this.ID + " component, with mime-type " + data.Type.ToString());
-
+            
             using (var sr = new System.IO.StringReader(data.Content))
             {
                 var component = parser.Parse(null, sr, ParseSourceType.Template) as Component;
-
-                //We clear out even if the returned content is null
-                if (data.Action == DataContentAction.Replace)
-                {
-                    this.InnerContent.Clear();
-
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Debug, "Binding", "Cleared inner content of the '" + this.ID + " component, as data-content-action is set to replace.");
-                }
-                if (null != component)
-                {
-                    if (data.Action == DataContentAction.PrePend)
-                    {
-                        this.InnerContent.Insert(0, component);
-
-                        if (context.ShouldLogDebug)
-                            context.TraceLog.Add(TraceLevel.Debug, "Binding", "Inserted bound content of the '" + this.ID + " component at index 0, as data-content-action is set to prepend.");
-                    }
-                    else
-                    {
-                        this.InnerContent.Add(component);
-
-                        if (context.ShouldLogDebug)
-                            context.TraceLog.Add(TraceLevel.Debug, "Binding", "Added bound content of the '" + this.ID + " component, to the end.");
-                    }
-                    //actually perfrom the data binding of the content
-                    //TODO: check on the init and load implementation.
-
-                    component.DataBind(context);
-                }
-                else if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Binding", "No component was retruned from the parser with data-content value '" + (data.Content.Length > 50 ? data.Content.Substring(45) + "..." : data.Content) + " on the '" + this.ID + " component");
-
+                return component;
             }
         }
-
-        #endregion
-
-        
 
     }
 

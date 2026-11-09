@@ -205,7 +205,12 @@ namespace Scryber.Drawing
                         formatS = formatS.Replace("-", "");
 
                     if (!Enum.TryParse<FontSourceFormat>(formatS, true, out format))
-                        format = FontSourceFormat.Default; //be nice
+                    {
+                        if (formatS.Equals("ttf"))
+                            format = FontSourceFormat.TrueType;
+                        else
+                            format = FontSourceFormat.Default; //be nice
+                    }
                 }
                 else
                     return false; //deffo not right

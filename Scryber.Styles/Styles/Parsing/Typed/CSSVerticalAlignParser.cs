@@ -34,6 +34,7 @@ namespace Scryber.Styles.Parsing.Typed
                     onStyle.SetValue(StyleKeys.PositionVAlignKey, align);
                     success = true;
                 }
+                else success = false;
             }
 
             return success;
@@ -77,6 +78,9 @@ namespace Scryber.Styles.Parsing.Typed
                     break;
                 case "middle":
                     align = VerticalAlignment.Middle;
+                    break;
+                case "baseline":
+                    align = VerticalAlignment.Baseline;
                     break;
                 default:
                     align = VerticalAlignment.Top;

@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        
+        body {
+            font-family: sans-serif;
+            padding: 20pt;
+        }
+        
+        svg {
+            background-color: #AAA;
+            width: 150pt;
+            height: 150pt;
+        }
+
+        .box {
+            border-radius: 5pt;
+        }
+
+        path.transparentish {
+            fill: aqua;
+            fill-opacity: 0.5;
+            stroke-opacity: 0.5;
+        }
+        
+        #img{
+            width : 200pt;
+            height: 200pt;
+            border: solid 1px black;
+            padding: 3pt;
+        }
+        
+        tspan{
+            text-decoration: underline;
+        }
+    </style>
+    
+</head>
+<body title="Rotation Samples" >
+
+<!--    <img id="img" src="../../resources/group.png" style="width: 100pt; height:100pt" />-->
+    <svg id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+          xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <style>
+            
+        </style>
+        <defs>
+            <rect id="cdef" width="30" height="10" />
+        </defs>
+        <a id="link" href="SVGTransform_TransformComponents.html" target="_blank" transform=" translate(0, 70) skewX(30)" >
+            <circle r="20" cx="20" cy="20" fill="blue" />
+        </a>
+        <circle id="circ" r="20" transform="translate(75 90) skewX(30)" />
+        <ellipse id="elli" rx="30" ry="20" transform="translate(120 90) skewY(30)" />
+        <g id="grp"  transform="translate(130 60) skewX(40)">
+            <rect height="60" width="40" />
+        </g>
+        <rect id="rect" transform="translate(10, 25) scale(4,1)" width="30" height="30" />
+        <line id="ln" x1="0" x2="0" y1="0" y2="60" stroke-width="8" stroke="black" transform="translate(180, 60) skewX(40)"  />
+        <polyline id="poly" points="0,0 0,56 20, 56 20,0"
+                  fill="transparent" stroke-width="8" stroke="black" 
+                  transform="translate(195, 60) skewX(40)"  />
+        <polygon id="polyG" points="0,0 100,0 0,5" transform="translate(20, 60) skewX(-50)" />
+        <path id="pth"  transform="translate(225, 60) scale(0.2) skewX(30)"
+                d="M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60" 
+                stroke-width="6" fill="transparent" stroke="black" stroke-linecap="round"  />
+        <image id="img" opacity="0.5" href="../../resources/group.png" transform="translate(15, 125) scale(1.3,0.1) skewX(-10) " />
+        <use id="use" href="#cdef" opacity="0.2" transform="translate(120, 150) scale(2, 0.2)" />
+        <text id="txt" font-size="40px" transform="translate(10, 150) skewX(25) scaleY(-1.0)" 
+              dominant-baseline="alphabetic" >Under the image</text>
+    </svg>
+    
+</body>
+</html>

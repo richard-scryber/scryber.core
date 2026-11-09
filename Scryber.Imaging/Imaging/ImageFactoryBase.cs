@@ -15,27 +15,33 @@ namespace Scryber.Imaging
 {
     public abstract class ImageFactoryBase : IPDFImageDataFactory
     {
-        public bool ShouldCache { get; }
+        public bool ShouldCache
+        {
+            get;
+        }
 
         public Regex Match { get; }
         
+        public MimeType ImageType { get; }
+        
         public string Name { get; }
         
-        public ImageFactoryBase(Regex match, string name, bool shouldCache)
+        public ImageFactoryBase(Regex match, MimeType type, string name, bool shouldCache)
         {
             this.Match = match ?? throw new ArgumentNullException(nameof(match));
+            this.ImageType = type ?? MimeType.Empty;
             this.Name = name;
             this.ShouldCache = shouldCache;
         }
 
-        public bool IsMatch(string forPath)
+        public virtual bool IsMatch(string forPath)
         {
             return this.Match.IsMatch(forPath);
         }
         
         public virtual ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
-            if (document is IResourceRequester resourceRequester)
+            if (null != document && document is IResourceRequester resourceRequester)
             {
                 return GetProxyImageData(document, resourceRequester, owner, path);
             }
@@ -48,7 +54,7 @@ namespace Scryber.Imaging
 
         public virtual async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
-            if (document is IResourceRequester resourceRequester)
+            if (null != document && document is IResourceRequester resourceRequester)
             {
                 return GetProxyImageData(document, resourceRequester, owner, path);
             }
@@ -58,7 +64,32 @@ namespace Scryber.Imaging
             }
         }
 
-        private static readonly System.Runtime.InteropServices.OSPlatform _wasm;
+        public virtual ImageData LoadImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+        {
+            if (!this.ImageType.Equals(type))
+                throw new NotSupportedException(
+                    "This image factory can only load images of type " + this.ImageType + " The mime-type " + type +
+                    "does not match");
+
+            return this.DoLoadRawImageData(document, owner, rawData, type);
+        }
+
+        /// <summary>
+        /// Converts the binary data of the image into a known ImageData instance, e.g. SVGImageData. Base method is not implemented.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="owner"></param>
+        /// <param name="rawData"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException">If this method is not implemented by inheriting instance then an exception will be thrown.</exception>
+        protected virtual ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData,
+            MimeType type)
+        {
+            throw new NotImplementedException("Inheritors should override LoadRawImageData to load images from raw data in the format they expect.");
+        }
+
+        
         protected virtual async Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
             Stream stream = null;
@@ -80,7 +111,7 @@ namespace Scryber.Imaging
             }
             catch (Exception ex)
             {
-                if (document.ConformanceMode == ParserConformanceMode.Strict)
+                if (null == document || document.ConformanceMode == ParserConformanceMode.Strict)
                     throw new System.IO.IOException("Could not load the image for component " + (owner == null ? "UNKNOWN" : owner.ID) + ". See the inner exception for more details", ex);
                 else
                     document.TraceLog.Add(TraceLevel.Error, "Imaging", " Could not load the image for component " + (owner == null ? "UNKNOWN" : owner.ID) + " from path: " + path, ex);
@@ -110,11 +141,14 @@ namespace Scryber.Imaging
                         error = ex;
                         asyncData = null;
                     }
+                    
                     request.CompleteRequest(asyncData, asyncData != null, error);
                     return request.IsSuccessful;
                 }
             });
-            var req = requester.RequestResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, path, callback, owner, this);
+            
+            var cacheDuration = this.ShouldCache ? Scryber.Caching.PDFCacheProvider.DefaultCacheDuration : Scryber.Caching.PDFCacheProvider.NoCacheDuration;
+            var req = requester.RequestResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, path, cacheDuration, callback, owner, this);
 
             return new ImageDataProxy(req, path);
         }
@@ -158,24 +192,28 @@ namespace Scryber.Imaging
             Stream stream = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read);
             return Task.FromResult(stream);
         }
-        
+
         /// <summary>
-        /// Method all inheritors should implement to return data 
+        /// Method all inheritors should implement to return data decoded into a known ImageDataInstance. e.g. SVGImageData
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="owner"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected abstract ImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner, string path);
+        protected virtual ImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner,
+            string path)
+        {
+            throw new NotImplementedException("Inheritors should override DoDecodeImageData to load images from raw data in the format they expect.");
+        }
 
         
 
 
-        protected virtual PDFImageDataBase GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
+        protected static  ImageData GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
         {
             if (null == baseImage)
                 throw new ArgumentNullException(nameof(baseImage));
-
+                
             var data = GetImageDataForImage(baseImage, source);
             data.SetSourceImageFormat(format, bitdepth, hasAlpha, colorSpace);
             return data;
@@ -184,7 +222,7 @@ namespace Scryber.Imaging
         public static PDFImageDataBase GetImageDataForImage(Image image, string source)
         {
             PDFImageDataBase data;
-            
+
             switch (image)
             {
                 case Image<Argb32> argb32:
@@ -202,6 +240,12 @@ namespace Scryber.Imaging
                 default:
                     throw new NotSupportedException("The image type " + image.GetType().Name + " is not supported");
             }
+
+            //Every format that reaches here has already gone through SixLabors' Image.Load, so
+            //its ExifProfile (if the source file carried one) is already parsed and sitting on
+            //image.Metadata - a single shared hook point for PNG/GIF/TIFF/WebP and JPEG's own
+            //Image.Load fallback path. Silently absent (not an error) when there's no profile.
+            data.ExifMetadata = ImageEXIFExtractor.Extract(image);
 
             return data;
         }

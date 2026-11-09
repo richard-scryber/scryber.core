@@ -1,0 +1,1532 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Scryber.Components;
+using Scryber.Drawing;
+using Scryber.Styles;
+
+namespace Scryber.PDF.Layout
+{
+    /// <summary>
+    /// Layout engine for elements with display:grid.
+    /// Builds a synthetic TableGrid/TableRow/GridCell structure from the container's children
+    /// (auto-flow, row-major), then delegates all layout work to LayoutEngineTable.
+    /// Column widths from grid-template-columns (fr, pt, px, %, repeat()) are injected as explicit
+    /// pt values onto the GridCell styles before the table engine processes them.
+    /// </summary>
+    public class LayoutEngineFlexGrid : LayoutEngineTable
+    {
+        // -----------------------------------------------------------------------
+        // Track definition — one entry per column
+        // -----------------------------------------------------------------------
+
+        // subgrid is not represented here - a subgrid track doesn't have its own size, it
+        // inherits the corresponding track from the parent grid, which this engine's track
+        // model has no notion of. CSSGridTrackStringParser rejects the "subgrid" keyword at
+        // CSS-parse time, so it never reaches this type.
+        private enum TrackType { Fr, Points, Percent, Auto, MinContent, MaxContent }
+
+        private readonly struct TrackDef
+        {
+            public readonly TrackType Type;
+            public readonly double Value;
+            public TrackDef(TrackType t, double v) { Type = t; Value = v; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Instance state
+        // -----------------------------------------------------------------------
+
+        private readonly List<TrackDef> _tracks;
+        private readonly List<List<GridCell>> _cellGrid; // [row][col]
+        private readonly List<TrackDef> _rowTracks;
+        private readonly List<TableRow> _syntheticRows;
+
+        // Line-name maps built from [name] tokens in grid-template-columns/rows.
+        // Key = name, value = sorted list of 1-based line indices.
+        private readonly Dictionary<string, List<int>> _colLineNames;
+        private readonly Dictionary<string, List<int>> _rowLineNames;
+
+        // Parsed grid-template-areas (may be empty).
+        private readonly GridTemplateAreasValue _templateAreas;
+
+        protected IContainerComponent Container { get; set; }
+        protected Style ContainerStyle { get; set; }
+
+        /// <summary>
+        /// Counters are on the grid container, not the synthetic table that lays it out.
+        /// </summary>
+        protected override Component CounterComponent
+        {
+            get { return (this.Container as Component) ?? base.CounterComponent; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Constructor
+        // -----------------------------------------------------------------------
+
+        public LayoutEngineFlexGrid(ContainerComponent container, IPDFLayoutEngine parent, Style containerStyle)
+            : base(BuildSyntheticTable(container, containerStyle, parent,
+                   out var tracks, out var cellGrid, out var syntheticRows, out var rowTracks,
+                   out var colLineNames, out var rowLineNames, out var templateAreas), parent)
+        {
+            _tracks        = tracks;
+            _cellGrid      = cellGrid;
+            _syntheticRows = syntheticRows;
+            _rowTracks     = rowTracks;
+            _colLineNames  = colLineNames;
+            _rowLineNames  = rowLineNames;
+            _templateAreas = templateAreas;
+            ContainerStyle = containerStyle;
+            Container      = container;
+        }
+
+        // A block that itself has multiple CSS columns (e.g. a <main> with column-count:2) has
+        // an AvailableBounds.Width covering its FULL un-split content area - the region actually
+        // being laid into (one column) is narrower. Always prefer CurrentRegion's width when a
+        // region has been established; fall back to the block's own AvailableBounds otherwise.
+        // Used everywhere this engine resolves "how much width is available" from the parent
+        // block, so a grid with no explicit width nested inside a multi-column parent sizes to
+        // its own column rather than the parent's full (pre-split) width.
+        private static Unit GetCurrentRegionWidth(PDFLayoutBlock block)
+        {
+            if (block == null)
+                return Unit.Zero;
+            if (block.CurrentRegion != null)
+                return block.CurrentRegion.TotalBounds.Width;
+            return block.AvailableBounds.Width;
+        }
+
+        // -----------------------------------------------------------------------
+        // Width/height injection — called before base processes cell styles
+        // -----------------------------------------------------------------------
+
+        protected override void DoLayoutComponent()
+        {
+            if (_tracks.Count > 0 && _cellGrid.Count > 0)
+                InjectColumnWidths();
+
+            if (_rowTracks.Count > 0 && _syntheticRows.Count > 0)
+                InjectRowHeights();
+
+            InjectRowGaps();
+
+            // Returns > 0 if we should expand the container to the full parent width post-layout.
+            double expandWidth = ExpandToFillParentWidth();
+
+            var asDefined = Container.Content.ToArray();
+            try
+            {
+
+                Container.Content.Clear();
+                Container.Content.Insert(0, this.Table);
+
+                base.DoLayoutComponent();
+
+                // Strip the injected row-gap from the first row of each overflow page.
+                ClearContinuationRowGaps();
+
+                // Propagate each cell block's final height to its inner div block.
+                StretchAllCellContent();
+
+                // The table engine sizes the block to fit its cells; widen to the full parent
+                // width so the container renders as a block-level box.
+                if (expandWidth > 0)
+                    ExpandTableBlocks(expandWidth);
+
+                // align-content: reserve any declared-height leftover on the last page segment
+                // and position the row content within it (start/center/end).
+                ApplyAlignContent();
+            }
+            finally
+            {
+                Container.Content.Clear();
+                Container.Content.AddRange(asDefined);
+            }
+
+        }
+
+        // A CSS grid container is a block-level box: with no explicit width it should stretch to
+        // fill the full available parent width, and even WITH an explicit width larger than its
+        // tracks it should still occupy that declared width (the leftover space is then
+        // positioned by justify-content, handled separately in InjectColumnWidths - this method
+        // only concerns the outer block's own size).  Cell widths are already baked by
+        // InjectColumnWidths so setting FullStyle.Size.Width here only widens the outer block;
+        // it does not trigger any recalculation of column or cell widths.
+        // Returns the target full width (pts) so DoLayoutComponent can apply it post-layout.
+        private double ExpandToFillParentWidth()
+        {
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+
+            double fullWidth;
+            if (tablePos.Width.HasValue)
+            {
+                fullWidth = tablePos.Width.Value.PointsValue;
+            }
+            else
+            {
+                var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                fullWidth = GetCurrentRegionWidth(block).PointsValue;
+                if (!tablePos.Margins.IsEmpty)
+                    fullWidth -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
+            }
+
+            if (fullWidth > 0)
+            {
+                this.FullStyle.Size.Width = new Drawing.Unit(fullWidth, PageUnits.Points);
+                // CreatePostionOptions is cached on StyleFull; clear it so base.DoLayoutComponent
+                // picks up the width we just set.
+                (this.FullStyle as StyleFull)?.ClearFullRefs();
+                return fullWidth;
+            }
+            return 0;
+        }
+
+        // Widens each TableBlock (and its column region and row blocks) to targetWidth so the
+        // container renders as a block-level box matching the full parent available width.
+        private void ExpandTableBlocks(double targetWidth)
+        {
+            var target = new Drawing.Unit(targetWidth, PageUnits.Points);
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (grid.TableBlock == null) continue;
+
+                // Widen the column region that contains all row blocks.
+                if (grid.TableBlock.Columns != null && grid.TableBlock.Columns.Length > 0)
+                {
+                    var region = grid.TableBlock.Columns[0];
+                    if (region != null && region.TotalBounds.Width < target)
+                    {
+                        var rb = region.TotalBounds;
+                        rb.Width = target;
+                        region.TotalBounds = rb;
+                    }
+
+                    // Widen each row block inside the region.
+                    if (region?.Contents != null)
+                    {
+                        foreach (var item in region.Contents)
+                        {
+                            if (item is PDFLayoutBlock rowBlock && rowBlock.TotalBounds.Width < target)
+                            {
+                                var rowb = rowBlock.TotalBounds;
+                                rowb.Width = target;
+                                rowBlock.TotalBounds = rowb;
+                            }
+                        }
+                    }
+                }
+
+                // Widen the table block itself.
+                if (grid.TableBlock.TotalBounds.Width < target)
+                {
+                    var tb = grid.TableBlock.TotalBounds;
+                    tb.Width = target;
+                    grid.TableBlock.TotalBounds = tb;
+                }
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // align-content — positions the grid's rows as a block within an explicit
+        // container height that is larger than the rows actually consume.
+        //
+        // Row heights (unlike column widths) are not known until after layout - most row
+        // tracks are content-driven (auto/fr), so the total content height can only be
+        // measured once every row has actually been laid out across however many pages the
+        // grid landed on.  The declared height is only ever "missing" on the LAST such page:
+        // every earlier segment is, by definition, full (that's why it needed to continue).
+        // So the leftover is computed from the grand total across every segment, but only
+        // ever applied to the last one - earlier segments are untouched.
+        // -----------------------------------------------------------------------
+
+        private void ApplyAlignContent()
+        {
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+            if (!tablePos.Height.HasValue && !tablePos.MinimumHeight.HasValue)
+                return; // no explicit or minimum height - nothing to distribute
+
+            // With no explicit height, min-height is the closest thing to a "declared" box -
+            // treat it the same way here, otherwise align-content is a no-op on a min-height-only
+            // grid. This also grows the block itself (via ExpandLastSegment below), since that
+            // runs unconditionally whenever there's leftover space to distribute - min-height
+            // growth for plain tables/flexbox isn't covered yet (see follow-up task).
+            double declaredHeight = tablePos.Height.HasValue ? tablePos.Height.Value.PointsValue : 0;
+            if (tablePos.MinimumHeight.HasValue && tablePos.MinimumHeight.Value.PointsValue > declaredHeight)
+                declaredHeight = tablePos.MinimumHeight.Value.PointsValue;
+
+            double totalActualHeight = 0;
+            GridReference lastGrid = null;
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (grid.TableBlock == null) continue;
+                totalActualHeight += grid.TableBlock.TotalBounds.Height.PointsValue;
+                lastGrid = grid;
+            }
+            if (lastGrid == null) return;
+
+            double leftover = declaredHeight - totalActualHeight;
+            if (leftover <= 0) return; // content already fills (or exceeds) the declared height
+
+            // Clamp to whatever space actually remains on the page the last segment ends on,
+            // so we never manufacture a new overflow that wouldn't otherwise happen.
+            var parentRegion = FindParentRegion(lastGrid.TableBlock);
+            double available = parentRegion?.AvailableHeight.PointsValue ?? 0;
+            double growBy = Math.Max(0, Math.Min(leftover, available));
+            if (growBy <= 0) return;
+
+            double shiftBy;
+            switch (this.FullStyle.Flex.AlignContent)
+            {
+                case FlexAlignMode.Center:
+                    shiftBy = growBy / 2;
+                    break;
+                case FlexAlignMode.FlexEnd:
+                    shiftBy = growBy;
+                    break;
+                // Stretch (the CSS default), FlexStart, Baseline, Auto and the space-* values
+                // (not yet supported) all fall back to start - rows stay at the top, the
+                // reserved space simply trails after them.
+                default:
+                    shiftBy = 0;
+                    break;
+            }
+
+            ExpandLastSegment(lastGrid, growBy, shiftBy);
+        }
+
+        // Finds the region containing tableBlock within its parent block - i.e. the region
+        // whose AvailableHeight tells us how far tableBlock could grow before overflowing onto
+        // a new page, and whose UsedSize must be kept in sync with tableBlock's own height so
+        // that anything laid out after the grid (e.g. a sibling) is positioned correctly.
+        private static PDFLayoutRegion FindParentRegion(PDFLayoutBlock tableBlock)
+        {
+            if (tableBlock.Parent is PDFLayoutBlock parentBlock && parentBlock.Columns != null)
+            {
+                foreach (var col in parentBlock.Columns)
+                {
+                    if (col?.Contents != null && col.Contents.Contains(tableBlock))
+                        return col;
+                }
+            }
+            return null;
+        }
+
+        // Grows the last segment's table block (and its column region) by growBy, and shifts
+        // every row in that segment down by shiftBy so the rows sit at the correct position
+        // (start/center/end) within the newly-reserved space.
+        private void ExpandLastSegment(GridReference lastGrid, double growBy, double shiftBy)
+        {
+            var grow = new Unit(growBy, PageUnits.Points);
+
+            if (shiftBy > 0)
+            {
+                var shift = new Unit(shiftBy, PageUnits.Points);
+                for (int r = lastGrid.StartRowIndex; r <= lastGrid.EndRowIndex; r++)
+                {
+                    var rowRef = this.AllCells.AllRows[r];
+                    if (rowRef?.Block == null) continue;
+                    var bounds = rowRef.Block.TotalBounds;
+                    bounds.Y += shift;
+                    rowRef.Block.TotalBounds = bounds;
+                }
+            }
+
+            if (lastGrid.TableBlock.Columns != null && lastGrid.TableBlock.Columns.Length > 0)
+            {
+                var region = lastGrid.TableBlock.Columns[0];
+                if (region != null)
+                {
+                    var rb = region.TotalBounds;
+                    rb.Height += grow;
+                    region.TotalBounds = rb;
+                }
+            }
+
+            var tb = lastGrid.TableBlock.TotalBounds;
+            tb.Height += grow;
+            lastGrid.TableBlock.TotalBounds = tb;
+
+            // The parent region's UsedSize was set from the table block's height BEFORE we grew
+            // it here. Bring it in line so any content laid out after the grid (e.g. a sibling)
+            // is positioned below the full (now-taller) block, not the original shorter one -
+            // same fix as ClearContinuationRowGaps applies for the row-gap-shrink case.
+            var parentRegion = FindParentRegion(lastGrid.TableBlock);
+            if (parentRegion != null)
+            {
+                var usedSize = parentRegion.UsedSize;
+                usedSize.Height += grow;
+                parentRegion.UsedSize = usedSize;
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Row-span height propagation and continuation-row gap removal
+        // -----------------------------------------------------------------------
+
+        // When the grid overflows to a new page each overflow GridReference knows its
+        // StartRowIndex — the first row on that page.  InjectRowGaps already injected a
+        // row-gap top margin on those rows; strip it so no phantom gap appears at the top
+        // of each continuation page.
+        // Must run BEFORE StretchAllCellContent so the corrected heights feed into the stretch.
+        private void ClearContinuationRowGaps()
+        {
+            int colCount = this.AllCells.TotalColumnCount;
+            bool first = true;
+
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (first) { first = false; continue; } // first grid = first page, no gap to strip
+
+                int r = grid.StartRowIndex;
+                var rowRef = this.AllCells.AllRows[r];
+                if (rowRef?.Block == null) continue;
+
+                // Find the gap amount from the first cell in this row that carries one.
+                Unit gap = Unit.Zero;
+                for (int c = 0; c < colCount && gap == Unit.Zero; c++)
+                {
+                    var cref = this.AllCells.AllCells[r, c];
+                    if (cref?.Block?.Position != null && cref.Block.Position.Margins.Top > Unit.Zero)
+                        gap = cref.Block.Position.Margins.Top;
+                }
+                if (gap == Unit.Zero) continue;
+
+                // Remove the gap from every cell block in this row.
+                for (int c = 0; c < colCount; c++)
+                {
+                    var cref = this.AllCells.AllCells[r, c];
+                    if (cref?.Block?.Position == null) continue;
+                    if (cref.Block.Position.Margins.Top == Unit.Zero) continue;
+
+                    var margins = cref.Block.Position.Margins;
+                    margins.Top = Unit.Zero;
+                    cref.Block.Position.Margins = margins;
+
+                    var bounds = cref.Block.TotalBounds;
+                    bounds.Height -= gap;
+                    cref.Block.TotalBounds = bounds;
+                }
+
+                // Shrink the row block to match the corrected cell heights.
+                var rowBounds = rowRef.Block.TotalBounds;
+                rowBounds.Height -= gap;
+                rowRef.Block.TotalBounds = rowBounds;
+
+                // Every subsequent row on this continuation page was positioned by the
+                // layout engine using the original (gap-inflated) row offset, so its
+                // TotalBounds.Y is `gap` too large.  Slide each one up.
+                for (int rNext = r + 1; rNext <= grid.EndRowIndex; rNext++)
+                {
+                    var nextRow = this.AllCells.AllRows[rNext];
+                    if (nextRow?.Block == null) continue;
+                    var nextBounds = nextRow.Block.TotalBounds;
+                    nextBounds.Y -= gap;
+                    nextRow.Block.TotalBounds = nextBounds;
+                }
+
+                // Propagate the height reduction upward: the grid continuation block and its
+                // containing column region still reflect the old (gap-inclusive) height.
+                if (grid.TableBlock?.Columns != null && grid.TableBlock.Columns.Length > 0)
+                {
+                    var region = grid.TableBlock.Columns[0];
+
+                    var colBounds = region.TotalBounds;
+                    colBounds.Height -= gap;
+                    region.TotalBounds = colBounds;
+
+                    var usedSize = region.UsedSize;
+                    usedSize.Height -= gap;
+                    region.UsedSize = usedSize;
+                }
+                if (grid.TableBlock != null)
+                {
+                    var tableBounds = grid.TableBlock.TotalBounds;
+                    tableBounds.Height -= gap;
+                    grid.TableBlock.TotalBounds = tableBounds;
+
+                    // The parent region's UsedSize was incremented by the original
+                    // (gap-inflated) TableBlock height when the block was closed.
+                    // Reduce it now so that any content laid out after the grid
+                    // (e.g. a sibling span) is positioned correctly.
+                    if (grid.TableBlock.Parent is PDFLayoutBlock parentBlock &&
+                        parentBlock.Columns != null)
+                    {
+                        foreach (var col in parentBlock.Columns)
+                        {
+                            if (col?.Contents != null && col.Contents.Contains(grid.TableBlock))
+                            {
+                                var usedSize = col.UsedSize;
+                                usedSize.Height -= gap;
+                                col.UsedSize = usedSize;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // After base.DoLayoutComponent(), every GridCell block has its final height:
+        //   - non-spanning cells: set to the row's max height by SetCellHeightForRow
+        //   - spanning cells:     set to the combined row span height by AdjustRowspanCellHeights
+        // The inner grid-item block (the actual div) was sized to content height during layout
+        // and is not updated by either step.  Stretch all inner blocks to fill their cell.
+        // Uses AllGrids.TableBlock to search only this grid's layout blocks — one per overflow
+        // page — so the search is O(grids × depth) rather than O(all-document-pages × depth).
+        // This also correctly finds cells placed in headers or footers.
+        private void StretchAllCellContent()
+        {
+            var remaining = new HashSet<GridCell>();
+            foreach (var rowCells in _cellGrid)
+                foreach (var cell in rowCells)
+                    remaining.Add(cell);
+
+            if (remaining.Count == 0) return;
+
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (remaining.Count == 0) break;
+                if (grid.TableBlock != null)
+                    SearchAndStretch(grid.TableBlock, remaining);
+            }
+        }
+
+        // Removes found cells from `remaining` as they are processed so we stop early
+        // once every cell has been found (important when the grid spans multiple pages).
+        private static void SearchAndStretch(PDFLayoutBlock block, HashSet<GridCell> remaining)
+        {
+            if (block == null || remaining.Count == 0) return;
+
+            if (block.Owner is GridCell gc && remaining.Contains(gc))
+            {
+                StretchFirstChildBlock(block);
+                remaining.Remove(gc);
+                return; // no need to recurse inside the cell we just fixed
+            }
+
+            if (block.Columns == null) return;
+            foreach (var region in block.Columns)
+            {
+                if (region?.Contents == null) continue;
+                for (int i = 0; i < region.Contents.Count; i++)
+                {
+                    if (region.Contents[i] is PDFLayoutBlock child)
+                        SearchAndStretch(child, remaining);
+                }
+            }
+        }
+
+        // The GridCell block's TotalBounds.Height includes the cell's top margin (which
+        // carries the row-gap).  The inner grid-item block lives in the content area
+        // *after* that margin, so we must subtract the margin before applying the height.
+        private static void StretchFirstChildBlock(PDFLayoutBlock cellBlock)
+        {
+            var newHeight = cellBlock.TotalBounds.Height;
+            if (newHeight <= Unit.Zero) return;
+
+            // Strip the top margin (row-gap) so the inner block doesn't overflow the gap.
+            if (cellBlock.Position != null)
+                newHeight -= cellBlock.Position.Margins.Top;
+
+            if (newHeight <= Unit.Zero) return;
+
+            if (cellBlock.Columns == null || cellBlock.Columns.Length == 0) return;
+            var region = cellBlock.Columns[0];
+            if (region?.Contents == null || region.Contents.Count == 0) return;
+
+            if (region.Contents[0] is PDFLayoutBlock innerBlock)
+            {
+                var bounds = innerBlock.TotalBounds;
+                bounds.Height = newHeight;
+                innerBlock.TotalBounds = bounds;
+            }
+        }
+
+        private void InjectColumnWidths()
+        {
+            // Determine available width (same logic as CalculateTableSpace in base)
+            var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+
+            double availPts = tablePos.Width.HasValue
+                ? tablePos.Width.Value.PointsValue
+                : GetCurrentRegionWidth(block).PointsValue;
+
+            if (!tablePos.Margins.IsEmpty && !tablePos.Width.HasValue)
+                availPts -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
+            if (!tablePos.Padding.IsEmpty)
+                availPts -= (tablePos.Padding.Left + tablePos.Padding.Right).PointsValue;
+
+            // Column gap: gap and column-gap both write FlexColumnGapKey so CSS order wins.
+            // Fall back to ColumnAlleyKey for legacy usages that only set that key.
+            double gapPts = 0;
+            if (this.FullStyle.IsValueDefined(StyleKeys.FlexColumnGapKey))
+                gapPts = this.FullStyle.Flex.ColumnGap.PointsValue;
+            else if (this.FullStyle.IsValueDefined(StyleKeys.ColumnAlleyKey))
+                gapPts = this.FullStyle.GetValue(StyleKeys.ColumnAlleyKey, Drawing.Unit.Zero).PointsValue;
+
+            int colCount = _tracks.Count;
+            double totalGapPts = gapPts * (colCount - 1);
+            double workingPts = Math.Max(0, availPts - totalGapPts);
+
+            double[] colPts = CalcColumnPtWidths(workingPts);
+
+            // justify-content: when the tracks (+ gaps) don't consume all of availPts - which
+            // only happens when every track is a fixed size (fr/auto tracks always expand to
+            // fill workingPts) - the leftover space positions the whole set of tracks within
+            // the container box.  Injected as extra margin-left on the first column; the tracks
+            // themselves are unaffected, so this never needs to touch workingPts.
+            double actualContentWidth = totalGapPts;
+            for (int i = 0; i < colPts.Length; i++)
+                actualContentWidth += colPts[i];
+            double leftoverWidth = availPts - actualContentWidth;
+            double justifyOffset = 0;
+            if (leftoverWidth > 0)
+            {
+                switch (this.FullStyle.Flex.JustifyContent)
+                {
+                    case FlexJustify.Center:
+                        justifyOffset = leftoverWidth / 2;
+                        break;
+                    case FlexJustify.FlexEnd:
+                        justifyOffset = leftoverWidth;
+                        break;
+                    // FlexStart and the space-* values (not yet supported - fall back to start)
+                    default:
+                        justifyOffset = 0;
+                        break;
+                }
+            }
+
+            // Set explicit widths on GridCell styles, summing track widths for spanned cells.
+            // Cells in each row are stored left-to-right, so a running column cursor is sufficient
+            // for the no-row-span case; row spans that leave column gaps are handled by tracking
+            // the occupied slots here too.
+            //
+            // Column gap is injected as margin-left on cells that are not in the first column,
+            // mirroring how InjectRowGaps injects margin-top for row gaps.  The gap space was
+            // already removed from workingPts so column widths are already narrower; the margin
+            // puts the visual space back between adjacent columns.
+            var colGapUnit = gapPts > 0 ? new Unit(gapPts, PageUnits.Points) : Unit.Zero;
+            var justifyUnit = justifyOffset > 0 ? new Unit(justifyOffset, PageUnits.Points) : Unit.Zero;
+
+            var colOccupied = new System.Collections.Generic.Dictionary<(int row, int col), bool>();
+            for (int ri = 0; ri < _cellGrid.Count; ri++)
+            {
+                var rowCells = _cellGrid[ri];
+                int colCursor = 0;
+                foreach (var cell in rowCells)
+                {
+                    // Advance past slots already occupied by row-spans from earlier rows
+                    while (colOccupied.ContainsKey((ri, colCursor)))
+                        colCursor++;
+
+                    int span    = Math.Max(1, cell.CellColumnSpan);
+                    int rowSpan = Math.Max(1, cell.CellRowSpan);
+
+                    // Sum column widths for this cell's span, clipped to available columns
+                    int actualSpan = Math.Min(span, colPts.Length - colCursor);
+                    double totalWidth = 0;
+                    for (int tc = colCursor; tc < colCursor + actualSpan; tc++)
+                        totalWidth += colPts[tc];
+                    // Spanning cells must also absorb the inter-column gaps they bridge
+                    if (gapPts > 0 && actualSpan > 1)
+                        totalWidth += gapPts * (actualSpan - 1);
+
+                    if (totalWidth > 0)
+                        cell.Style.Size.Width = new Unit(totalWidth, PageUnits.Points);
+
+                    // Column gap: inject left margin on every cell that is not in the first column.
+                    // First-column cells instead get the justify-content offset (if any).
+                    if (colCursor > 0 && gapPts > 0)
+                        cell.Style.Margins.Left = colGapUnit;
+                    else if (colCursor == 0 && justifyOffset > 0)
+                        cell.Style.Margins.Left = justifyUnit;
+
+                    // Mark slots occupied by this cell's row span
+                    for (int dr = 1; dr < rowSpan; dr++)
+                        for (int dc = 0; dc < span; dc++)
+                            colOccupied[(ri + dr, colCursor + dc)] = true;
+
+                    colCursor += span;
+                }
+            }
+        }
+
+        private double[] CalcColumnPtWidths(double workingPts)
+        {
+            // First pass: resolve fixed/percent columns, accumulate fr total.
+            // Percent tracks are resolved against workingPts here so fr tracks
+            // correctly share whatever space remains.
+            double fixedTotal = 0;
+            double frTotal = 0;
+
+            foreach (var t in _tracks)
+            {
+                if (t.Type == TrackType.Points)
+                    fixedTotal += t.Value;
+                else if (t.Type == TrackType.Percent)
+                    fixedTotal += (t.Value / 100.0) * workingPts;
+                else if (t.Type == TrackType.Fr)
+                    frTotal += t.Value;
+                // Auto treated as fr=1 if no other fr units, else as fr=1 share
+            }
+
+            // Auto / min-content / max-content: if no fr columns exist, treat each as 1fr.
+            // min-content and max-content are content-intrinsic so the table engine handles
+            // their sizing; we just need them to share leftover space the same way Auto does.
+            int autoCount = 0;
+            foreach (var t in _tracks)
+                if (t.Type == TrackType.Auto || t.Type == TrackType.MinContent || t.Type == TrackType.MaxContent)
+                    autoCount++;
+
+            if (autoCount > 0 && frTotal == 0)
+                frTotal = autoCount; // each auto-like track gets 1fr of remaining space
+
+            double frSpace = Math.Max(0, workingPts - fixedTotal);
+
+            var widths = new double[_tracks.Count];
+            for (int i = 0; i < _tracks.Count; i++)
+            {
+                var t = _tracks[i];
+                switch (t.Type)
+                {
+                    case TrackType.Points:
+                        widths[i] = t.Value;
+                        break;
+                    case TrackType.Percent:
+                        widths[i] = (t.Value / 100.0) * workingPts;
+                        break;
+                    case TrackType.Fr:
+                        widths[i] = frTotal > 0 ? (t.Value / frTotal) * frSpace : 0;
+                        break;
+                    case TrackType.Auto:
+                    case TrackType.MinContent:
+                    case TrackType.MaxContent:
+                        widths[i] = frTotal > 0 ? (1.0 / frTotal) * frSpace : 0;
+                        break;
+                }
+            }
+            return widths;
+        }
+
+        // -----------------------------------------------------------------------
+        // Synthetic table construction
+        // -----------------------------------------------------------------------
+
+        private static TableGrid BuildSyntheticTable(
+            ContainerComponent source,
+            Style containerStyle,
+            IPDFLayoutEngine parent,
+            out List<TrackDef> tracks,
+            out List<List<GridCell>> cellGrid,
+            out List<TableRow> syntheticRows,
+            out List<TrackDef> rowTracks,
+            out Dictionary<string, List<int>> colLineNames,
+            out Dictionary<string, List<int>> rowLineNames,
+            out GridTemplateAreasValue templateAreas)
+        {
+            tracks        = ParseTemplateCols(source, containerStyle, parent, out colLineNames);
+            rowTracks     = ParseTemplateRows(source, containerStyle, out rowLineNames);
+            templateAreas = ParseTemplateAreas(source, containerStyle, colLineNames, rowLineNames);
+            cellGrid      = new List<List<GridCell>>();
+            syntheticRows = new List<TableRow>();
+
+            // Parse auto-track values for implicit columns/rows beyond the explicit template.
+            var autoColRaw = containerStyle.GetValue(StyleKeys.GridAutoColumnsKey, null as string);
+            var autoRowRaw = containerStyle.GetValue(StyleKeys.GridAutoRowsKey, null as string);
+            TrackDef autoColTrack = !string.IsNullOrWhiteSpace(autoColRaw)
+                ? ParseAutoTrack(autoColRaw)
+                : new TrackDef(TrackType.Auto, 0);
+            TrackDef autoRowTrack = !string.IsNullOrWhiteSpace(autoRowRaw)
+                ? ParseAutoTrack(autoRowRaw)
+                : new TrackDef(TrackType.Auto, 0);
+
+            // Capture the explicit row count from grid-template-rows before seeding defaults.
+            // Column-major flow uses this to determine how many items fill each column.
+            int explicitRowCount = rowTracks.Count;
+
+            // When no explicit template is defined, seed with the auto track (or 1fr).
+            if (tracks.Count == 0)
+                tracks.Add(!string.IsNullOrWhiteSpace(autoColRaw)
+                    ? autoColTrack
+                    : new TrackDef(TrackType.Fr, 1));
+
+            if (rowTracks.Count == 0)
+                rowTracks.Add(!string.IsNullOrWhiteSpace(autoRowRaw)
+                    ? autoRowTrack
+                    : new TrackDef(TrackType.Fr, 1));
+
+            var grid     = new TableGrid();
+            int colCount = tracks.Count;
+
+            if (colCount == 0 || !(source is IContainerComponent ic) || !ic.HasContent)
+                return grid;
+
+            // Collect visible block-level children
+            var items = new List<Component>();
+            AppendGridItems(ic, items);
+
+            if (items.Count == 0)
+                return grid;
+
+            var autoFlow = containerStyle.GetValue(StyleKeys.GridAutoFlowKey, GridAutoFlow.Row);
+            int maxColUsed;
+
+            if (autoFlow == GridAutoFlow.Column)
+                maxColUsed = BuildColumnMajor(items, colCount, explicitRowCount, grid, cellGrid, syntheticRows,
+                                  colLineNames, rowLineNames, templateAreas);
+            else
+                maxColUsed = BuildRowMajor(items, colCount, grid, cellGrid, syntheticRows,
+                              colLineNames, rowLineNames, templateAreas);
+
+            // Extend column tracks for any implicit columns placed beyond the explicit template.
+            for (int i = tracks.Count; i <= maxColUsed; i++)
+                tracks.Add(autoColTrack);
+
+            // Extend row tracks to cover all synthetic rows with the auto-row track.
+            for (int i = rowTracks.Count; i < syntheticRows.Count; i++)
+                rowTracks.Add(autoRowTrack);
+
+            return grid;
+        }
+
+        // Walks ic's children looking for real grid items, mirroring
+        // LayoutEngineCSSTable.AppendRowChildren's own reasoning:
+        //  - A {{#each}}/{{#with}}/{{#if}} binding component (ForEach/WithHelper/If/Choose,
+        //    all constructed with ObjectTypes.NoOp - see Component.CountSiblingContent and
+        //    ComponentWrappingList.BuildAllItems for the same established check elsewhere in
+        //    the codebase) is left behind in the real content collection as a marker sibling
+        //    alongside the items it generated. It must be skipped, not added as a spurious
+        //    extra grid item.
+        //  - A repeat instance (Scryber.Data.TemplateInstance : ContainerComponent,
+        //    IInvisibleContainer) must be recursed into rather than added directly as the
+        //    grid item itself - per IInvisibleContainer's own documented contract, its
+        //    children are the real items. Adding the wrapper directly would not just misplace
+        //    it visually: ResolveGridItemPlacement reads grid-column/grid-row/grid-area from
+        //    the item's OWN applied style, so any explicit placement CSS on the actual
+        //    repeated element would silently be read from the unstyled wrapper instead.
+        private static void AppendGridItems(IContainerComponent ic, List<Component> items)
+        {
+            foreach (var item in ic.Content)
+            {
+                if (!(item is Component c) || !c.Visible || c.Type == ObjectTypes.NoOp)
+                    continue;
+
+                // IInvisibleContainer is checked ahead of IContainerComponent (TemplateInstance
+                // is both) so a repeat instance is recursed into rather than added as one opaque item.
+                if (c is IInvisibleContainer invisible)
+                {
+                    if (invisible.HasContent)
+                        AppendGridItems(invisible, items);
+                }
+                else if (c is IContainerComponent)
+                {
+                    // GridCell : TableCell wraps this item as its sole content the same way
+                    // LayoutEngineCSSTable's AnonymousCell does - display:inline-block (however
+                    // it was authored, not just as a mistaken table-cell stand-in) needs the
+                    // same leniency. See NormalizeLooseInlineBlockDisplay's doc comment on the
+                    // shared LayoutEngineTable base.
+                    var itemStyle = c.GetAppliedStyle();
+                    var itemDisplay = itemStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                    NormalizeLooseInlineBlockDisplay(itemStyle, itemDisplay);
+
+                    items.Add(c);
+                }
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Placement resolution
+        // -----------------------------------------------------------------------
+
+        private struct GridItemPlacement
+        {
+            public Component Item;
+            public int ColStart; // 0-indexed, or -1 for auto
+            public int ColSpan;  // >= 1
+            public int RowStart; // 0-indexed, or -1 for auto
+            public int RowSpan;  // >= 1
+        }
+
+        // Resolves a component's grid placement from its applied style.
+        // col/row-start -1 means "auto" (let the auto-flow algorithm choose).
+        private static GridItemPlacement ResolveGridItemPlacement(
+            Component item, int colCount,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames,
+            GridTemplateAreasValue templateAreas)
+        {
+            var style = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
+
+            // Named grid-area reference takes precedence over individual line values.
+            if (style != null)
+            {
+                var areaName = style.GetValue(StyleKeys.GridAreaNameKey, null as string);
+                if (!string.IsNullOrEmpty(areaName) &&
+                    templateAreas.TryGetAreaBounds(areaName,
+                        out int rs, out int re, out int cs, out int ce))
+                {
+                    return new GridItemPlacement
+                    {
+                        Item     = item,
+                        ColStart = cs - 1,
+                        ColSpan  = Math.Max(1, ce - cs),
+                        RowStart = rs - 1,
+                        RowSpan  = Math.Max(1, re - rs)
+                    };
+                }
+            }
+
+            var colStart = style?.GetValue(StyleKeys.GridColumnStartKey, GridLineValue.Unset) ?? GridLineValue.Unset;
+            var colEnd   = style?.GetValue(StyleKeys.GridColumnEndKey,   GridLineValue.Unset) ?? GridLineValue.Unset;
+            var rowStart = style?.GetValue(StyleKeys.GridRowStartKey,    GridLineValue.Unset) ?? GridLineValue.Unset;
+            var rowEnd   = style?.GetValue(StyleKeys.GridRowEndKey,      GridLineValue.Unset) ?? GridLineValue.Unset;
+
+            int cs0 = colStart.ResolveStart(colLineNames);  // 0-based or -1
+            int rs0 = rowStart.ResolveStart(rowLineNames);
+
+            int colSpan = colEnd.IsSet
+                ? colEnd.ResolveSpan(cs0, colCount, colLineNames)
+                : colStart.IsSpan ? Math.Max(1, colStart.Value) : 1;
+
+            int rowSpan = rowEnd.IsSet
+                ? rowEnd.ResolveSpan(rs0, rowLineNames.Count, rowLineNames)
+                : rowStart.IsSpan ? Math.Max(1, rowStart.Value) : 1;
+
+            // Clamp column span to available columns.
+            int maxColSpan = cs0 >= 0 ? colCount - cs0 : colCount;
+            colSpan = Math.Max(1, Math.Min(colSpan, maxColSpan));
+
+            return new GridItemPlacement
+            {
+                Item     = item,
+                ColStart = cs0,
+                ColSpan  = colSpan,
+                RowStart = rs0,
+                RowSpan  = Math.Max(1, rowSpan)
+            };
+        }
+
+        // -----------------------------------------------------------------------
+        // Placement helpers
+        // -----------------------------------------------------------------------
+
+        private static void EnsureRows(
+            List<TableRow> syntheticRows, TableGrid grid, List<List<GridCell>> cellGrid, int maxRow)
+        {
+            while (syntheticRows.Count <= maxRow)
+            {
+                var newRow = new TableRow();
+                grid.Rows.Add(newRow);
+                cellGrid.Add(new List<GridCell>());
+                syntheticRows.Add(newRow);
+            }
+        }
+
+        // Stores a cell in the placement map (column-keyed SortedDictionary per row) and marks
+        // the occupied slots.  Cells are committed to syntheticRows/cellGrid in column order
+        // after all placements are resolved, so rendering order matches column position.
+        private static void StoreCell(
+            in GridItemPlacement p, int r, int c,
+            Dictionary<(int, int), bool> occupied,
+            Dictionary<int, SortedDictionary<int, GridCell>> placedCells)
+        {
+            var cell = new GridCell(p.Item, p.ColSpan, p.RowSpan);
+            if (!placedCells.ContainsKey(r))
+                placedCells[r] = new SortedDictionary<int, GridCell>();
+            placedCells[r][c] = cell;
+            for (int dr = 0; dr < p.RowSpan; dr++)
+                for (int dc = 0; dc < p.ColSpan; dc++)
+                    occupied[(r + dr, c + dc)] = true;
+        }
+
+        // Returns true when the rectangular area [r..r+rowSpan) x [c..c+colSpan) is free.
+        private static bool CanPlace(
+            Dictionary<(int, int), bool> occupied, int r, int c, int colSpan, int rowSpan)
+        {
+            for (int dr = 0; dr < rowSpan; dr++)
+                for (int dc = 0; dc < colSpan; dc++)
+                    if (occupied.ContainsKey((r + dr, c + dc))) return false;
+            return true;
+        }
+
+        // -----------------------------------------------------------------------
+        // Row-major placement
+        // -----------------------------------------------------------------------
+
+        private static int BuildRowMajor(
+            List<Component> items, int colCount,
+            TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames,
+            GridTemplateAreasValue templateAreas)
+        {
+            var occupied    = new Dictionary<(int, int), bool>();
+            // Cells are stored here (row → col-ordered map) and committed to rows in
+            // column order at the end, so the table engine sees them left-to-right.
+            var placedCells = new Dictionary<int, SortedDictionary<int, GridCell>>();
+            var placements  = new List<GridItemPlacement>(items.Count);
+            foreach (var item in items)
+                placements.Add(ResolveGridItemPlacement(item, colCount,
+                               colLineNames, rowLineNames, templateAreas));
+
+            // Phase 1: items with both row AND column explicitly set.
+            // Pre-place them so the auto-flow cursor can route around them.
+            foreach (var p in placements)
+            {
+                if (p.RowStart < 0 || p.ColStart < 0) continue;
+                EnsureRows(syntheticRows, grid, cellGrid, p.RowStart + p.RowSpan - 1);
+                StoreCell(p, p.RowStart, p.ColStart, occupied, placedCells);
+            }
+
+            // Phase 2: auto-flow cursor for everything else.
+            // Items with explicit column are placed at their column in the first
+            // available row (from the cursor) but do not advance the cursor.
+            // Items with explicit row only find the first free column in that row.
+            // Fully auto items use the normal left-to-right, row-by-row cursor.
+            int curR = 0, curC = 0;
+            foreach (var p in placements)
+            {
+                if (p.RowStart >= 0 && p.ColStart >= 0) continue; // already placed
+
+                int r, c;
+
+                if (p.ColStart >= 0)
+                {
+                    // Explicit column, auto row — find the first row (from curR) where
+                    // the column range is free.
+                    c = p.ColStart;
+                    r = curR;
+                    while (!CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        r++;
+                    // Explicit-column items do not advance the auto-flow cursor.
+                }
+                else if (p.RowStart >= 0)
+                {
+                    // Explicit row, auto column — scan left to right for a free slot.
+                    r = p.RowStart;
+                    c = 0;
+                    while (c + p.ColSpan <= colCount && !CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        c++;
+                    if (c + p.ColSpan > colCount) { r = curR; c = curC; } // fallback
+                    // Explicit-row items do not advance the auto-flow cursor.
+                }
+                else
+                {
+                    // Fully auto: advance cursor until we find a slot that fits.
+                    r = curR; c = curC;
+                    while (c + p.ColSpan > colCount || !CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                    {
+                        c++;
+                        if (c + p.ColSpan > colCount) { c = 0; r++; }
+                    }
+                    // Advance the cursor past this item.
+                    curC = c + p.ColSpan;
+                    curR = r;
+                    if (curC >= colCount) { curC = 0; curR++; }
+                }
+
+                EnsureRows(syntheticRows, grid, cellGrid, r + p.RowSpan - 1);
+                StoreCell(p, r, c, occupied, placedCells);
+            }
+
+            // Commit cells to rows and cellGrid in column order.
+            // Columns with no placed cell AND not covered by a rowspan from above need an
+            // empty placeholder so the table engine doesn't slide subsequent cells left
+            // (this is the case for dot "." cells from grid-template-areas, or implicit columns).
+            int maxColUsed = colCount - 1;
+            foreach (var k in occupied.Keys)
+                if (k.Item2 > maxColUsed) maxColUsed = k.Item2;
+
+            int fillCount = maxColUsed + 1;
+            for (int r = 0; r < syntheticRows.Count; r++)
+            {
+                if (!placedCells.TryGetValue(r, out var rowDict))
+                    rowDict = new SortedDictionary<int, GridCell>();
+
+                for (int c = 0; c < fillCount; c++)
+                {
+                    if (!rowDict.ContainsKey(c) && !occupied.ContainsKey((r, c)))
+                        rowDict[c] = new GridCell(null, 1, 1); // empty placeholder for dot/gap cell
+                }
+
+                foreach (var kvp in rowDict) // SortedDictionary iterates in ascending column order
+                {
+                    syntheticRows[r].Cells.Add(kvp.Value);
+                    cellGrid[r].Add(kvp.Value);
+                }
+            }
+
+            return maxColUsed;
+        }
+
+        private static int BuildColumnMajor(
+            List<Component> items, int colCount, int explicitRowCount,
+            TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames,
+            GridTemplateAreasValue templateAreas)
+        {
+            var occupied    = new Dictionary<(int, int), bool>();
+            var placedCells = new Dictionary<int, SortedDictionary<int, GridCell>>();
+            var placements  = new List<GridItemPlacement>(items.Count);
+            foreach (var item in items)
+                placements.Add(ResolveGridItemPlacement(item, colCount,
+                               colLineNames, rowLineNames, templateAreas));
+
+            // Phase 1: items with both row AND column explicitly set.
+            foreach (var p in placements)
+            {
+                if (p.RowStart < 0 || p.ColStart < 0) continue;
+                EnsureRows(syntheticRows, grid, cellGrid, p.RowStart + p.RowSpan - 1);
+                StoreCell(p, p.RowStart, p.ColStart, occupied, placedCells);
+            }
+
+            // Determine the row cap — how many rows before the cursor wraps to the next column.
+            // Priority: (1) explicit grid-template-rows; (2) max row extent from phase-1
+            // placements (e.g. an item at row 2 forces at least 2 rows); (3) heuristic.
+            int rowCap = explicitRowCount;
+            if (rowCap == 0)
+            {
+                foreach (var p in placements)
+                    if (p.RowStart >= 0)
+                        rowCap = Math.Max(rowCap, p.RowStart + p.RowSpan);
+            }
+            if (rowCap == 0)
+                rowCap = (items.Count + colCount - 1) / colCount;
+
+            // Phase 2: column-major auto-flow cursor (rows advance first, then columns).
+            int curR = 0, curC = 0;
+            foreach (var p in placements)
+            {
+                if (p.RowStart >= 0 && p.ColStart >= 0) continue; // already placed in phase 1
+
+                int r, c;
+
+                if (p.ColStart >= 0)
+                {
+                    // Explicit column, auto row — find the first row where the range is free.
+                    c = p.ColStart;
+                    r = 0;
+                    while (!CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        r++;
+                }
+                else if (p.RowStart >= 0)
+                {
+                    // Explicit row, auto column — find the first column (from curC) with room.
+                    r = p.RowStart;
+                    c = curC;
+                    while (c < colCount && !CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        c++;
+                    if (c >= colCount) { r = curR; c = curC; } // fallback: treat as fully auto
+                }
+                else
+                {
+                    // Fully auto: move down rows first, wrap to next column when row cap is hit.
+                    r = curR; c = curC;
+                    while (true)
+                    {
+                        if (r + p.RowSpan <= rowCap && CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                            break;
+                        r++;
+                        if (r + p.RowSpan > rowCap) { r = 0; c++; }
+                    }
+                    // Advance cursor past this item.
+                    curR = r + p.RowSpan;
+                    curC = c;
+                    if (curR >= rowCap) { curR = 0; curC++; }
+                }
+
+                EnsureRows(syntheticRows, grid, cellGrid, r + p.RowSpan - 1);
+                StoreCell(p, r, c, occupied, placedCells);
+            }
+
+            // Commit cells to rows and cellGrid in column order, filling gaps with empty
+            // placeholder cells so the table engine doesn't slide cells left.
+            // In column-major flow items may not fill all explicit columns (e.g. 12 items
+            // in 3 explicit rows only needs 4 of 6 explicit columns), so derive maxColUsed
+            // purely from what was actually placed rather than initialising to colCount - 1.
+            int maxColUsed = -1;
+            foreach (var k in occupied.Keys)
+                if (k.Item2 > maxColUsed) maxColUsed = k.Item2;
+            if (maxColUsed < 0) maxColUsed = 0;
+
+            int fillCount = maxColUsed + 1;
+            for (int r = 0; r < syntheticRows.Count; r++)
+            {
+                if (!placedCells.TryGetValue(r, out var rowDict))
+                    rowDict = new SortedDictionary<int, GridCell>();
+
+                for (int c = 0; c < fillCount; c++)
+                {
+                    if (!rowDict.ContainsKey(c) && !occupied.ContainsKey((r, c)))
+                        rowDict[c] = new GridCell(null, 1, 1);
+                }
+
+                foreach (var kvp in rowDict)
+                {
+                    syntheticRows[r].Cells.Add(kvp.Value);
+                    cellGrid[r].Add(kvp.Value);
+                }
+            }
+
+            return maxColUsed;
+        }
+
+        // -----------------------------------------------------------------------
+        // Row height injection
+        // -----------------------------------------------------------------------
+
+        private void InjectRowHeights()
+        {
+            // TableRow strips SizeHeightKey in RemoveInapplicableStyles, so we inject
+            // the explicit height onto each GridCell in the row instead.
+            for (int r = 0; r < _rowTracks.Count && r < _cellGrid.Count; r++)
+            {
+                var track = _rowTracks[r];
+                if (track.Type == TrackType.Points && track.Value > 0)
+                {
+                    var unit = new Unit(track.Value, PageUnits.Points);
+                    foreach (var cell in _cellGrid[r])
+                        cell.Style.Size.Height = unit;
+                }
+            }
+        }
+
+        private void InjectRowGaps()
+        {
+            double rowGapPts = GetRowGapPts();
+            if (rowGapPts <= 0) return;
+
+            // Add a top margin to all cells in rows after the first.
+            // Cell top margin adds space between the bottom of the previous row and the
+            // top of this row's cells — exactly the CSS row-gap behaviour.
+            var rowGapUnit = new Unit(rowGapPts, PageUnits.Points);
+            for (int r = 1; r < _cellGrid.Count; r++)
+            {
+                foreach (var cell in _cellGrid[r])
+                    cell.Style.Margins.Top = rowGapUnit;
+            }
+        }
+
+        private double GetRowGapPts()
+        {
+            // gap and row-gap both write FlexRowGapKey so CSS order determines the winner.
+            if (this.FullStyle.IsValueDefined(StyleKeys.FlexRowGapKey))
+                return this.FullStyle.Flex.RowGap.PointsValue;
+            return 0;
+        }
+
+        // -----------------------------------------------------------------------
+        // grid-template-columns / grid-template-rows parsers
+        // -----------------------------------------------------------------------
+
+        private static List<TrackDef> ParseTemplateRows(ContainerComponent source, Style sourceStyle,
+            out Dictionary<string, List<int>> lineNames)
+        {
+            lineNames = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
+            if (sourceStyle == null)
+                return new List<TrackDef>();
+
+            var raw = sourceStyle.GetValue(StyleKeys.GridTemplateRowsKey, null as string);
+            if (string.IsNullOrWhiteSpace(raw))
+                return new List<TrackDef>();
+
+            var h = sourceStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+            double containerH = (!h.IsRelative && h.PointsValue > 0) ? h.PointsValue : 0;
+            var rg = sourceStyle.GetValue(StyleKeys.FlexRowGapKey, Unit.Zero);
+            double rowGap = (!rg.IsRelative) ? rg.PointsValue : 0;
+
+            return ParseTrackList(raw, lineNames, containerH, rowGap);
+        }
+
+        private static List<TrackDef> ParseTemplateCols(ContainerComponent source, Style sourceStyle,
+            IPDFLayoutEngine parent,
+            out Dictionary<string, List<int>> lineNames)
+        {
+            lineNames = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
+            if (null == sourceStyle)
+                return new List<TrackDef>();
+
+            var raw = sourceStyle.GetValue(StyleKeys.GridTemplateColumnsKey, null as string);
+            if (string.IsNullOrWhiteSpace(raw))
+                return new List<TrackDef>();
+
+            var w = sourceStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+            double containerW = (!w.IsRelative && w.PointsValue > 0)
+                ? w.PointsValue
+                : GetParentAvailableWidth(parent, sourceStyle);
+
+            var cg = sourceStyle.GetValue(StyleKeys.FlexColumnGapKey, Unit.Zero);
+            double colGap = (!cg.IsRelative) ? cg.PointsValue : 0;
+            if (colGap == 0)
+            {
+                var cg2 = sourceStyle.GetValue(StyleKeys.ColumnAlleyKey, Unit.Zero);
+                colGap = (!cg2.IsRelative) ? cg2.PointsValue : 0;
+            }
+
+            return ParseTrackList(raw, lineNames, containerW, colGap);
+        }
+
+        // Returns the available width for grid track layout from the parent engine's current
+        // open block, minus the container's own margins and padding, so auto-fill can compute
+        // the correct repeat count when no explicit CSS width is set on the container.
+        private static double GetParentAvailableWidth(IPDFLayoutEngine parent, Style containerStyle)
+        {
+            if (parent?.Context?.DocumentLayout?.CurrentPage == null)
+                return 0;
+
+            var block = parent.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            if (block == null)
+                return 0;
+
+            double available = GetCurrentRegionWidth(block).PointsValue;
+            if (available <= 0)
+                return 0;
+
+            // Mirror CalculateTableSpace: subtract margins and padding when no explicit width.
+            var ml = containerStyle.GetValue(StyleKeys.MarginsLeftKey, Unit.Zero);
+            var mr = containerStyle.GetValue(StyleKeys.MarginsRightKey, Unit.Zero);
+            var pl = containerStyle.GetValue(StyleKeys.PaddingLeftKey, Unit.Zero);
+            var pr = containerStyle.GetValue(StyleKeys.PaddingRightKey, Unit.Zero);
+
+            if (!ml.IsRelative) available -= ml.PointsValue;
+            if (!mr.IsRelative) available -= mr.PointsValue;
+            if (!pl.IsRelative) available -= pl.PointsValue;
+            if (!pr.IsRelative) available -= pr.PointsValue;
+
+            return available > 0 ? available : 0;
+        }
+
+        // Parses a track-list string into TrackDefs and populates a name→line-index map.
+        // [name1 name2] tokens are stripped; each name maps to the 1-based line index
+        // immediately following the bracket group (line 1 is before track 0).
+        // containerSizePts and gapPts are required only when the value contains auto-fill/auto-fit.
+        private static List<TrackDef> ParseTrackList(string value,
+            Dictionary<string, List<int>> lineNames,
+            double containerSizePts = 0,
+            double gapPts = 0)
+        {
+            var tracks = new List<TrackDef>();
+            if (string.IsNullOrWhiteSpace(value))
+                return tracks;
+
+            // Expand repeat(N/auto-fill/auto-fit, ...) first — names inside repeat expand verbatim.
+            var expanded = ExpandRepeat(value.Trim(), containerSizePts, gapPts);
+
+            // Split on whitespace, then walk tokens:
+            // [name...] groups are recorded against the next 1-based line index;
+            // track tokens are parsed and added to the track list.
+            var tokens = expanded.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var token in tokens)
+            {
+                var t = token.Trim();
+
+                // [name1 name2 ...] — line-name group; line index = tracks so far + 1
+                if (t.StartsWith("[") && t.EndsWith("]"))
+                {
+                    int lineIndex = tracks.Count + 1;
+                    foreach (var name in t.Substring(1, t.Length - 2)
+                             .Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (!lineNames.TryGetValue(name, out var nameList))
+                            lineNames[name] = nameList = new List<int>();
+                        if (!nameList.Contains(lineIndex)) nameList.Add(lineIndex);
+                    }
+                    continue;
+                }
+
+                t = t.ToLowerInvariant();
+                if (t == "auto")
+                {
+                    tracks.Add(new TrackDef(TrackType.Auto, 0));
+                }
+                else if (t == "min-content")
+                {
+                    tracks.Add(new TrackDef(TrackType.MinContent, 0));
+                }
+                else if (t == "max-content")
+                {
+                    tracks.Add(new TrackDef(TrackType.MaxContent, 0));
+                }
+                else if (t.EndsWith("fr"))
+                {
+                    if (double.TryParse(t.Substring(0, t.Length - 2),
+                        System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out var fr))
+                        tracks.Add(new TrackDef(TrackType.Fr, fr));
+                }
+                else
+                {
+                    // Attempt to parse as a Scryber Unit (pt, px, mm, cm, in, %)
+                    Unit u;
+                    if (Unit.TryParse(t, out u))
+                    {
+                        if (u.IsRelative)
+                            // Percent (and other relative units) — defer resolution against
+                            // the available container width until CalcColumnPtWidths runs.
+                            tracks.Add(new TrackDef(TrackType.Percent, u.Value));
+                        else
+                            tracks.Add(new TrackDef(TrackType.Points, u.PointsValue));
+                    }
+                }
+            }
+
+            return tracks;
+        }
+
+        // Parses a single track-size value (for grid-auto-columns / grid-auto-rows).
+        // Returns Auto if the string is empty or unrecognised.
+        private static TrackDef ParseAutoTrack(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                return new TrackDef(TrackType.Auto, 0);
+            var dummy = new Dictionary<string, List<int>>();
+            var list = ParseTrackList(raw, dummy);
+            return list.Count > 0 ? list[0] : new TrackDef(TrackType.Auto, 0);
+        }
+
+        private static readonly Regex RepeatRegex =
+            new Regex(@"repeat\(\s*(auto-fill|auto-fit|\d+)\s*,\s*([^)]+)\)",
+                      RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static string ExpandRepeat(string value, double containerSizePts, double gapPts)
+        {
+            return RepeatRegex.Replace(value, m =>
+            {
+                string countToken = m.Groups[1].Value.Trim();
+                string trackGroup = m.Groups[2].Value.Trim();
+
+                int count;
+                if (!int.TryParse(countToken, out count))
+                    count = ComputeAutoRepeatCount(trackGroup, containerSizePts, gapPts);
+
+                var parts = new List<string>();
+                for (int i = 0; i < count; i++)
+                    parts.Add(trackGroup);
+                return string.Join(" ", parts);
+            });
+        }
+
+        // Computes how many times a track group should repeat for auto-fill/auto-fit.
+        // Returns 1 when the count cannot be determined (unknown track size or no container width).
+        // Formula: n = floor((containerSizePts + gapPts) / (groupSizePts + trackCount * gapPts))
+        // where trackCount is the number of track tokens in the group.
+        private static int ComputeAutoRepeatCount(string trackGroupRaw, double containerSizePts, double gapPts)
+        {
+            if (containerSizePts <= 0)
+                return 1;
+
+            var tokens = trackGroupRaw.Trim()
+                .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+            double groupSizePts = 0;
+            int trackCount = 0;
+
+            foreach (var t in tokens)
+            {
+                var lower = t.ToLowerInvariant();
+
+                // Skip inline line-name groups like [col-start]
+                if (lower.StartsWith("[") && lower.EndsWith("]"))
+                    continue;
+
+                trackCount++;
+
+                if (lower == "auto" || lower == "min-content" || lower == "max-content"
+                    || lower.EndsWith("fr"))
+                    return 1; // indeterminate size — can't compute
+
+                Unit u;
+                if (!Unit.TryParse(lower, out u))
+                    return 1; // unrecognised
+
+                if (u.IsRelative)
+                    groupSizePts += (u.Value / 100.0) * containerSizePts;
+                else
+                    groupSizePts += u.PointsValue;
+            }
+
+            if (trackCount == 0 || groupSizePts <= 0)
+                return 1;
+
+            double denominator = groupSizePts + trackCount * gapPts;
+            if (denominator <= 0)
+                return 1;
+
+            return Math.Max(1, (int)Math.Floor((containerSizePts + gapPts) / denominator));
+        }
+
+        // Parses grid-template-areas and injects implicit area-start/area-end line names
+        // into the column and row name maps.
+        private static GridTemplateAreasValue ParseTemplateAreas(
+            ContainerComponent source, Style containerStyle,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames)
+        {
+            if (containerStyle == null)
+                return default;
+
+            var areas = containerStyle.GetValue(StyleKeys.GridTemplateAreasKey,
+                            default(GridTemplateAreasValue));
+            if (areas.IsEmpty) return default;
+
+            // Inject implicit line names: each named area "foo" creates
+            // foo-start and foo-end in both axes.
+            foreach (var name in areas.AreaNames())
+            {
+                if (!areas.TryGetAreaBounds(name,
+                        out int rs, out int re, out int cs, out int ce))
+                    continue;
+
+                AddLineName(colLineNames, name + "-start", cs);
+                AddLineName(colLineNames, name + "-end",   ce);
+                AddLineName(rowLineNames, name + "-start", rs);
+                AddLineName(rowLineNames, name + "-end",   re);
+            }
+
+            return areas;
+        }
+
+        private static void AddLineName(Dictionary<string, List<int>> map, string name, int lineIndex)
+        {
+            if (!map.TryGetValue(name, out var list))
+                map[name] = list = new List<int>();
+            if (!list.Contains(lineIndex)) list.Add(lineIndex);
+        }
+
+        // -----------------------------------------------------------------------
+        // Proxy cell — transparent table cell containing the grid item as a child
+        // -----------------------------------------------------------------------
+
+        internal sealed class GridCell : TableCell
+        {
+            /// <summary>
+            /// Creates a cell that contains <paramref name="source"/> as its direct child.
+            /// The source Panel is laid out with its own border, padding, and explicit height.
+            /// </summary>
+            public GridCell(Component source, int colSpan = 1, int rowSpan = 1) : base()
+            {
+                if (source != null)
+                    this.Contents.Add(source);
+                if (colSpan > 1) this.CellColumnSpan = colSpan;
+                if (rowSpan > 1) this.CellRowSpan = rowSpan;
+            }
+
+            // GridCell has no visual styling of its own — the item Panel handles that.
+            protected override Styles.Style GetBaseStyle()
+            {
+                var style = base.GetBaseStyle();
+                style.Border.LineStyle = Drawing.LineType.None;
+                style.Border.Width = Drawing.Unit.Zero;
+                style.Padding.All = Drawing.Unit.Zero;
+                style.Margins.All = Drawing.Unit.Zero;
+                return style;
+            }
+        }
+    }
+}

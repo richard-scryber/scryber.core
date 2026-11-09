@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Functions.Conversion
 
         public override string Name => "Integer";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 1, 1);
 
@@ -19,9 +19,33 @@ namespace Scryber.Expressive.Functions.Conversion
             // No point converting if there is nothing to convert.
             if (objectToConvert is null) { return null; }
 
+            if (objectToConvert is string str)
+            {
+                if (str.Length > 2)
+                {
+                    if (str.StartsWith("0x")) // hex conversion
+                        return Convert.ToInt32(str, 16);
+                    else if (str.StartsWith("0b"))
+                        return Convert.ToInt32(str.Substring(2), 2);
+                }
+            }
+            else if (objectToConvert is DateTime dt)
+                return (int)(dt.Ticks / TimeSpan.TicksPerMillisecond);
+
             return Convert.ToInt32(objectToConvert, context.CurrentCulture);
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Just a short name for integer, matching long, double and bool - int(value)
+    /// </summary>
+    public class IntFunction : IntegerFunction
+    {
+        public override string Name => "Int";
+
+        public IntFunction() : base()
+        { }
     }
 }

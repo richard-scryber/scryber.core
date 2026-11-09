@@ -45,7 +45,14 @@ namespace Scryber.Utilities
         private static Version GetFrameworkVersion()
         {
             Type me = typeof(FrameworkHelper);
-            Assembly assm = me.Assembly;
+            
+            return GetAssmblyFileVersion(me);
+        }
+
+        public static Version GetAssmblyFileVersion(Type forType)
+        {
+            Assembly assm = forType.Assembly;
+            
             object[] all = assm.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
             if (all != null && all.Length > 0)
             {
@@ -56,8 +63,7 @@ namespace Scryber.Utilities
                     return new Version(s);
                 }
             }
-
-            return new Version(0, 8, 0);
+            return null;
         }
 
         public static bool IsWindows() =>

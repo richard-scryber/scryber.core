@@ -20,7 +20,7 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, reader.CurrentTextValue, DoConvertColumnCount);
                 }
-                else if (ParseInteger(reader.CurrentTextValue, out number))
+                else if (DoConvertColumnCount(onStyle, reader.CurrentTextValue, out number))
                 {
                     this.SetValue(onStyle, number);
                     return true;
@@ -39,6 +39,11 @@ namespace Scryber.Styles.Parsing.Typed
             else if(value is int i)
             {
                 count = i;
+                return true;
+            }
+            else if (value.ToString() == "auto")
+            {
+                count = 1;
                 return true;
             }
             else if(ParseInteger(value.ToString(), out count))

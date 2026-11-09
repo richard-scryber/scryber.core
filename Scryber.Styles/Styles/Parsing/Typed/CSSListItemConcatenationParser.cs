@@ -31,6 +31,10 @@ namespace Scryber.Styles.Parsing.Typed
                     onStyle.SetValue(StyleKeys.ListConcatKey, concat);
                     success = true;
                 }
+                else
+                {
+                    success = false;
+                }
 
             }
             return success;
@@ -72,10 +76,20 @@ namespace Scryber.Styles.Parsing.Typed
                     concat = true;
                     return true;
                 }
-                else //any other value is considered valid but not to concatenate.
+                else if (string.Equals("false", str, StringComparison.OrdinalIgnoreCase))
                 {
                     concat = false;
                     return true;
+                }
+                else if (string.Equals("0", str, StringComparison.Ordinal))
+                {
+                    concat = false;
+                    return true;
+                }
+                else //any other value is considered valid but not to concatenate.
+                {
+                    concat = false;
+                    return false;
                 }
             }
         }

@@ -9,6 +9,54 @@ namespace Scryber.Svg.Components
     [PDFParsableComponent("a")]
     public class SVGAnchor : HTMLAnchor, ICloneable
     {
+        
+        [PDFAttribute("transform")]
+        public SVGTransformOperationSet Transform
+        {
+            get
+            {
+                if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                    return value.Value(this.Style) as SVGTransformOperationSet;
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
+        
+        [PDFAttribute("transform-origin")]
+        public TransformOrigin TransformOrigin
+        {
+            get
+            {
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TransformOriginKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOriginKey, value);
+            }
+        }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
         public SVGAnchor()
         {
@@ -20,6 +68,7 @@ namespace Scryber.Svg.Components
             var style = base.GetBaseStyle();
             style.Fill.RemoveColor();
             style.Text.RemoveDecoration();
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
             return style;
         }
 
@@ -27,7 +76,7 @@ namespace Scryber.Svg.Components
         {
             var a = this.MemberwiseClone() as SVGAnchor;
             a.Parent = null;
-            if(this.Style.HasValues)
+            if(this.HasStyle && this.Style.HasValues)
             {
                 a.Style = new Style();
                 this.Style.MergeInto(a.Style);
@@ -39,5 +88,6 @@ namespace Scryber.Svg.Components
         {
             return this.Clone();
         }
+        
     }
 }

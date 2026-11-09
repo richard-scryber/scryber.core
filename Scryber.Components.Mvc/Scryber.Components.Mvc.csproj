@@ -1,25 +1,58 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>6.0.1.0-beta</PackageVersion>
-    <Version>1.0.1-alpha</Version>
+    <PackageVersion>9.9.0</PackageVersion>
+    <Version>9.9.0.0</Version>
     <Authors>richard@paperworkday.com</Authors>
-    <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
+    <Description>ASP.NET MVC extensions for Scryber.Core, the open-source PDF rendering engine behind Paperwork.Core. Return a PDF from a controller action, generated from an HTML template with CSS styles and SVG drawing, bound to your model.
 
-Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing, or just code it. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+Paperwork.Core is the successor to Scryber.Core and the recommended package for new projects. It adds a fluent builder, dependency injection and code configuration on top of this same engine, and your templates carry straight across.
 
-This framework is built entirely in .NET6 and Net Standard 2.0 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
-    <Copyright>Richard Hewitson 2023</Copyright>
+Scryber.Core and these extensions still work as they always have, and will continue to be maintained and supported. Released under the LGPL licence, so you can use them in commercial applications.</Description>
+    <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+      <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+      <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://paperwork.help/changelog/scryber_core.html for a full break down.
+
+9.9.0
+Updates the Scryber.Core dependency to 9.9.0 - see the Scryber.Core release notes (breaking changes: a css transform keeps its space and is drawn around its own centre, translate percentages and order, transform-origin).
+
+9.8.2
+Updates the Scryber.Core dependency to 9.8.2, with a NuGet readme in plain markdown.
+        
+9.6.0.7
+BREAKING CHANGE: updates as per 9.6.0.7-beta for scryber.core - &lt;img width&gt;/&lt;img height&gt; attributes now set intrinsic pixel size per the HTML5 spec, rather than accepting arbitrary CSS units directly on the attribute.
+        
+9.5.0.0
+BREAKING RELEASE
+Removed support for Net Standard 2.0, and Image Sharp updated to 3.1.2
+All libraries updated to include dotnet 8/9/10
+Added support image format webP
+Clean up codebase to remove compiler warnings
+        
+9.3.1.0
+Updated to the latest version of the Core Library
+New features include @page with :first, :left and :right, cell rowSpan support, column-rule and column-fill
+Initial support for display:flex, flex-grid and table(-xxx)
+Fixed SVG image alignment, SVG image sizing, page sizing within a document, loading configuraion options in Web and exe improved.
+        
+9.2.0.0
+Public release of the DotNet 9.0 version of the core library with extensive enhancements to HTML components, data binding and css and svg calculations.
+        
+9.1.0.7-beta
+Add full support for HTML documents in .Net 6, 8 and 9 along with .net standard 2.0
+        
+6.0.2.0-beta
+
+Updated to net8.0 sdk and dependencies updated to latest version.
+
 6.0.1.0-beta
 
 We now support html - in many of its flavours, through the HTMLAgilityPack
@@ -100,21 +133,32 @@ CSS and HTML Logging
 Fixed application of multiple styles with the same word inside
 Allow missing images on the document is now supported.
 Contain fill style for background images.
-
-See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The MVC extensions for the Scryber PDF creation engine - easy, dynamic, flowing PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet_6</PackageTags>
+</PackageReleaseNotes>
+    <Summary>ASP.NET MVC extensions for Scryber.Core, the open-source PDF rendering engine behind Paperwork.Core: return PDF documents from HTML templates bound to your model, on .NET 10, 9 and 8. Paperwork.Core is its successor.</Summary>
+    <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet 10;</PackageTags>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <FileVersion>9.8.0.0</FileVersion>
+      <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <Title>Scryber MVC Extensions</Title>
-    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/PaperworkLogoTransparent.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-    <PackageReference Include="Scryber.Core" Version="6.0.1-beta" />
+    <PackageReference Include="HtmlAgilityPack" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="Scryber.Core" />
+    <PackageReference Include="System.Security.Cryptography.Xml" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseScryberProjRef)' == 'False'">
+    <PackageReference Include="Scryber.Core" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(UseScryberProjRef)' == 'True'">
+    <!-- Scryber.Common is not a package, it is bundled in Scryber.Core, so it must not become a dependency of this package -->
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Components\Scryber.Components.csproj" />
   </ItemGroup>
       
   <ItemGroup>
@@ -122,13 +166,12 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <None Remove="SixLabors.ImageSharp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="readme.txt" pack="true">
-      <IncludeInPackage>true</IncludeInPackage>
-    </None>
-    <None Include="..\ScyberLogo2_alpha_small.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+      <None Include="../README.nuget.md" Pack="true" PackagePath="\">
+          <IncludeInPackage>true</IncludeInPackage>
+      </None>
+      <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
+          <IncludeInPackage>true</IncludeInPackage>
+      </None>
     <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>

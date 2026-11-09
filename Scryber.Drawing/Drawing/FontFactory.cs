@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -36,6 +36,14 @@ namespace Scryber.Drawing
                 : base(familyName, style, weight, font, null)
             {
                 
+            }
+
+            /// <summary>
+            /// Creates a reference to a font in a typeface, overriding the weight and style the file declares itself
+            /// </summary>
+            internal LinkedFontReference(string familyName, FontStyle style, int weight, IFontInfo info, ITypefaceInfo typeface)
+                : base(familyName, style, weight, info, typeface)
+            {
             }
 
             internal void Append(LinkedFontReference reference)
@@ -275,6 +283,17 @@ namespace Scryber.Drawing
                 return fontReference;
             }
 
+            public FontReference Add(IFontInfo font, ITypefaceInfo typeface, FontStyle style, int weight)
+            {
+                LinkedFontReference fontReference = new LinkedFontReference(this.FamilyName, style, weight, font, typeface);
+                if (null == this.Styles)
+                    this.Styles = new LinkedStyleReference(this.FamilyName, style);
+
+                this.Styles.Add(fontReference);
+
+                return fontReference;
+            }
+
             public FontReference Add(int fontWeight, FontStyle style, ITypefaceFont font)
             {
                 LinkedFontReference fontReference = new LinkedFontReference(this.FamilyName, style, fontWeight, font);
@@ -348,6 +367,19 @@ namespace Scryber.Drawing
                         return null;
 
                 }
+            }
+
+            public FontReference AddFont(ITypefaceInfo info, IFontInfo font, string familyName, FontStyle style, int weight)
+            {
+                FamilyReference family;
+                familyName = familyName ?? font.FamilyName;
+
+                if (!_families.TryGetValue(familyName, out family))
+                {
+                    family = new FamilyReference(familyName);
+                    _families.Add(familyName, family);
+                }
+                return family.Add(font, info, style, weight);
             }
 
             public int FillAllFamilies(List<String> familyNames)
@@ -622,23 +654,91 @@ namespace Scryber.Drawing
         private static FamilyReferenceBag UnsafeLoadCustomFonts(FontOptions options)
         {
             FamilyReferenceBag custom = new FamilyReferenceBag();
-
-            if (options.Register == null || options.Register.Length == 0) return custom;
+            List<string> loadErrors = new List<string>();
+            
+            if (options.Register == null || options.Register.Count == 0) return custom;
 
             using (var reader = new TypefaceReader())
             {
                 foreach (var known in options.Register)
                 {
-                    if (string.IsNullOrEmpty(known.File)) continue;
-                    
-                    var file = new FileInfo(GetFullPath(known.File));
-                        
-                    if(!file.Exists) continue;
+                    ITypefaceInfo info = null;
 
-                    var info = reader.ReadTypeface(file);
+                    if (!string.IsNullOrEmpty(known.File))
+                    {
+                        try
+                        {
+                            var file = new FileInfo(GetFullPath(known.File));
+
+                            if (!file.Exists)
+                            {
+                                loadErrors.Add(known.File + " : Was not found");
+                                continue;
+                            }
+
+                            info = reader.ReadTypeface(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            loadErrors.Add(known.File + " : " + ex.Message);
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(known.Resource))
+                    {
+                        var both = known.Resource.Split(',');
+
+                        if (both.Length != 2)
+                        {
+                            loadErrors.Add(known.File + " : Resource is invalid, should be 'DefaultNamespace.FileName.extension, AssemblyName'(no extension)");
+                            continue;
+                        }
+
+                        try
+                        {
+                            var path = both[0].Trim();
+                            var assm = both[1].Trim();
+                            var assembly = Assembly.Load(assm);
+                            using (var stream = assembly.GetManifestResourceStream(path))
+                            {
+                                info = reader.ReadTypeface(stream, "rsrc://" + known.Resource);
+                                
+                                for (var i = 0; i < info.FontCount; i++)
+                                {
+                                    if (info.Fonts[i] is Scryber.OpenType.Utility.SingleTypefaceInfo sti)
+                                        stream.Position = sti.OffsetInFile;
                     
-                    if (null != info && string.IsNullOrEmpty(info.ErrorMessage))
-                        custom.AddTypefaceFonts(info);
+                                    ITypefaceFont one = reader.GetFont(stream, "rsrc://" + known.Resource  , info.Fonts[i]);
+                                    info.Fonts[i] = one;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            loadErrors.Add(known.Resource + " : " + ex.Message);
+                        }
+                    }
+
+                    if (null != info && string.IsNullOrEmpty(info.ErrorMessage) && info.FontCount > 0)
+                    {
+                        //If the registration declares a weight or style, then it is used for the (single) font in the file,
+                        //rather than the one the file declares itself.
+                        var overrideStyle = !string.IsNullOrEmpty(known.Style) || known.Weight > 0;
+                        
+                        foreach (var font in info.Fonts)
+                        {
+                            var family = known.Family ?? font.FamilyName;
+
+                            if (overrideStyle && info.FontCount == 1)
+                            {
+                                var style = string.IsNullOrEmpty(known.Style) ? GetStyleFromFont(font) : ParseRegisteredStyle(known.Style);
+                                var weight = known.Weight > 0 ? known.Weight : (int)font.FontWeight;
+                                custom.AddFont(info, font, family, style, weight);
+                            }
+                            else
+                                custom.AddFont(info, font, family);
+                        }
+                        //custom.AddTypefaceFonts(info);
+                    }
                 }
 
                 var defaultDir = options.DefaultDirectory;
@@ -880,6 +980,16 @@ namespace Scryber.Drawing
         
         #endregion
         
+        private static FontStyle ParseRegisteredStyle(string style)
+        {
+            if (string.Equals(style, "italic", StringComparison.OrdinalIgnoreCase))
+                return FontStyle.Italic;
+            else if (string.Equals(style, "oblique", StringComparison.OrdinalIgnoreCase))
+                return FontStyle.Oblique;
+            else
+                return FontStyle.Regular;
+        }
+
         #region private static FontStyle GetStyleFromFont(IFontInfo font)
         
         private static FontStyle GetStyleFromFont(IFontInfo font)
@@ -963,10 +1073,11 @@ namespace Scryber.Drawing
                 fref = _static[family, style, weight];
 
             if (null == fref)
+                fref = _generic[family, style, weight];
+
+            if (null == fref)
                 fref = _system[family, style, weight];
             
-            if (null == fref)
-                fref = _generic[family, style, weight];
 
             if (null == fref)
             {

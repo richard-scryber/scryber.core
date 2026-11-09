@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Components
@@ -53,7 +54,8 @@ namespace Scryber.Components
         {
             Style style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.PositionMode = PositionMode.Static;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             return style;
         }
     }

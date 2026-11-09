@@ -78,6 +78,11 @@ namespace Scryber.PDF.Layout
         {
 
             this.Context.DocumentLayout = CreateDocumentLayout();
+            
+            //If we are pre-pending a file then pass it down the line.
+            if (null != this.Document.PrependedFile)
+                this.Context.DocumentLayout.PrependFile = this.Document.PrependedFile;
+            
             Style style = this.FullStyle;
 
             this.StartPageNumbering(style);
@@ -160,7 +165,19 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected virtual PDFLayoutDocument CreateDocumentLayout()
         {
-            return new PDFLayoutDocument(this.Document, this);
+            var definedStyle = this.Document.GetPageStyle(string.Empty);
+            var size = definedStyle.CreatePageSize();
+
+            var layout = new PDFLayoutDocument(this.Document, this);
+
+            layout.PushPageSize(string.Empty, size);
+
+            // if(null != definedStyle)
+            // {
+            //     layout.PushPageSize(string.Empty, definedStyle.CreatePageSize());
+            // }
+
+            return layout;
         }
 
         #endregion
@@ -211,20 +228,27 @@ namespace Scryber.PDF.Layout
 
         protected override Style BuildFullStyle(Component forComponent)
         {
-            var full = this.FullStyle;
+           
             var pg = this.FullStyle.CreatePageSize();
-            var pos = this.FullStyle.CreatePostionOptions();
             var txt = this.FullStyle.CreateTextOptions();
             var fs = new Size(txt.GetZeroCharWidth(), txt.GetSize());
 
-            var docPage = forComponent as IDocumentPage;
-
+            
             if (forComponent is IDocumentPage documentPage)
                 return this.StyleStack.GetFullStyleForPage(documentPage, pg.Size, fs, Font.DefaultFontSize);                
             else
-                return this.StyleStack.GetFullStyle(forComponent, pg.Size, pg.Size.Subtract(pos.Margins), fs, Font.DefaultFontSize);
+                return this.StyleStack.GetFullStyle(forComponent, pg.Size, new ParentComponentSizer(this.GetPageSize), fs, Font.DefaultFontSize);
 
             
+        }
+
+        private Size GetPageSize(IComponent forComponent, Style withStyle, PositionMode andMode)
+        {
+            var pg = this.FullStyle.CreatePageSize();
+            var pos = this.FullStyle.CreatePostionOptions(false);
+
+            return pg.Size.Subtract(pos.Margins);
+
         }
     }
 }

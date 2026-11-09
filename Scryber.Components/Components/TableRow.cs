@@ -831,6 +831,7 @@ namespace Scryber.Components
         {
             Style style = base.GetBaseStyle();
             style.Overflow.Split = Drawing.OverflowSplit.Never;
+            style.Overflow.Action = OverflowAction.Clip;
             return style;
         }
 
@@ -865,10 +866,10 @@ namespace Scryber.Components
             applied.RemoveItemStyleValues(StyleKeys.PaddingItemKey);
 
             //Remove the position mode if it is not set to invisible
-            StyleValue<PositionMode> pos;
-            if (applied.IsValueDefined(StyleKeys.PositionModeKey) && applied.TryGetValue(StyleKeys.PositionModeKey, out pos) && pos.Value(applied) != PositionMode.Invisible)
+            StyleValue<DisplayMode> pos;
+            if (applied.IsValueDefined(StyleKeys.PositionDisplayKey) && applied.TryGetValue(StyleKeys.PositionDisplayKey, out pos) && pos.Value(applied) != DisplayMode.Invisible)
             {
-                applied.RemoveValue(StyleKeys.PositionModeKey);
+                applied.RemoveValue(StyleKeys.PositionDisplayKey);
             }
 
             applied.RemoveValue(StyleKeys.SizeHeightKey);
@@ -879,7 +880,7 @@ namespace Scryber.Components
 
 
 
-            if (modified)
+            if (modified && this.Document != null)
             {
                 var log = this.Document.TraceLog;
                 if (log.ShouldLog(TraceLevel.Message))

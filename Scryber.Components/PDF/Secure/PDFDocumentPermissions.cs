@@ -98,7 +98,8 @@ namespace Scryber.PDF.Secure
         [PDFAttribute("allow-hq-printing")]
         public bool AllowHighQualityPrinting { get; set; }
 
-        private static readonly PermissionFlags allAllowedR3 = (PermissionFlags)(-4100);
+        //all the bits set apart from bits 1 and 2
+        private static readonly PermissionFlags allAllowedR3 = (PermissionFlags)(-4);
         private static readonly PermissionFlags allAllowedR2 = (PermissionFlags)(-3844);
 
         /// <summary>
@@ -237,17 +238,13 @@ namespace Scryber.PDF.Secure
             if (AllowAnnotations)
                 restrict |= PermissionFlags.AllowR2AnnotationsAndForms;
 
+            //bit 9 allows filling forms even if bit 6 (annotations) is clear, so form filling does not also allow annotations
             if (AllowFormFilling)
-            {
-                restrict |= PermissionFlags.AllowR2AnnotationsAndForms;
                 restrict |= PermissionFlags.AllowFormFilling;
-            }
             if (AllowAccessiblity)
                 restrict |= PermissionFlags.AllowAccessibleTextAndGraphics;
             if (AllowDocumentAssembly)
-            {
-                restrict -= PermissionFlags.AllowDocumentAssembly;
-            }
+                restrict |= PermissionFlags.AllowDocumentAssembly;
             if (AllowHighQualityPrinting)
             {
                 restrict |= PermissionFlags.AllowPrinting;

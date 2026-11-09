@@ -1,0 +1,2836 @@
+{
+  "sections": [
+    {
+      "id": "binary_ops",
+      "name": "Binary Operators",
+      "desc": "Binary operators have both a left and right value with the operator between, and will return a single result from the combined operation. The precedence order is in the standard PEDMAS - however parentheses (brackets) are always recommended to clarify and explain intent.",
+      "funcs": [
+        {
+          "id": "plus_op",
+          "name": "Plus (+) operator",
+          "desc": "The plus operator will add 2 numbers together or join 2 strings, if the first operand is a string",
+          "usage": "{{LHS + RHS}}",
+          "returns": [{
+            "type": "number",
+            "desc": "If both values are convertable to numeric values."
+          },{
+            "type": "string",
+            "desc": "If the first value is a string, then the concatenation of both parameters."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "object",
+            "required": true,
+            "desc": "Any object, constant or expression. If it is not a number then it will be converted to a string."
+          },{
+            "name": "RHS",
+            "type": "object",
+            "required": true,
+            "desc": "Any object, constant or expression. If the LHS parameter is a number then this RHS value should be a number, or be able to be converted to a number"
+          }],
+          "examples": [
+            { "text": "{{12 + 4}}",
+              "expr": "12 + 4",
+              "desc": "Simply adding two numbers together"
+            },
+            { "text": "12 + model.number", "expr": "12 + model.number" },
+            { "text": "\"12\" + model.number", "expr": "\"12\" + model.number" },
+            { "text": "model.number + \"12\"", "expr": "model.number + \"12\"" },
+            { "text": "model.number + \" - as a string\"", "expr": "model.number + \" - as a string\"" },
+            { "text": "\"To a string - \" + model.number", "expr": "\"To a string - \" + model.number" },
+            { "text": "integer(\"12\") + model.number", "expr": "integer(\"12\") + model.number" }
+          ],
+          "notes":"When the first operand is a string then the following argument will be concatenated, however if the first argument is a number then the second will attempt to be converted to a number. If in doubt use the conversion functions, or concatenate function.",
+          "seealso": ["minus_op","binary_ops","number_func","string_func"]
+        },
+        {
+          "id": "minus_op",
+          "name": "Minus (-) operator",
+          "desc": "The minus operator will subtract the second (right) operand from the first (left) operand.",
+          "usage": "{{LHS - RHS}}",
+          "returns": [{
+            "type": "number",
+            "desc": "The result of the subtract operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          },{
+            "name": "RHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          }],
+          "examples": [
+            { "text": "50 - 4", "expr": "50 - 4" },
+            { "text": "50 - model.number", "expr": "50 - model.number" },
+            { "text": "model.number - \"12\"", "expr": "model.number - \"12\"" },
+            { "text": "model.number - \"two\"", "expr": "model.number - \"two\"" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not numbers then an attempt will be made to convert the parameters string representation to a number. If the conversion cannot be made, then the entire expression will error.",
+          "seealso": ["plus_op","binary_ops","number_func","string_func"]
+        },
+        {
+          "id": "multiply_op",
+          "name": "Multiply (*) operator",
+          "desc": "The multiply operator will return the product value of the LHS by the RHS",
+          "usage": "{{LHS * RHS}}",
+          "returns": [{
+            "type": "number",
+            "desc": "The result of the multiply operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          },{
+            "name": "RHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          }],
+          "examples": [
+            { "text": "50 * 4", "expr": "50 * 4" },
+            { "text": "50 * model.number", "expr": "50 * model.number" },
+            { "text": "model.number * \"12\"", "expr": "model.number * \"12\"" },
+            { "text": "model.number * \"two\"", "expr": "model.number * \"two\"" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not numbers then an attempt will be made to convert the parameters string representation to a number. If the conversion cannot be made, then the entire expression will error.",
+          "seealso": ["divide_op","binary_ops","number_func","string_func"]
+        },
+        {
+          "id": "divide_op",
+          "name": "Divide (/) operator",
+          "desc": "The divide operator will divide the LHS value by the RHS value and return the result",
+          "usage": "{{LHS / RHS}}",
+          "returns": [{
+            "type": "number",
+            "desc": "The result of the divide operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          },{
+            "name": "RHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          }],
+          "examples": [
+            { "text": "50 / 4", "expr": "50 / 4" },
+            { "text": "50 / model.number", "expr": "50 / model.number" },
+            { "text": "model.number / \"12\"", "expr": "model.number / \"12\"" },
+            { "text": "model.number / \"two\"", "expr": "model.number / \"two\"" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not numbers then an attempt will be made to convert the parameters string representation to a number. If the conversion cannot be made, then the entire expression will error.",
+          "seealso": ["divide_op","binary_ops","number_func","string_func"]
+        },
+        {
+          "id": "modulo_op",
+          "name": "Modulo (%) operator",
+          "desc": "The modulo operator will divide the LHS value by the RHS value and return the remainder of the division",
+          "usage": "{{LHS % RHS}}",
+          "returns": [{
+            "type": "number",
+            "desc": "The result of the modulo operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          },{
+            "name": "RHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          }],
+          "examples": [
+            { "text": "50 % 4", "expr": "50 % 4" },
+            { "text": "50 % model.number", "expr": "50 % model.number" },
+            { "text": "model.number % \"12\"", "expr": "model.number % \"12\"" },
+            { "text": "model.number % \"two\"", "expr": "model.number % \"two\"" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not numbers then an attempt will be made to convert the parameters string representation to a number. If the conversion cannot be made, then the entire expression will error.",
+          "seealso": ["divide_op","binary_ops","number_func","string_func"]
+        },
+        {
+          "id": "exponent_op",
+          "name": "Exponent (^) operator",
+          "desc": "The exponent operator raise the LHS number to the power of the RHS number",
+          "usage": "{{LHS ^ RHS}}",
+          "returns": [{
+            "type": "number",
+            "desc": "The result of the exponent operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          },{
+            "name": "RHS",
+            "type": "number",
+            "required": true,
+            "desc": "Any number, or a constant or expression that returns a number value."
+          }],
+          "examples": [
+            { "text": "50 ^ 4", "expr": "50 ^ 4" },
+            { "text": "50 ^ (model.int / 10)", "expr": "50 ^ (model.int / 10)" },
+            { "text": "model.number ^ \"2\"", "expr": "model.number ^ \"12\"" },
+            { "text": "\"12\" ^ 2", "expr": "\"12\" ^ 2" },
+            { "text": "model.number ^ \"two\"", "expr": "model.number ^ \"two\"" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not numbers then an attempt will be made to convert the parameters string representation to a number. If the conversion cannot be made, then the entire expression will error.",
+          "seealso": ["divide_op","binary_ops","number_func","string_func"]
+        },
+        {
+          "id": "bitwise_and_op",
+          "name": "Bitwise And (&) operator",
+          "desc": "The bitwise operators will perform bit level comparison operations on integer values. All bits within the values will be compared based on the AND truth tables.",
+          "usage": "{{LHS & RHS}}",
+          "returns": [{
+            "type": "integer",
+            "desc": "The result of the bitwise operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer, or a constant or expression that returns an integer value."
+          },{
+            "name": "RHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer value, or a constant or expression that returns an integer value."
+          }],
+          "examples": [
+            { "text": "11 & 7", "expr": "11 & 7" },
+            { "text": "string(0b1011 & 7, 'b')", "expr": "string((0b1011 & 7), 'b')" },
+            { "text": "model.int & 7", "expr": "model.int & 7" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not integers, then an attempt will be made to convert the parameters string representation to an integer. If the conversion cannot be made, then the entire expression will error. For explicit conversion, use the integer() function.",
+          "seealso": ["binary_ops","integer_func","string_func"]
+        },
+        {
+          "id": "bitwise_or_op",
+          "name": "Bitwise Or (|) operator",
+          "desc": "The bitwise operators will perform bit level comparison operations on integer values. All bits within the values will be compared based on the OR truth tables.",
+          "usage": "{{LHS | RHS}}",
+          "returns": [{
+            "type": "integer",
+            "desc": "The result of the bitwise operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer, or a constant or expression that returns an integer value."
+          },{
+            "name": "RHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer value, or a constant or expression that returns an integer value."
+          }],
+          "examples": [
+            { "text": "11 | 7", "expr": "11 | 7" },
+            { "text": "string(0b1011 | 7, 'b')", "expr": "string(0b1011 | 7, 'b')" },
+            { "text": "model.int | 7", "expr": "model.int | 7" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not integers, then an attempt will be made to convert the parameters string representation to an integer. If the conversion cannot be made, then the entire expression will error. For explicit conversion, use the integer() function.",
+          "seealso": ["binary_ops","integer_func","string_func"]
+        },
+        {
+          "id": "bitwise_left_op",
+          "name": "Bitwise Shift Left (<<) operator",
+          "desc": "The left shift (<<) operator returns a number whose binary representation is the first operand shifted by the specified number of bits to the left. Excess bits shifted off to the left are discarded, and zero bits are shifted in from the right.",
+          "usage": "{{LHS << RHS}}",
+          "returns": [{
+            "type": "integer",
+            "desc": "The result of the bitwise operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer, or a constant or expression that returns an integer value."
+          },{
+            "name": "RHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer value, or a constant or expression that returns an integer value."
+          }],
+          "examples": [
+            { "text": "11 << 7", "expr": "11 << 7" },
+            { "text": "string(0b1011 << 7, 'b')", "expr": "string(0b1011 << 7, 'b')" },
+            { "text": "string(model.int << 7)", "expr": "model.int << 7" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not integers, then an attempt will be made to convert the parameters string representation to an integer. If the conversion cannot be made, then the entire expression will error. For explicit conversion, use the integer() function.",
+          "seealso": ["bitwise_right_op","binary_ops","integer_func","string_func"]
+        },
+        {
+          "id": "bitwise_right_op",
+          "name": "Bitwise Shift Right (>>) operator",
+          "desc": "The right shift (>>) operator returns a number whose binary representation is the first operand shifted by the specified number of bits to the right. Excess bits shifted off to the right are discarded, and zero bits are shifted in from the left.",
+          "usage": "{{LHS >> RHS}}",
+          "returns": [{
+            "type": "integer",
+            "desc": "The result of the bitwise operation as a numeric value."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer, or a constant or expression that returns an integer value."
+          },{
+            "name": "RHS",
+            "type": "integer",
+            "required": true,
+            "desc": "Any integer value, or a constant or expression that returns an integer value."
+          }],
+          "examples": [
+            { "text": "11 >> 2", "expr": "11 >> 2" },
+            { "text": "string(0b1011 >> 2, 'b')", "expr": "string(0b1011 >> 2, 'b')" },
+            { "text": "string(model.int >> 2)", "expr": "model.int >> 2" }
+          ],
+          "notes" : "If either the LHS, or RHS parameters are not integers, then an attempt will be made to convert the parameters string representation to an integer. If the conversion cannot be made, then the entire expression will error. For explicit conversion, use the integer() function.",
+          "seealso": ["bitwise_left_op","binary_ops","integer_func","string_func"]
+        },
+        {
+          "id": "nullcoalescing_op",
+          "name": "Null coalescing (??) operator",
+          "desc": "The null coalesce operator (??) will provide the first (left) value if it is not null, otherwise it will provide the second (right) value.",
+          "usage": "{{LHS ?? RHS}}",
+          "returns": [{
+            "type": "object",
+            "desc": "The result of the null comparison in the type provided of either the left or right hand side arguments. No conversion is automatically done."
+          }],
+          "parameters": [{
+            "name": "LHS",
+            "type": "object",
+            "required": true,
+            "desc": "Any object, or a constant or expression that returns an object value."
+          },{
+            "name": "RHS",
+            "type": "object",
+            "required": true,
+            "desc": "Any object, or a constant or expression that returns an object value."
+          }],
+          "examples": [
+            { "text": "null ?? 'replaced'", "expr": "null ?? 'replaced'" },
+            { "text": "'not-replaced' ?? 'replaced'", "expr": "'not-replaced' ?? 'replaced'" },
+            { "text": "model.color ?? '#aaaaaa'", "expr": "model.color ?? '#aaaaaa'" },
+            { "text": "model.notset ?? '#aaaaaa'", "expr": "model.notset ?? '#aaaaaa'" }
+          ],
+          "notes" : "",
+          "seealso": ["bitwise_left_op","binary_ops","integer_func","string_func"]
+        },
+        {
+          "id": "combining",
+          "name": "Combining binary operators",
+          "desc": "The operators can be combined with their nartual precedence or, explicit precedence with parenthese.",
+          "examples": [
+            { "text": "12 + 2 - 6 * 2 / 4", "expr": "12 + 2 - 6 * 2 / 4" },
+            { "text": "((12 + 2) - 6) * (2 / 4)", "expr": "((12 + 2) - 6) * (2 / 4)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "relational-ops",
+      "name": "Relational Operators",
+      "funcs": [
+        {
+          "id": "equals",
+          "name": "Equal (==) operator",
+          "desc": "The equality (==) operator will return true if the left and right side are the same value. If the types of values are different, then an attempt to convert to the same value will be made.",
+          "notes": "Zero is classed as false, any other non null value is true.",
+          "usage": "{{LHS == RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the LHS and RHS objects are considered equal; otherwise, false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },
+          "examples": [
+            {
+              "text": "20.9 == 20.9",
+              "expr": "20.9 == 20.9",
+              "value": "true",
+              "desc": "The direct comparison of 2 numbers will result in true"
+            },
+            {
+              "text": "model.number == 20.0",
+              "expr": "model.number == 20.0",
+              "value": "false",
+              "desc": "The comparison of the bound model values and the number will result in false"
+            },
+            {
+              "text": "model.number == '20.9'",
+              "expr": "model.number == '20.9'",
+              "value": "true",
+              "desc": "The RHS value will be converted to a number and then the comparison will result in true"
+            },
+            {
+              "text": "0 == false",
+              "expr": "0 == false",
+              "value": "true",
+              "desc": "As 0 is considered the same as false the comparison will result in true"
+            },
+            {
+              "text": "1 == false",
+              "expr": "1 == false",
+              "value": "false",
+              "desc": "As any value other than 0 is considered the same as true the comparison will result in false"
+            },
+            {
+              "text": "model.number == null",
+              "expr": "model.number == null",
+              "value": "false",
+              "desc": "As the LHS has a value, it is not null, and the comparison will result in false"
+            },
+            {
+              "text": "model.bg == 'silver'",
+              "expr": "model.bg == 'silver'",
+              "value": "true",
+              "desc": "The RHS value matches the LHS type and value, so the comparison will result in true"
+            },
+            {
+              "text": "model.bg == 'SILVER'",
+              "expr": "model.bg == 'SILVER'",
+              "value": "false",
+              "desc": "The RHS value matches the LHS type but string comparisons are case sensitive, so the comparison will result in false"
+            }
+          ],
+          "seealso": ["notequals", "relational-ops", "if"]
+        },
+        {
+          "id": "notequals",
+          "name": "Not Equal (!=) operator",
+          "desc": "The non-equality (!=) operator will return true if the left and right side are *not* the same value. Again, if the types of values are different, then an attempt to convert to the same type will be made.",
+          "notes": "Zero is classed as false, any other non null value is true",
+          "usage": "{{LHS != RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the LHS and RHS objects are *not* considered equal, otherwise false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },
+          "examples": [
+            { "text": "20.9 != 20.9",
+              "expr": "20.9 != 20.9",
+              "value" : "false",
+              "desc": "The direct comparison of 2 numbers will result in false if they are not of the same equivalent value"
+            },
+            { "text": "model.number != 20.0", "expr": "model.number != 20.0" },
+            { "text": "model.number != '20.9'", "expr": "model.number != '20.9'" },
+            { "text": "0 != true", "expr": "0 != true" },
+            { "text": "1 != true", "expr": "1 != true" },
+            { "text": "model.number != null", "expr": "model.number != null" },
+            { "text": "model.bg != 'silver'", "expr": "model.bg != 'silver'" },
+            { "text": "model.bg != 'SILVER'", "expr": "model.bg != 'SILVER'" }
+          ]
+        },
+        {
+          "id": "lessthan",
+          "name": "Less than (<) operator",
+          "desc": "The less than (<) operator will return true if the left side is considered less than the right side. Again, if the types of values are different, then an attempt to convert to the same type will be made. String comparison is case sensitive",
+          "notes": "More information on the 'if' function can be found later in the logical functions.",
+          "usage": "{{LHS < RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the LHS object is consideredand less than the RHS objects, otherwise false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },
+          "examples": [
+            { "text": "20.9 < 21.0", "expr": "20.9 < 21.0" },
+            { "text": "20.9 < 20.9", "expr": "20.9 < 20.9" },
+            { "text": "model.number < 30.0", "expr": "model.number < 30.0" },
+            { "text": "model.bg < 'silver'", "expr": "model.bg < 'silver'" },
+            { "text": "if(model.number < 21,'Less', 'More or equal')", "expr": "if(model.number < 21,'Less', 'More or equal')" },
+            { "text": "if(model.bg < 'silver','Less', 'More or equal')", "expr": "if(model.bg < 'silver','Less', 'More or equal')" },
+            { "text": "if(model.bg < 'SILVER','Less', 'More or equal')", "expr": "if(model.bg < 'SILVER','Less', 'More or equal')" }
+          ]
+        },
+        {
+          "id": "greaterthan",
+          "name": "Greater than (>) operator",
+          "desc": "The more than (>) operator will return true if the left side is greater than the right side. Again, if the types of values are different, then an attempt to convert to the same type will be made. String comparison is case sensitive",
+          "notes": "More information on the 'if' function can be found later in the logical functions.",
+          "usage": "{{LHS > RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the LHS object is consideredand more than the RHS object, otherwise false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },
+          "examples": [
+            { "text": "20.9 > 21.0", "expr": "20.9 > 21.0" },
+            { "text": "20.9 > 20.0", "expr": "20.9 > 20.0" },
+            { "text": "model.number > 30.0", "expr": "model.number > 30.0" },
+            { "text": "model.bg > 'silver'", "expr": "model.bg > 'silver'" },
+            { "text": "if(model.number > 20,'More', 'Less or equal')", "expr": "if(model.number > 20,'More', 'Less or equal')" },
+            { "text": "if(model.bg > 'silver','More', 'Less or equal')", "expr": "if(model.bg > 'silver','More', 'Less or equal')" },
+            { "text": "if(model.bg > 'SILVER','More', 'Less or equal')", "expr": "if(model.bg > 'SILVER','More', 'Less or equal')" }
+          ]
+        },
+        {
+          "id": "lessthanequal",
+          "name": "Less than or equal (<=) operator",
+          "desc": "The less than or equal (<=) operator will return true if the left side is less than or the same as the right side. If the types of values are different, then an attempt to convert to the same type will be made. String comparison is case sensitive",
+          "notes": "More information on the 'if' function can be found later in the logical functions.",
+          "usage": "{{LHS <= RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the LHS object is consideredand less than or eaqual to the RHS object, otherwise false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },
+          "examples": [
+            { "text": "20.9 <= 20.0", "expr": "20.9 <= 20.0" },
+            { "text": "20.9 <= 20.9", "expr": "20.9 <= 20.9" },
+            { "text": "model.number <= 30.0", "expr": "model.number <= 30.0" },
+            { "text": "model.bg <= 'silver'", "expr": "model.bg <= 'silver'" },
+            { "text": "model.bg <= 'liver'", "expr": "model.bg <= 'liver'" },
+            { "text": "if(model.number <= 21,'Less or equal', 'More')", "expr": "if(model.number <= 21,'Less or equal', 'More')" },
+            { "text": "if(model.bg <= 'silver','Less or equal', 'More')", "expr": "if(model.bg <= 'silver','Less or equal', 'More')" },
+            { "text": "if(model.bg <= 'SILVER','Less or equal', 'More')", "expr": "if(model.bg <= 'SILVER','Less or equal', 'More')" }
+          ]
+        },
+        {
+          "id": "greaterthanequal",
+          "name": "Greater than or equal (>=) operator",
+          "desc": "The greater than or equal (>=) operator will return true if the left side is more than or the same as the right side. If the types of values are different, then an attempt to convert to the same type will be made. String comparison is case sensitive",
+          "notes": "More information on the 'if' function can be found later in the logical functions.",
+          "usage": "{{LHS >= RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the LHS object is consideredand greater than or eaqual to the RHS object, otherwise false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },
+          "examples": [
+            { "text": "20.9 >= 20.0", "expr": "20.9 >= 20.0" },
+            { "text": "20.9 >= 30.0", "expr": "20.9 >= 30.0" },
+            { "text": "model.number >= 30.0", "expr": "model.number >= 30.0" },
+            { "text": "model.bg >= 'silver'", "expr": "model.bg >= 'silver'" },
+            { "text": "if(model.number >= 20,'More or equal', 'Less')", "expr": "if(model.number >= 20,'More or equal', 'Less')" },
+            { "text": "if(model.bg >= 'silver','More or equal', 'Less')", "expr": "if(model.bg >= 'silver','More or equal', 'Less')" }
+          ]
+        }]
+    },
+    {
+      "id": "logical-ops",
+      "name": "Logical Operators",
+      "funcs": [
+        {
+          "id": "and_op",
+          "name": "And (&&) operator",
+          "desc": "The logical and (&&) operator will return true if the left and right side are both true, otherwise it will return false. Either side can be a constant or an expression, and if the types of values are different, then an attempt to convert to the same value will be made.",
+          "notes": "Using the && operator within an xhtml template requires the operand to be escaped to &amp;&amp; otherwise the actual structure of the document is invalid. As with other operators 0 and null are false.",
+          "usage": "{{LHS && RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if both the LHS and RHS objects are considered true otherwise, false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },"examples": [
+          { "text": "true && true", "expr": "true && true" },
+          { "text": "true && false", "expr": "true && false" },
+          { "text": "model.boolean && true", "expr": "model.boolean && true" },
+          { "text": "null && true", "expr": "null && true" },
+          { "text": "'true' && true", "expr": "'true' && true" },
+          { "text": "model.boolean && 1", "expr": "model.boolean && 1" },
+          { "text": "model.boolean && 0", "expr": "model.boolean && 0" },
+          { "text": "model.boolean && -1", "expr": "model.boolean && -1" }
+        ]
+        },
+        {
+          "id": "or_op",
+          "name": "Or (||) operator",
+          "desc": "The logical or (||) operator will return true if the left or right side are true, otherwise it will return false. Either side can be a constant or an expression, and if the types of values are different, then an attempt to convert to the same value will be made.",
+          "notes": "As with other operators 0 and null are false.",
+          "usage": "{{LHS || RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if either the LHS or RHS objects are considered true otherwise, false"
+          },
+          "parameters": [{
+            "name": "LHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "modeldata": {
+            "number": 20.9,
+            "int": 11,
+            "bg": "silver"
+
+          },"examples": [
+          { "text": "true || false", "expr": "true || false" },
+          { "text": "0 || false", "expr": "0 || false" },
+          { "text": "model.boolean || false", "expr": "model.boolean || false" },
+          { "text": "null || false", "expr": "null || false" },
+          { "text": "'true' || false", "expr": "'true' || false" },
+          { "text": "model.boolean || 1", "expr": "model.boolean || 1" },
+          { "text": "model.boolean || 0", "expr": "model.boolean || 0" },
+          { "text": "model.boolean || -1", "expr": "model.boolean || -1" }
+        ]
+        },
+        {
+          "id": "not_op",
+          "name": "Not (!) operator",
+          "desc": "The not (!) unary operator will return true if the contained value results in false, or false if the contained value results in true. The contained value can be a constant or another expression, and if the type of value is not a boolean value, then an attempt to convert to boolean will be made.",
+          "notes": "The !! operator must currently be separated by parentheses e.g. !(!true), directly using !!true will cause an error",
+          "usage": "{{!RHS}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"true if the RHS object is considered false otherwise, true"
+          },
+          "parameters": [{
+            "name": "RHS",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "examples": [
+            { "text": "!true", "expr": "!true" },
+            { "text": "!0", "expr": "!0" },
+            { "text": "!10", "expr": "!10" },
+            { "text": "!(model.number + 10)", "expr": "!(model.number + 10)" },
+            { "text": "!(model.number - 20.9)", "expr": "!(model.number - 20.9)" },
+            { "text": "!'false'", "expr": "!'false'" },
+            { "text": "!model.boolean", "expr": "!model.boolean" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conversion-func",
+      "name": "Conversion Functions",
+      "funcs": [
+        {
+          "id": "boolean",
+          "name": "Boolean Function",
+          "desc": "The boolean() function will return true if the contained expression can be converted to a true value, otherwise false, or false if the contained expression results in false. The contained expression can be a constant or another expression, and an attempt to convert to boolean will be made.",
+          "notes": "A non-empty string value is considered true, unless it is 'false'",
+          "usage": "{{boolean(expr)}}",
+          "returns": {
+            "type": "boolean",
+            "desc":"If 'expr' is considered a true, non zero or null value returns true, otherwise false"
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "examples": [
+            { "text": "boolean(1)", "expr": "boolean(1)" },
+            { "text": "boolean(0)", "expr": "boolean(0)" },
+            { "text": "boolean(-1)", "expr": "boolean(-1)" },
+            { "text": "boolean(null)", "expr": "boolean(null)" },
+            { "text": "boolean(model.number)", "expr": "boolean(model.number)" },
+            { "text": "boolean('')", "expr": "boolean('')" },
+            { "text": "boolean('a string')", "expr": "boolean('a string')" },
+            { "text": "boolean('false')", "expr": "boolean('false')" },
+            { "text": "boolean(model.array)", "expr": "boolean(model.array)" }
+          ]
+        },
+        {
+          "id": "date",
+          "name": "Date Function",
+          "desc": "The date function will return the value, of the contained expression, as a date. If no contained expression is provided, then it will return the current date and time. The contained expression can be a constant or another expression, and an attempt to convert to date will be made. If a second *format* parameter is provided, then the date will be parsed according to that format. ",
+          "notes": "Once converted to a date there are many date manipulation functions available to alter the value.",
+          "usage": "{{date()}} or {{date(expr)}} or {{date(expr, format)}}",
+          "returns": {
+            "type": "DateTime",
+            "desc":"The 'expr' as a DateTime, or if no 'expr' is given, then the current date and time."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "Object",
+            "desc" : "Optional. Any value, constant or expression that is either a string value for a date, or a number (representing the number of milliseconds past since 01-01-0001 00:00:00)"
+          },{
+            "name": "format",
+            "type": "string",
+            "desc": "Optional. Any value, constant or expression that returns a string. A standard (non-cultural) string representation or the format for the date."
+          }],
+          "examples": [
+            { "text": "date()", "expr": "date()" },
+            {"text": "date(63822124800000)", "expr": "date(63822124800000)"},
+            { "text": "date('12 June 2023')", "expr": "date('12 June 2023')" },
+            { "text": "date('12 06 2023', 'dd MM yyyy')", "expr": "date('12 06 2023', 'dd MM yyyy')" },
+            { "text": "date('12 06 2023', 'MM dd yyyy')", "expr": "date('12 06 2023', 'MM dd yyyy')" },
+            { "text": "string(date('12 06 2023', 'MM dd yyyy'),'dd MMM yyyy')", "expr": "string(date('12 06 2023', 'MM dd yyyy'),'dd MMM yyyy')" }
+          ]
+        },
+        {
+          "id": "decimal",
+          "name": "Decimal Function",
+          "desc": "The decimal function will return the value as a decimal of the contained expression. The contained expression can be a constant or another expression, and an attempt to convert to decmial will be made.",
+          "usage": "{{decimal(expr)}}",
+          "returns": {
+            "type": "decimal",
+            "desc":"If 'expr' can be converted to a decimal value, the value is returned."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }]
+        ,"examples": [
+          { "text": "decimal(0)", "expr": "decimal(0)" },
+          { "text": "decimal(0.25)", "expr": "decimal(0.25)" },
+          { "text": "decimal('0.25')", "expr": "decimal('0.25')" },
+          { "text": "decimal(false)", "expr": "decimal(false)" },
+          { "text": "decimal(true)", "expr": "decimal(true)" },
+          { "text": "decimal(model.int + 1)", "expr": "decimal(model.int + 1)" },
+          { "text": "decimal(model.array)", "expr": "decimal(model.array)" }
+        ]
+        },
+        {
+          "id": "double",
+          "name": "Double Function",
+          "desc": "The double function will return the value as a double of the contained expression. The contained expression can be a constant or another expression, and an attempt to convert to double will be made.",
+          "usage": "{{double(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' can be converted to a double value, the value is returned"
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "examples": [
+            { "text": "double(0)", "expr": "double(0)" },
+            { "text": "double(0.25)", "expr": "double(0.25)" },
+            { "text": "double('0.25')", "expr": "double('0.25')" },
+            { "text": "double(false)", "expr": "double(false)" },
+            { "text": "double(true)", "expr": "double(true)" },
+            { "text": "double(model.int)", "expr": "double(model.int)" },
+            { "text": "double(model.array)", "expr": "double(model.array)" }
+          ]
+        },
+        {
+          "id": "integer",
+          "name": "Integer Function",
+          "desc": "The integer function will return the value as an integer of the contained expression. The contained expression can be a constant or another expression, and an attempt to convert to integer will be made. Null or invalid values will cause an error",
+          "notes": "If the value to be converted to an integer is a floating point (double, decimal) value, then it will be rounded to the nearest integer. If it is a string, then it *must* be able an integral value representation.",
+          "usage": "{{integer(expr)}}",
+          "returns": {
+            "type": "Int34",
+            "desc":"If 'expr' can be converted to a integer value, the value is returned"
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          }],
+          "examples": [
+            { "text": "integer(0)", "expr": "integer(0)" },
+            { "text": "integer(10.6)", "expr": "integer(10.6)" },
+            { "text": "integer('10')", "expr": "integer('10')" },
+            { "text": "integer('10.6')", "expr": "integer('10.6')" },
+            { "text": "integer(double('10.6'))", "expr": "integer(double('10.6'))" },
+            { "text": "integer(false)", "expr": "integer(false)" },
+            { "text": "integer(true)", "expr": "integer(true)" },
+            { "text": "integer(model.number)", "expr": "integer(model.number)" },
+            { "text": "integer(model.array)", "expr": "integer(model.array)" }
+          ]
+        },
+        {
+          "id": "string",
+          "name": "String Function",
+          "desc": "The string function will return the value of the contained expression as a string. Complex (object and array values will be expanded). A formatting parameter can also be specifified to alter how the value is encoded.",
+          "notes": "The standard .NET format conversion notations can be used, but cultures are not currently set on the expressions. This may be supported in the future, however the formatting string can be bound to a model value, as well, for flexibility.",
+          "usage": "{{string(expr)}} or {{string(expr, format)",
+          "returns": {
+            "type": "string",
+            "desc":"If 'expr' can be converted to a integer value, the value is returned"
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "Object",
+            "desc": "Required. Any object, constant or expression"
+          },{
+            "name": "format",
+            "type": "string",
+            "desc": "Required. Any value, constant or expression as a string"
+          }],
+          "examples": [
+            { "text": "string(10)", "expr": "string(10)" },
+            { "text": "string(10 + 1)", "expr": "string(10 + 1)" },
+            { "text": "string(10) + 1", "expr": "string(10) + 1" },
+            { "text": "string(false)", "expr": "string(false)" },
+            { "text": "string(true)", "expr": "string(true)" },
+            { "text": "string(model.int)", "expr": "string(model.int)" },
+            { "text": "string(model.number)", "expr": "string(model.number)" },
+            { "text": "string(model.array)", "expr": "string(model.array)" },
+            { "text": "string(model.items[1])", "expr": "string(model.items[1])" },
+            { "text": "string(model.notset)", "expr": "string(model.notset)" },
+            { "text": "string(model.notset) + ' - after'", "expr": "string(model.notset) + ' - after'" },
+            { "text": "string(model.notset ?? '') + ' - after'", "expr": "string(model.notset ?? '') + ' - after'" },
+            { "text": "string(10.3456,'##0.00')", "expr": "string(10.3456,'##0.00')" },
+            { "text": "string(10.3456,'000.00#')", "expr": "string(10.3456,'000.00#')" },
+            { "text": "string(10.3456,'£#,##0.00')", "expr": "string(10.3456,'£#,##0.00')" },
+            { "text": "string(model.number + 1,'# ##0,00 €')", "expr": "string(model.number + 1,'# ##0,00 €')" },
+            { "text": "string(date())", "expr": "string(date())" },
+            { "text": "string(date(),'D')", "expr": "string(date(),'D')" },
+            { "text": "string(date(),'dd MMM yyyy')", "expr": "string(date(), 'dd MMM yyyy')" },
+            { "text": "string(integer(model.number))", "expr": "string(integer(model.number))" },
+            { "text": "string(date('12 06 2023', 'MM dd yyyy'),'D')", "expr": "string(date('12 06 2023', 'MM dd yyyy'),'D')" }
+          ]
+        }
+
+      ]
+    },
+    {
+      "id": "math-func",
+      "name": "Mathematical Functions",
+      "funcs": [
+        {
+          "id": "abs",
+          "name": "Abs Function",
+          "desc": "The abs() function will return the absolute (positive) value of a provided number. If the value is negative it will return the positive value of that number, otherwise it will return the original number.",
+          "usage": "{{abs(expr)}}",
+          "returns": {
+            "type": "number",
+            "desc":"If 'expr' is considered a number, the absolute value of that number in its type will be returned (e.g. integer returns integer, double returns double)."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "Abs(10)", "expr": "Abs(10)" },
+            { "text": "Abs(1 - 10)", "expr": "Abs(1 - 10)" },
+            { "text": "Abs('-5')", "expr": "Abs('-5')", "isinvalid" : true },
+            { "text": "Abs(double('-5'))", "expr": "Abs(double('-5'))" },
+            { "text": "Abs(null)", "expr": "Abs(null)", "isinvalid" : true },
+            { "text": "Abs(model.int)", "expr": "Abs(model.int)" },
+            { "text": "Abs(model.int - model.number)", "expr": "Abs(model.int - model.number)" }
+          ]
+        },
+        {
+          "id": "pi",
+          "name": "Pi Function",
+          "desc": "The pi() function will return the value of Pi (to 10 decimal places). It can also be used as a constant without the parenthese. e.g. pi and PI() are equivalent.",
+          "notes": "As a constant it also means that no template variables or parameters should be named 'pi' as a conflicting state would arise",
+          "usage": "{{pi()}} or {{pi}}",
+          "returns": {
+            "type": "double",
+            "desc":"The value of Pi to 10 decimal places."
+          },
+          "examples": [
+            { "text": "Pi()", "expr": "Pi()" },
+            { "text": "pi", "expr": "pi" },
+            { "text": "pi/2", "expr": "pi/2" }
+          ]
+        },
+        {
+          "id": "euler",
+          "name": "E Function",
+          "desc": "The e() function will return the value of Eulers number (to 10 decimal places). It can also be used as a constant without the parenthese. e.g. e and E() are equivalent.",
+          "notes": "As a constant it also means that no template variables or parameters should be named 'e' as a conflicting state would arise",
+          "usage": "{{e()}} or {{e}}",
+          "returns": {
+            "type": "double",
+            "desc":"Eulers constant value to 10 decimal places."
+          },
+          "examples": [
+            { "text": "E()", "expr": "E()" },
+            { "text": "e", "expr": "e" },
+            { "text": "e * model.int", "expr": "e * model.int" }
+          ]
+        },
+
+        {
+          "id": "round",
+          "name": "Round Function",
+          "desc": "The round() function will return the value of a provided number to the nearest integer, or rounded to any provided precision.",
+          "usage": "{{round(expr)}} or {{round(expr,precision)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the round value of that number will be returned as a double with either 0 or 'precision' number of numbers after the decimal separator."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          },{
+            "name": "precision",
+            "type": "integer",
+            "desc": "Optional. Any value, constant or expression that represents an integer value, or rounded up to the nearest integer value. Will not be converted from a string value"
+          }],
+          "examples": [
+            { "text": "round(20.3456)", "expr": "round(20.3456)" },
+            { "text": "round(model.number)", "expr": "round(model.number)" },
+            { "text": "round(20.3456, 1)", "expr": "round(20.3456, 1)" },
+            { "text": "round(20.3456, 3)", "expr": "round(20.3456, 3)" },
+            { "text": "round('20.3456', 1)", "expr": "round('20.3456', 1)" },
+            { "text": "round(20.3456, '3.6')", "expr": "round(20.3456, '3.6')", "isinvalid": true },
+            { "text": "round('two point three', 1)", "expr": "round('two point three', 1)", "isinvalid": true },
+            { "text": "round('20.3456', 'three')", "expr": "round('20.3456', 'three')", "isinvalid": true },
+            { "text": "round(model.number + 0.6, 0)", "expr": "round(model.number + 0.6, 0)" }
+          ]
+        },
+        {
+          "id": "floor",
+          "name": "Floor Function",
+          "desc": "The floor() function will return the highest possible integer value below the provided value.",
+          "usage": "{{floor(expr)}}",
+          "returns": {
+            "type": "decimal or double",
+            "desc":"If 'expr' is considered a number, the floor value of that number in its type will be returned as either a decimal if the expr is a decimal or as double if expr is a double or any other numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "floor(20.3456)", "expr": "floor(20.3456)" },
+            { "text": "floor(-20.3456)", "expr": "floor(-20.3456)" },
+            { "text": "floor(model.number)", "expr": "floor(model.number)" },
+            { "text": "floor('20.3456')", "expr": "floor('20.3456')" },
+            { "text": "floor('two')", "expr": "floor('two')", "isinvalid" : true },
+            { "text": "floor(model.number + 0.6)", "expr": "floor(model.number + 0.6)" }
+          ]
+        },
+        {
+          "id": "ceiling",
+          "name": "Ceiling Function",
+          "desc": "The ceiling() function will return the lowest possible integer value above the provided value.",
+          "usage": "{{ceiling(expr)}}",
+          "returns": {
+            "type": "decimal or double",
+            "desc":"If 'expr' is considered a number, the ceiling value of that number in its type will be returned as either a decimal if the expr is a decimal or as double if expr is a double or any other numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "ceiling(20.3456)", "expr": "ceiling(20.3456)" },
+            { "text": "ceiling(-20.3456)", "expr": "ceiling(-20.3456)" },
+            { "text": "ceiling(model.number)", "expr": "ceiling(model.number)" },
+            { "text": "ceiling('20.9')", "expr": "ceiling('20.9')" },
+            { "text": "ceiling('two')", "expr": "ceiling('two')", "isinvalid" : true },
+            { "text": "ceiling(model.number + 0.6)", "expr": "ceiling(model.number + 0.6)" }
+          ]
+        },
+        {
+          "id": "truncate",
+          "name": "Truncate Function",
+          "desc": "The truncate() function will remove any floating point value. This means negative values are equivalent to ceiling(expr) and positive values are equivalent to floor(expr).",
+          "usage": "{{truncate(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the truncated value of that number will be returned as double, even if expr is another numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "truncate(20.6456)", "expr": "truncate(20.6456)" },
+            { "text": "truncate(-20.6456)", "expr": "truncate(-20.6456)" },
+            { "text": "truncate('-20.6456')", "expr": "truncate('-20.6456')" },
+            { "text": "truncate('two')", "expr": "truncate('two')", "isinvalid": true },
+            { "text": "truncate(model.number)", "expr": "truncate(model.number)" },
+            { "text": "truncate(model.number + 0.6)", "expr": "truncate(model.number + 0.6)" }
+          ]
+        },
+        {
+          "id": "sign",
+          "name": "Sign Function",
+          "desc": "The sign() function will return 1 if the value of a provided number is positive. If the value is negative it will return -1, and zero will return 0.",
+          "usage": "{{sign(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "returns": {
+            "type": "integer",
+            "desc":"Either 1, 0 or -1 depending on the value of the numeric expression"
+          },"examples": [
+          { "text": "Sign(10.4)", "expr": "Sign(10.4)" },
+          { "text": "Sign(1 - 10)", "expr": "Sign(1 - 10)" },
+          { "text": "Sign(model.int)", "expr": "Sign(model.int)" },
+          { "text": "Sign(model.notset)", "expr": "Sign(model.notset)" , "isinvalid":true},
+          { "text": "Sign(0)", "expr": "Sign(0)" },
+          { "text": "sign(null)", "expr": "sign(null)", "isinvalid":true },
+          { "text": "sign('two')", "expr": "sign('two')", "isinvalid":true }
+        ]
+        },
+        {
+          "id": "pow",
+          "name": "Pow Function",
+          "desc": "The pow() function requires 2 arguments and will return the first argument, raised to the exponent of the second argument e.g. pow(3,2) is equivalent to 3^2.",
+          "usage": "{{pow(expr, exponent)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the value of that number will be raised by the exponent and returned as a double."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          },{
+            "name": "exponent",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "pow(10,2)", "expr": "pow(10,2)" },
+            { "text": "pow(1,3)", "expr": "pow(1,3)" },
+            { "text": "pow('2',3)", "expr": "pow('2',3)" },
+            { "text": "pow('2.2','3.3')", "expr": "pow('2.2','3.3')" },
+            { "text": "pow('two','3.3')", "expr": "pow('two','3.3')", "isinvalid" : true },
+            { "text": "pow(model.number,model.int-8)", "expr": "pow(model.number,model.int-8)" }
+          ]
+        },
+        {
+          "id": "sqrt",
+          "name": "Sqrt Function",
+          "desc": "The sqrt() function will return the square root of a number.",
+          "usage": "{{sqrt(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "returns": {
+            "type": "double",
+            "desc": "The resultant square root value of the provided number"
+          },
+          "examples": [
+            { "text": "sqrt(10)", "expr": "sqrt(10)" },
+            { "text": "sqrt('10')", "expr": "sqrt('10')" },
+            { "text": "sqrt('ten')", "expr": "sqrt('ten')", "isinvalid":true },
+            { "text": "sqrt(e)", "expr": "sqrt(e)" },
+            { "text": "sqrt(model.number + 4.1)", "expr": "sqrt(model.number + 4.1)" }
+          ]
+        },
+        {
+          "id": "sin",
+          "name": "Sin Function",
+          "desc": "The sin() function will return the sine of the provided angle (in radians).",
+          "notes": "If the angle is in degrees, then multiply by Pi/180 or use the rad() function to get the angle in radians",
+          "usage": "{{sin(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "returns": {
+            "type": "double",
+            "desc": "The resultant sine value of the provided angle"
+          },
+          "examples": [
+            { "text": "sin(1.234)", "expr": "sin(1.234)" },
+            { "text": "sin(2.0943951024)", "expr": "sin(2.0943951024)" },
+            { "text": "sin(60*Pi/180)", "expr": "sin(60*Pi/180)" },
+            { "text": "sin(rad(60))", "expr": "sin(rad(60))" },
+            { "text": "sin('2.0943951024')", "expr": "sin('2.0943951024')" },
+            { "text": "sin('two')", "expr": "sin('two')", "isinvalid":true },
+            { "text": "sin(model.number*Pi/180)", "expr": "sin(model.number*Pi/180)" },
+            { "text": "sin(rad(model.number))", "expr": "sin(rad(model.number))" }
+          ]
+        },
+        {
+          "id": "cos",
+          "name": "Cos Function",
+          "desc": "The cos() function will return the cosine of the provided angle (in radians).",
+          "notes": "If the angle is in degrees, then multiply by Pi/180 or use the rad() function to get the angle in radians",
+          "usage": "{{cos(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the cosine value of that number in radians will be returned as double, even if expr is another numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "cos(1.234)", "expr": "cos(1.234)" },
+            { "text": "cos(2.0943951024)", "expr": "cos(2.0943951024)" },
+            { "text": "cos(60*Pi/180)", "expr": "cos(60*Pi/180)" },
+            { "text": "cos(rad(60))", "expr": "cos(rad(60))" },
+            { "text": "cos(model.number*Pi/180)", "expr": "cos(model.number*Pi/180)" },
+            { "text": "cos(rad(model.number))", "expr": "cos(rad(model.number))" }
+          ]
+        },
+        {
+          "id": "tan",
+          "name": "Tan Function",
+          "desc": "The tan() function will return the tangent of the provided angle (in radians).",
+          "notes": "If the angle is in degrees, then multiply by Pi/180 or use the rad() function to get the angle in radians",
+          "usage": "{{tan(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the cosine value of that number in radians will be returned as double, even if expr is another numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "tan(1.234)", "expr": "tan(1.234)" },
+            { "text": "tan(2.0943951024)", "expr": "tan(2.0943951024)" },
+            { "text": "tan(60*Pi/180)", "expr": "tan(60*Pi/180)" },
+            { "text": "tan(rad(60))", "expr": "tan(rad(60))" },
+            { "text": "tan(model.number*Pi/180)", "expr": "tan(model.number*Pi/180)" },
+            { "text": "tan(rad(model.number))", "expr": "tan(rad(model.number))" }
+          ]
+        },
+        {
+          "id": "asin",
+          "name": "Asin Function",
+          "desc": "The asin() function will return the arcsine, or inverse sine of the provided number in radians.",
+          "notes": "If the result is needed in degrees, then multiply by 180/Pi or use the deg() function to get the angle in degrees",
+          "usage": "{{aSin(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"The radian value arcsine of the expr value."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }]
+        ,"examples": [
+          { "text": "asin(1)", "expr": "asin(1)" },
+          { "text": "asin(0.3304651081)", "expr": "asin(0.3304651081)" },
+          { "text": "asin(-0.5)", "expr": "asin(-0.5)" },
+          { "text": "asin(0.5)*180/Pi", "expr": "asin(0.5)*180/Pi" },
+          { "text": "deg(asin(0.5))", "expr": "deg(asin(0.5))" },
+          { "text": "asin(model.number/100.0)*180/Pi", "expr": "asin(model.number/100.0)*180/Pi" }
+        ]
+        },
+        {
+          "id": "acos",
+          "name": "Acos Function",
+          "desc": "The acos() function will return the arccosine, or inverse cosine, of the provided number in radians.",
+          "notes": "If the result is needed in degrees, then multiply by 180/Pi or use the deg() function to get the angle in degrees",
+          "usage": "{{acos(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"The radian value arccosine of the expr value."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }]
+        ,"examples": [
+          { "text": "acos(1)", "expr": "acos(1)" },
+          { "text": "acos(0.3304651081)", "expr": "acos(0.3304651081)" },
+          { "text": "acos(-0.5)", "expr": "acos(-0.5)" },
+          { "text": "acos(0.5)*180/Pi", "expr": "acos(0.5)*180/Pi" },
+          { "text": "deg(acos(0.5))", "expr": "deg(acos(0.5))" },
+          { "text": "acos(model.number/100.0)*180/Pi", "expr": "acos(model.number/100.0)*180/Pi" }
+        ]
+        },
+        {
+          "id": "atan",
+          "name": "Atan Function",
+          "desc": "The atan() function will return the arctangent, or inverse tangent of the provided number in radians.",
+          "notes": "If the result is needed in degrees, then multiply by 180/Pi or use the deg() function to get the angle in degrees",
+          "usage": "{{atan(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"The radian value arctangent of the expr value."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }]
+        ,"examples": [
+          { "text": "atan(1)", "expr": "atan(1)" },
+          { "text": "atan(2.8560298389)", "expr": "atan(2.8560298389)" },
+          { "text": "atan(1.7320508076) * 180/Pi", "expr": "round(atan(1.7320508076) * 180/Pi, 9)" },
+          { "text": "deg(atan(1.7320508076))", "expr": "round(deg(atan(1.7320508076)),9)" }
+        ]
+        },
+        {
+          "id": "deg",
+          "name": "Deg Function",
+          "desc": "The deg() function will convert any numeric value (expected to be in radians), to its equivalent degree value based on the rotation around half a circle circumference.",
+          "usage": "{{deg(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the degrees function will convert that number in radians to a double in degrees, even if expr is another numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "deg(Pi/180)", "expr": "deg(Pi/180)" },
+            { "text": "round(deg(1.047198),4)", "expr": "round(deg(1.047198),4)" },
+            { "text": "round(deg('1.047198'),4)", "expr": "round(deg('1.047198'),4)" },
+            { "text": "deg('two')", "expr": "deg('two')", "isinvalid" : true },
+            { "text": "deg(rad(model.number + 9.1))", "expr": "deg(rad(model.number + 9.1))" }
+          ]
+        },
+        {
+          "id": "rad",
+          "name": "Rad Function",
+          "desc": "The rad() function will convert a value in degrees to it's radian equivalent.",
+          "usage": "{{rad(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the radians function will convert that number in degrees to a double in radians, even if expr is another numeric type."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "rad(180)/Pi", "expr": "rad(180)/Pi" },
+            { "text": "round(rad(60),7)", "expr": "round(rad(60),7)" },
+            { "text": "round(rad('60'),4)", "expr": "round(rad('60'),4)" },
+            { "text": "rad('sixty')", "expr": "rad('sixty')", "isinvalid" : true },
+            { "text": "rad(model.number + 9.1)", "expr": "rad(model.number + 9.1)" }
+          ]
+        },
+        {
+          "id": "log",
+          "name": "Log Function",
+          "desc": "The log() function will return the logarithm of the first argument in the base of the second argument.",
+          "usage": "{{log(expr, newbase)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the logarithm value of that number be returned as a double in the new base."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          },{
+            "name": "newbase",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "log(10,2)", "expr": "log(10, 2)" },
+            { "text": "log(10,e)", "expr": "log(10, e)" },
+            { "text": "log('10',e)", "expr": "log('10', e)" },
+            { "text": "log('10','2')", "expr": "log('10', '2')" },
+            { "text": "log('10','e')", "expr": "log('10', 'e')", "isinvalid" : true },
+            { "text": "log(10,10)", "expr": "log(10,10)" },
+            { "text": "log(model.number * 1000, model.int)", "expr": "log(model.number * 1000, model.int)" }
+          ]
+        },
+        {
+          "id": "log10",
+          "name": "Log10 Function",
+          "desc": "The log10() is a standard shorthand for the log(n,10) function, and will return the base 10 logarithm of a number.",
+          "usage": "{{log10(expr)}}",
+          "returns": {
+            "type": "double",
+            "desc":"If 'expr' is considered a number, the logarithm value of that number be returned as a double in the new base."
+          },
+          "parameters": [{
+            "name": "expr",
+            "type": "number",
+            "desc": "Required. Any value, constant or expression that represents a numeric value"
+          }],
+          "examples": [
+            { "text": "log10(1)", "expr": "log10(1)" },
+            { "text": "log10(10)", "expr": "log10(10)" },
+            { "text": "log10('10')", "expr": "log10('10')" },
+            { "text": "log10('two')", "expr": "log10('two')" , "isinvalid" : true},
+            { "text": "log10(model.number * 1000)", "expr": "log10(model.number * 1000)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "string-func",
+      "name": "String Functions",
+      "funcs": [
+        {
+          "id": "concat",
+          "name": "Concat(enate) Function",
+          "desc": "The concat() function will take any length of parameters and concatenate them into a single string returning the result. If one of the parameters is a collection or array, then each of the entries in that array will be appended to the string in order.",
+          "notes": "If one or more of the values is null, then the entry will be skipped and any further values processed",
+          "usage": "{{concat(expr, expr, expr, expr ...)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object or array",
+            "desc": "One or more. Any string, constant or expression (that will be evaluated and converted to a string). If the expr is an array then the contents will be expanded once and each entry concatenated."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The resultant concatenation of all the expression values"
+          },
+          "examples": [
+            { "text": "concat('hello ','world!')", "expr": "concat('hello ','world!')" },
+            { "text": "concat(model.array)", "expr": "concat(model.array)" },
+            { "text": "concat('09',model.array, '!')", "expr": "concat('09',model.array, '!')" },
+            { "text": "concat('09',model.notset, '!')", "expr": "concat('09',model.notset, '!')" },
+            { "text": "concat(model.number, ' + 10 = ', model.number + 10)", "expr": "concat(model.number, ' + 10 = ', model.number + 10)" },
+            { "text": "concat(model.items)", "expr": "concat(model.items)" }
+          ]
+        },
+        {
+          "id": "contains",
+          "name": "Contains Function",
+          "desc": "The contains() function will return true if the second string parameter appears at least once somewhere in the first string parameter. If not then the function returns false. The search is case-sensitive.",
+          "usage": "{{contains(expr, comparison)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "comparison",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "boolean",
+            "desc": "True if the expr string contains the comparison string"
+          },
+          "seealso": ["endswith", "startswith", "matches", "ismatch"],
+          "examples": [
+            { "text": "contains('hello world!','world')", "expr": "contains('hello world!','world')" },
+            { "text": "contains('hello world!','World')", "expr": "contains('hello world!','World')" },
+            { "text": "contains(concat(model.array),'10')", "expr": "contains(concat(model.array),'10')" },
+            { "text": "contains(concat(model.array),'13')", "expr": "contains(concat(model.array),'13')" }
+          ]
+        },
+        {
+          "id": "endswith",
+          "name": "EndsWith Function",
+          "desc": "The endsWith() function will return true if the second string parameter appears at the end of the first string parameter. If not then the function returns false. The search is by case-sensitive.",
+          "usage": "{{endswith(expr, comparison)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "comparison",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "boolean",
+            "desc": "True if the expr string ends with the comparison string"
+          },
+          "seealso": ["contains", "startswith", "matches", "ismatch"],
+          "examples": [
+            { "text": "endswith('hello world!','world!')", "expr": "endswith('hello world!','world!')" },
+            { "text": "endswith('hello world!','world')", "expr": "endswith('hello world!','world')" },
+            { "text": "endswith('hello world!','World!')", "expr": "endswith('hello world!','World!')" },
+            { "text": "endswith(concat(model.array),'10')", "expr": "endswith(concat(model.array),'10')" },
+            { "text": "endswith(concat(model.array),'12')", "expr": "endswith(concat(model.array),'12')" }
+          ]
+        },
+        {
+          "id": "eval",
+          "name": "Eval Function",
+          "desc": "The eval() function accepts a single parameter and will try and evaluate and execute the result by converting the string to another expression.",
+          "warning": "No range checking or validation is done on the value of the expr. It is up to you to know that remote content could be loaded based on input values and limit the ability, or trust.",
+          "notes": "The eval function has access to all the variables and values within the document context, as it is executing as a standard expression",
+          "usage": "{{eval(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string) and evaluated"
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "The results of the expression "
+          },
+          "examples": [
+            { "text": "eval('10 + 2')", "expr": "eval('10 + 2')" },
+            { "text": "eval('concat(model.array)')", "expr": "eval('concat(model.array)')" },
+            { "text": "integer(eval('concat(model.array)')) + 1000", "expr": "integer(eval('concat(model.array)')) + 1000" }
+          ]
+        },
+        {
+          "id": "indexof",
+          "name": "IndexOf Function",
+          "desc": "The indexof() function will return the starting (zero based) index of the first appearance of the second parameter within the first. If it is not found then the function returns -1. The search is case-sensitive.",
+          "usage": "{{indexof(expr, comparison)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "comparison",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "If found in the expr string, returns the index of first appearance of the string."
+          },
+          "seealso": ["endswith", "startswith", "substring", "matches", "ismatch"],
+          "examples": [
+            { "text": "indexof('hello world!','world')", "expr": "indexof('hello world!','world')" },
+            { "text": "indexof('hello world!','World')", "expr": "indexof('hello world!','World')" },
+            { "text": "indexof('hello world!','o')", "expr": "indexof('hello world!','o')" },
+            { "text": "substring('hello world!', 0,indexof('hello world!','o') + 1)", "expr": "substring('hello world!',0,indexof('hello world!','o') + 1)" },
+            { "text": "indexof(concat(model.array),'10')", "expr": "indexof(concat(model.array),'10')" },
+            { "text": "indexof(concat(model.array),'13')", "expr": "indexof(concat(model.array),'13')" }
+          ]
+        },
+        {
+          "id": "join",
+          "name": "Join Function",
+          "desc": "The join() function will take any length of parameters and concatenate them into a single string inserting the first parameter after each of the following parameters except the last, returning the result. If one of the parameters is a collection or array, then each of the entries in that array will be appended to the string in order.",
+          "notes": "If one or more of the values is null, then the entry will be skipped and any further values processed",
+          "usage": "{{join(separator, expr, expr, expr, expr ...)}}",
+          "parameters": [{
+            "name": "spearator",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string), that will be injected between each expr value."
+          },{
+            "name": "expr",
+            "type": "object or array",
+            "desc": "One or more. Any string, constant or expression (that will be evaluated and converted to a string). If the expr is an array then the contents will be expanded once and each entry concatenated."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The resultant concatenation of all the expression values"
+          },
+          "examples": [
+            { "text": "join(' ','hello','world!')", "expr": "join(' ','hello','world!')" },
+            { "text": "join(',',model.array)", "expr": "join(',',model.array)" },
+            { "text": "join(',',model.notset)", "expr": "join(',',model.notset)" },
+            { "text": "join(' + ', '09',model.array, '13')", "expr": "join(' + ', '09',model.array, '13')" },
+            { "text": "join(' + ', '09',model.notset, '13')", "expr": "join(' + ', '09',model.notset, '13')" },
+            { "text": "eval(join(' + ', '09',model.array, '13'))", "expr": "eval(join(' + ', '09',model.array, '13'))" }
+          ]
+        },
+        {
+          "id": "length",
+          "name": "Length Function",
+          "desc": "The length() function will return the total number of characters within the first string parameter.",
+          "usage": "{{length(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The total number or individual characters in the string"
+          },
+          "seealso": ["count", "substring", "matches", "ismatch"],
+          "examples": [
+            { "text": "length('hello world!')", "expr": "length('hello world!')" },
+            { "text": "length(join(',',model.array))", "expr": "length(join(',',model.array))" },
+            { "text": "substring(join(',',model.array),0, length(join(',',model.array)) - 3)", "expr": "substring(join(',',model.array),0, length(join(',',model.array)) - 3)" }
+          ]
+        },
+        {
+          "id": "padleft",
+          "name": "PadLeft Function",
+          "desc": "The padleft() function will return the first string parameter padded at the left (start) of the string to the total length specified in the second parameter with the (first) character of the third parameter.",
+          "notes": "If the paddingChar parameter is a string with more that one character, only the first character is significant and will be used",
+          "usage": "{{padleft(expr, length, paddingChar)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "length",
+            "type": "integer",
+            "desc": "Required. Any number, constant or expression, that will be evaluated as an integer."
+          },{
+            "name": "paddingChar",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression, that will be used to pad the left of the string to ensure it is always at least the required length number of characters."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The original expression with a minimum length and any required space prefixed by the padding character."
+          },
+          "seealso": ["padright",  "substring", "length"],
+          "examples": [
+            { "text": "padleft('hello world!',15, '-')", "expr": "padleft('hello world!',15, '-')" },
+            { "text": "padleft('hello world!',10, '-')", "expr": "padleft('hello world!',10, '-')" },
+            { "text": "padleft('hello world!',15, '-a')", "expr": "padleft('hello world!',15, '-a')" },
+            { "text": "padleft(concat(model.array),model.number,'0')", "expr": "padleft(concat(model.array),model.number,'0')" }
+          ]
+        },
+        {
+          "id": "padright",
+          "name": "PadRight Function",
+          "desc": "The padright() function will return the first string parameter padded at the right (end) of the string to the total length specified in the second parameter with the (first) character of the third parameter.",
+          "notes": "If the paddingChar parameter is a string with more that one character, only the first character is significant and will be used",
+          "usage": "{{padright(expr, length, paddingChar)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "length",
+            "type": "integer",
+            "desc": "Required. Any number, constant or expression, that will be evaluated as an integer."
+          },{
+            "name": "paddingChar",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression, that will be used to pad the right of the string to ensure it is always at least the required length number of characters."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The original expression with a minimum length and any required space prefixed by the padding character."
+          },
+          "seealso": ["padright",  "substring", "length"],
+          "examples": [
+            { "text": "padright('hello world!',15, '-')", "expr": "padright('hello world!',15, '-')" },
+            { "text": "padright('hello world!',10, '-')", "expr": "padright('hello world!',10, '-')" },
+            { "text": "padright('hello world!',15, '-a')", "expr": "padright('hello world!',15, '-a')" },
+            { "text": "padright(concat(model.array),model.number,'0')", "expr": "padright(concat(model.array),model.number,'0')" }
+          ]
+        },
+        {
+          "id": "ismatch",
+          "name": "IsMatch Function",
+          "desc": "The ismatch() function is a *Regular Expression* function, and will return true if the first string parameter matches the regular expression pattern string second parameter.",
+          "notes": "The Regex use is based on the dot.net parser and compiler (rather than the javascript version). More information can be found here - https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions",
+          "usage": "{{ismatch(expr, pattern)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "pattern",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string). This should be a valid regular .net expression. If the expression cannot be understood then no value will be returned for the entire expression."
+          }],
+          "returns": {
+            "type": "boolean",
+            "desc": "If true then there is a matching character set within the string based on the pattern."
+          },
+          "seealso": ["matches", "contains", "swap", "trimstart", "trimend"],
+          "examples": [
+            { "text": "ismatch('Hello World', '^[A-Z]'))", "expr": "ismatch('Hello World', '^[A-Z]')" },
+            { "text": "ismatch('Hello World', '^[a-z]')", "expr": "ismatch('Hello World', '^[a-z]')" },
+            { "text": "ismatch('Hello World', '\\b\\w{1,5}\\b')", "expr": "ismatch('Hello World', '\\b\\w{1,5}\\b')" },
+            { "text": "ismatch('Hello World', '\\b\\w{1,4}\\b')", "expr": "ismatch('Hello World', '\\b\\w{1,4}\\b')" }
+          ]
+        }, {
+          "id": "matches",
+          "name": "Matches Function",
+          "desc": "The matches() function will return an array of all the strings in the first string parameter that match the regular expression string second parameter.",
+          "notes": "The Regex use is based on the dot.net parser and compiler (rather than the javascript version). More information ca be found here - https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions",
+          "usage": "{{matches(expr, pattern)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "pattern",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string). This should be a valid .net regular expression in quotes. If the expression cannot be understood then no value will be returned for the entire expression."
+          }],
+          "returns": {
+            "type": "arrary",
+            "desc": "All the matching strings in the expression, based on the pattern."
+          },
+          "seealso": ["ismatch", "contains", "split", "swap", "join"],
+          "examples": [
+            { "text": "join(', ',matches('Hello World', '\\b([A-Z][a-z]+)\\b'))", "expr": "join(', ',matches('Hello World', '\\b([A-Z][a-z]+)\\b'))" },
+            { "text": "join(', ',matches('Hello world!', '\\b([A-Z][a-z]+)\\b'))", "expr": "join(', ',matches('Hello world', '\\b([A-Z][a-z]+)\\b'))" }
+          ]
+        }, {
+          "id": "swap",
+          "name": "Swap Function ",
+          "desc": "The swap() function will replace *all* of the values in the first string parameter that match the regular expression string second parameter, with the value passed in the third parameter.",
+          "notes": "The Regex use is based on the dot.net parser and compiler (rather than the javascript version). More information ca be found here - https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions",
+          "usage": "{{swap(expr, pattern, replacement)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "pattern",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string). This should be a valid .net regular expression in quotes. If the expression cannot be understood then no value will be returned for the entire expression."
+          },{
+            "name": "replacement",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string). The value can be null or an empty string, but must be provided."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The original string with *all* the matching strings in the expression changed to the replacement, based on the pattern."
+          },
+          "seealso": ["ismatch", "contains", "matches", "replace", "join"],
+          "examples": [
+            { "text": "swap('Hello World', '\\b([A-Z])', 'A')", "expr": "swap('Hello World', '\\b([A-Z])', 'A')" },
+            { "text": "swap('Hello world', '\\b([A-Z][a-z]+)\\b', 'Hi')", "expr": "swap('Hello world', '\\b([A-Z][a-z]+)\\b', 'Hi')" }
+          ]
+        }, {
+          "id": "swap",
+          "name": "Swap Function TODO",
+          "desc": "The swap() function will replace all the matching expressions in the first string parameter matches the regular expression string with the third parametersecond parameter.",
+          "notes": "The Regex use is based on the dot.net parser and compiler (rather than the javascript version). More information ca be found here - https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions",
+          "usage": "{{trim(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The string where all white space characters are removed from the start and the end."
+          },
+          "seealso": ["padleft", "padright", "replace", "matches", "trimstart", "trimend"],
+          "examples": [
+            { "text": "trim('   Hello World    ')", "expr": "trim('   Hello World    ')" },
+            { "text": "concat('#',trim('   Hello World    '),'#')", "expr": "concat('#',trim('   Hello World    '),'#')" },
+            { "text": "concat('#',trim(' -  Hello World  -  '),'#')", "expr": "concat('#',trim(' -  Hello World  -  '),'#')" }
+          ]
+        },
+        {
+          "id": "replace",
+          "name": "Replace Function",
+          "desc": "The replace() function will return the first string parameter where all occurances of the second string parameter are replaced with the third parameter. The search is case-sensitive.",
+          "usage": "{{replace(expr, searchString, replacement)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "searchString",
+            "type": "string",
+            "desc": "Required. Any value, constant or expression, that will be converted to a string. Any occurance of this set of characters will be replaced by the value of the replacement"
+          },{
+            "name": "replacement",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression, that will be converted to a string, and used to replace the search string"
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The original expression with any occurances of the specifed search string, replaced. If the search string is not found, then the original string will be returned."
+          },
+          "seealso": ["ismatch", "matches",  "substring"],
+          "examples": [
+            { "text": "replace('hello world!','hello', 'hi')", "expr": "replace('hello world!','hello', 'hi')" },
+            { "text": "replace('hello world!','o', '0')", "expr": "replace('hello world!','o', '0')" },
+            { "text": "replace(concat(model.array),'1','2')", "expr": "replace(concat(model.array),'1','2')" },
+            { "text": "replace(concat(model.array),'3','4')", "expr": "replace(concat(model.array),'3','4')" }
+          ]
+        },
+        {
+          "id": "split",
+          "name": "Split Function",
+          "desc": "The split() function will return a collection of strings that have been separated based on the index of the second parameter.",
+          "usage": "{{split(expr, splitString)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "splitString",
+            "type": "string",
+            "desc": "Required. Any value, constant or expression, that will be converted to a string. Any occurance of this set of characters will cause a new item in the returned result."
+          }],
+          "returns": {
+            "type": "array",
+            "desc": "The original expression converted to an array of individual values chunked into an array of strings by the splitString. If no occurances were found an array with 1 item of the original string will be returned."
+          },
+          "seealso": ["join", "matches", "replace", "substring"],
+          "examples": [
+            { "text": "split('hello world!',' ')[0]", "expr": "split('hello world!',' ')[0]" },
+            { "text": "split('hello world!',' ')[1]", "expr": "split('hello world!',' ')[1]" },
+            { "text": "join(', ', split('hello world!','l'))", "expr": "join(', ', split('hello world!','l'))" }
+          ]
+        },
+        {
+          "id": "startswith",
+          "name": "StartsWith Function",
+          "desc": "The startsWith() function will return true if the second string parameter appears at the start of the first string parameter. If not then the function returns false. The search is case-sensitive.",
+          "usage": "{{startsWith(expr, comparison)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "comparison",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "boolean",
+            "desc": "True if the expr string starts with the comparison string"
+          },
+          "seealso": ["contains", "endswith", "matches", "ismatch"],
+          "examples": [
+            { "text": "startswith('hello world!','world!')", "expr": "startswith('hello world!','hello')" },
+            { "text": "startswith('hello world!','world')", "expr": "startswith('hello world!','hello!')" },
+            { "text": "startswith('hello world!','World!')", "expr": "startswith('hello world!','Hello')" },
+            { "text": "startswith(concat(model.array),'10')", "expr": "startswith(concat(model.array),'10')" },
+            { "text": "startswith(concat(model.array),'12')", "expr": "startswith(concat(model.array),'12')" }
+          ]
+        },
+        {
+          "id": "substring",
+          "name": "Substring Function",
+          "desc": "The substring() function will return a modified version of the first string parameter starting at the index of the second parameter and optionally limited in length to the third integer parameter.",
+          "notes": "If the paddingChar parameter is a string with more that one character, only the first character is significant and will be used",
+          "usage": "{{substring(expr, startIndex, length)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "string",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          },{
+            "name": "startIndex",
+            "type": "integer",
+            "desc": "Required. Any number, constant or expression, that will be evaluated as an integer and used as the zero-based starting character position of a substring."
+          },{
+            "name": "length",
+            "type": "integer",
+            "desc": "Optional. Any number, constant or expression, that will be evaluated as an integer and used for the number of returned characters in the substring."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The original expression starting from the required startIndex offset, optionally trucated to the specified length."
+          },
+          "seealso": ["padright",  "substring", "length"],
+          "examples": [
+            { "text": "substring('hello world!',6)", "expr": "substring('hello world!',6)" },
+            { "text": "substring('hello world!',6,5)", "expr": "substring('hello world!',6,5)" },
+            { "text": "substring(concat(model.array),indexof(concat(model.array), '0'))", "expr": "substring(concat(model.array),indexof(concat(model.array), '0'))" }
+          ]
+        },
+        {
+          "id": "tolower",
+          "name": "ToLower Function",
+          "desc": "The tolower() function will return the string parameter converting all characters to lowercase characters.",
+          "usage": "{{tolower(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The string where all UPPER case characters are converted to their lowercase equivalent."
+          },
+          "seealso": ["join", "eachof", "matches", "toupper"],
+          "examples": [
+            { "text": "toLower('Hello World!')", "expr": "toLower('Hello World!')" },
+            { "text": "tolower(join(', ', eachOf(model.items, .name)))", "expr": "tolower(join(', ', eachof(model.items, .name)))" }
+          ]
+        },
+        {
+          "id": "toupper",
+          "name": "ToUpper Function",
+          "desc": "The toupper() function will return the string parameter converting all characters to uppercase (capital) characters.",
+          "usage": "{{toupper(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The string where all lower case characters are converted to their UPPERCASE equivalent."
+          },
+          "seealso": ["join", "eachof", "matches", "tolower"],
+          "examples": [
+            { "text": "toUpper('Hello World!')", "expr": "toUpper('Hello World!')" },
+            { "text": "toupper(join(', ', eachOf(model.items, .name)))", "expr": "toupper(join(', ', eachof(model.items, .name)))" }
+          ]
+        },
+        {
+          "id": "trim",
+          "name": "Trim Function",
+          "desc": "The trim() function will return the first string removing any white space characters from the start and end of the value when converted to a string.",
+          "usage": "{{trim(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The string where all white space characters are removed from the start and the end."
+          },
+          "seealso": ["padleft", "padright", "replace", "matches", "trimstart", "trimend"],
+          "examples": [
+            { "text": "trim('   Hello World    ')", "expr": "trim('   Hello World    ')" },
+            { "text": "concat('#',trim('   Hello World    '),'#')", "expr": "concat('#',trim('   Hello World    '),'#')" },
+            { "text": "concat('#',trim(' -  Hello World  -  '),'#')", "expr": "concat('#',trim(' -  Hello World  -  '),'#')" }
+          ]
+        },
+        {
+          "id": "trimstart",
+          "name": "TrimStart Function",
+          "desc": "The trimstart() function will return the first string parameter removing any white space characters from the left (start) of the string.",
+          "usage": "{{trimstart(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The string where all white space characters are removed from the start."
+          },
+          "seealso": ["padleft", "padright", "replace", "matches", "trimend", "trim"],
+          "examples": [
+            { "text": "trimstart('   Hello World    ')", "expr": "trimstart('   Hello World    ')" },
+            { "text": "concat('#',trimstart('   Hello World    '),'#')", "expr": "concat('#',trimstart('   Hello World    '),'#')" },
+            { "text": "concat('#',trimstart(' -  Hello World  -  '),'#')", "expr": "concat('#',trimstart(' -  Hello World  -  '),'#')" }
+          ]
+        },
+        {
+          "id": "trimend",
+          "name": "TrimEnd Function",
+          "desc": "The trimend() function will return the first string parameter removing any white space characters from the right (end) of the string.",
+          "usage": "{{trimend(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any string, constant or expression (that will be evaluated and converted to a string)."
+          }],
+          "returns": {
+            "type": "string",
+            "desc": "The string where all white space characters are removed from the end of the string."
+          },
+          "seealso": ["padleft", "padright", "replace", "matches", "trimstart", "trim"],
+          "examples": [
+            { "text": "trimend('   Hello World    ')", "expr": "trimend('   Hello World    ')" },
+            { "text": "concat('#',trimend('   Hello World    '),'#')", "expr": "concat('#',trimend('   Hello World    '),'#')" },
+            { "text": "concat('#',trimend(' -  Hello World  -  '),'#')", "expr": "concat('#',trimend(' -  Hello World  -  '),'#')" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "date-func",
+      "name": "Date Functions",
+      "desc": "The date functions works on (Gregorian) DateTime values, not strings. DateTime values can be converted from strings, or simply created with the 'date()' function.\r\n\r\nWhen working with the current date and time to compare values. It is always recommended to store this value in a variable, or pass it to the document as a field when executing. In this way, no errors will run through as time increases and the document is processed.",
+      "funcs": [
+        {
+          "id": "addyears",
+          "name": "AddYears Function",
+          "desc": "Adds the specified discreet number of years in the second parameter (either positive or negative), to the date value in the first parameter, returning the result",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{addDays(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "integer",
+            "desc": "The number of *whole* years to add to the expr value. Partial years are not supported, and any real number will be rounded to it's nearest whole number."
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of years added to the value."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addYears(date(), 1), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addYears(date(), 1), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addYears(date(), -10), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addYears(date(), -10), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addYears(date(), 20.9), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addYears(date(), 20.9), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addYears(date(), model.int * 5), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addYears(date(), model.int * 5), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addYears(date(), model.int + model.number), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addYears(date(), model.int + model.number), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addDays(date(), model.notset), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addDays(date(), model.notset), 'dd MMM yyyy HH:mm:ss')" }
+          ]
+        },
+        {
+          "id": "addmonths",
+          "name": "AddMonths Function",
+          "desc": "Adds the specified number of months in the second parameter (either positive or negative), to the date value in the first parameter, returning the result",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{addMonths(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "integer",
+            "desc": "The number of *whole* months to add to the expr value. Partial months are not supported, and any real number will be rounded to it's nearest whole number."
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of months and time added to the value."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMonths(date(), 3), 'dd MMM yyyy')", "expr": "string(addMonths(date(), 3), 'dd MMM yyyy')" },
+            { "text": "string(addMonths(date(), -3*4), 'dd MMM yyyy')", "expr": "string(addMonths(date(), -3*4), 'dd MMM yyyy')" },
+            { "text": "string(addMonths(date(), 20.9), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMonths(date(), 20.9), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMonths(date(), model.int * 5), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMonths(date(), model.int * 5), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMonths(date(), model.notset), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMonths(date(), model.notset), 'dd MMM yyyy HH:mm:ss')" }
+          ]
+        },
+        {
+          "id": "adddays",
+          "name": "AddDays Function",
+          "desc": "Adds the specified number of days in the second parameter (either positive or negative), to the date value in the first parameter, returning the result",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{addDays(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "number",
+            "desc": "The number of whole days, or partial days to add to the expr value. Where 0.5 days is 12hrs, etc."
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of days and time added to the value. This will also take into account the number of days in the month and any leap years."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addDays(date(), 31), 'dd MMM yyyy')", "expr": "string(addDays(date(), 31), 'dd MMM yyyy')" },
+            { "text": "string(addDays(date(), 365*4), 'dd MMM yyyy')", "expr": "string(addDays(date(), 365*4), 'dd MMM yyyy')" },
+            { "text": "string(addDays(date(), 0.5), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addDays(date(), 0.5), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addDays(date(), model.int + model.number), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addDays(date(), model.int + model.number), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addDays(date(), model.notset), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addDays(date(), model.notset), 'dd MMM yyyy HH:mm:ss')" }
+          ]
+        },
+        {
+          "id": "addhours",
+          "name": "AddHours Function",
+          "desc": "Adds the specified number of hours in the second parameter (either positive or negative), to the date value in the first parameter, returning the result. If the expr or the count are null then null will be returned.",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{addHours(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "number",
+            "desc": "The number of whole hours, or partial hours to add to the expr value. Where 0.5 hours is 30 minutes, etc."
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of time added to the value. This will also take into account the number of days in the month and any leap years."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addHours(date(), 24), 'dd MMM yyyy')", "expr": "string(addHours(date(), 24), 'dd MMM yyyy')" },
+            { "text": "string(addHours(date(), -10), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addHours(date(), -10), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addHours(date(), 31 * 24), 'dd MMM yyyy')", "expr": "string(addHours(date(), 31*24), 'dd MMM yyyy')" },
+            { "text": "string(addHours(date(), 0.5), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addHours(date(), 0.5), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addHours(date(), model.int * model.number), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addHours(date(), model.int * model.number), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addHours(date(), model.notset), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addHours(date(), model.notset), 'dd MMM yyyy HH:mm:ss')" }
+          ]
+        },
+        {
+          "id": "addmins",
+          "name": "AddMinutes Function",
+          "desc": "Adds the specified number of minutes in the second parameter (either positive or negative) to the date value in the first parameter, returning the result",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{addMinutes(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "number",
+            "desc": "The number of whole minutes, and/or partial minutes to add to the expr value. Where 0.5 minutes is 30 seconds, etc."
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of time added to the value. This will also take into account the number of days in the month and any leap years."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMinutes(date(), 30), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMinutes(date(), 30), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMinutes(date(), -10), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMinutes(date(), -10), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMinutes(date(), 24 * 60), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMinutes(date(), 24*60), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMinutes(date(), 0.5), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMinutes(date(), 0.5), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMinutes(date(), model.int * model.number), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMinutes(date(), model.int * model.number), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addMinutes(date(), model.notset), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addMinutes(date(), model.notset), 'dd MMM yyyy HH:mm:ss')" }
+          ]
+        },
+        {
+          "id": "addseconds",
+          "name": "AddSeconds Function",
+          "desc": "Adds the specified number of seconds in the second parameter (either positive or negative to the date value in the first parameter, returning the result",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{addMinutes(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "number",
+            "desc": "The number of whole seconds, and/or partial seconds to add to the expr value. Where 0.5 seconds is 500 milli-seconds, etc."
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of time added to the value. This will also take into account the number of days in the month and any leap years."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addSeconds(date(), 30), 'HH:mm:ss')", "expr": "string(addSeconds(date(), 30), 'HH:mm:ss')" },
+            { "text": "string(addSeconds(date(), -10), 'HH:mm:ss')", "expr": "string(addSeconds(date(), -10), 'HH:mm:ss')" },
+            { "text": "string(addSeconds(date(), 30 * 60), 'HH:mm:ss')", "expr": "string(addSeconds(date(), 30 *60), 'HH:mm:ss')" },
+            { "text": "string(addSeconds(date(), 24  * 60 * 60), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addSeconds(date(), 24* 60 *60), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(addSeconds(date(), 0.5), 'HH:mm:ss.fff')", "expr": "string(addSeconds(date(), 0.5), 'HH:mm:ss.fff')" },
+            { "text": "string(addSeconds(date(), model.int * model.number), 'HH:mm:ss')", "expr": "string(addSeconds(date(), model.int * model.number), 'HH:mm:ss')" },
+            { "text": "string(addSeconds(date(), model.notset), 'dd MMM yyyy HH:mm:ss')", "expr": "string(addSeconds(date(), model.notset), 'dd MMM yyyy HH:mm:ss')" }
+          ]
+        },
+        {
+          "id": "addmilli",
+          "name": "AddMilliseconds Function",
+          "desc": "Adds the specified number of milli-seconds in the second parameter (either positive or negative) to the date value in the first parameter, returning the result",
+          "notes": "Conversion of the current date with added milli-seconds may result in inaccuracies. Store the current sate in a variable or field to be used during execution. \r\nIf the expression is not a DateTime, then a conversion attempt will be made, however, explicit conversion before execution is a better option.",
+          "usage": "{{addMilliseconds(expr, count)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "count",
+            "type": "number",
+            "desc": "The number of whole milli-seconds, or partial milli-seconds to add to the expr value, to a double precision for .net 8 (rounded for .net Standard 2.0)"
+          }],
+          "returns": {
+            "type": "datetime",
+            "desc": "The expr value, with the amount of time added to the value."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss.fff')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss.fff')" },
+            { "text": "string(addMilliseconds(date(), 1), 'HH:mm:ss.fff')", "expr": "string(addMilliseconds(date(), 1), 'HH:mm:ss.fff')" },
+            { "text": "string(addMilliseconds(date(), 2 * 1000), 'HH:mm:ss.fff')", "expr": "string(addMilliseconds(date(), 2 * 1000), 'HH:mm:ss.fff')" },
+            { "text": "string(addMilliseconds(date(), 0.5), 'HH:mm:ss.fff')", "expr": "string(addMilliseconds(date(), 0.5), 'HH:mm:ss.fff')" },
+            { "text": "string(addMilliseconds(date(), model.int * model.number), 'HH:mm:ss.fff')", "expr": "string(addMilliseconds(date(), model.int * model.number), 'HH:mm:ss.fff')" },
+            { "text": "string(addMilliseconds(date(), model.notset), 'HH:mm:ss.fff')", "expr": "string(addHours(date(), model.notset), 'dd MMM yyyy HH:mm:ss.fff')" }
+          ]
+        },
+        {
+          "id": "dayofmonth",
+          "name": "DayOfMonth Function",
+          "desc": "Returns the day of the month of the date expr parameter. The first day of the month is 1, not zero.",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{dayOfMonth(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The day of the month. This is non-zero based, so the first day of the month will be 1, not zero (0)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "string(dayofmonth(date()))", "expr": "string(dayofmonth(date()))" },
+            { "text": "dayofmonth(addDays(date(), 20))", "expr": "dayOfMonth(addDays(date(), 20))" },
+            { "text": "dayofmonth(addDays(date(), -20))", "expr": "dayOfMonth(addDays(date(), -20))" },
+            { "text": "dayofmonth(addDays(date(), 20)) + model.int", "expr": "dayOfMonth(addDays(date(), 20)) + model.int" }
+
+          ]
+        },
+        {
+          "id": "dayofweek",
+          "name": "DayOfWeek Function",
+          "desc": "Returns the day of the week (0 - 6) of the date expr parameter",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{dayOfWeek(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The day of the week. This is zero based from Sunday, Monday = 1, Tuesday = 2, etc."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "dayofweek(date())", "expr": "dayOfWeek(date())" },
+            { "text": "dayofweek(date('2024-11-03', 'yyyy-MM-dd')", "expr": "dayOfWeek(date('2024-11-03', 'yyyy-MM-dd'))" },
+            { "text": "dayofweek(addDays(date(), 20))", "expr": "dayofweek(addDays(date(), 20))" },
+            { "text": "model.days[dayofweek(date())]", "expr": "model.days[dayofweek(date())]" },
+            { "text": "dayofweek(date(model.date, 'dd MMMM yyyy HH:mm:ss'))", "expr": "dayofweek(date(model.date, 'dd MMMM yyyy HH:mm:ss'))" }
+          ]
+        },
+        {
+          "id": "dayofyear",
+          "name": "DayOfYear Function",
+          "desc": "Returns the total number of days that have passed in the current year for the date expr parameter",
+          "notes": "If the date expression is not a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{dayOfYear(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The total number of days. As this is non-zero based, the first of Jauary is day one (1)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "dayOfYear(date())", "expr": "dayOfYear(date())" },
+            { "text": "dayOfYear(addDays(date(),300))", "expr": "dayOfYear(addDays(date(),300))" },
+            { "text": "dayofyear(date('2024-01-01', 'yyyy-MM-dd')", "expr": "dayofyear(date('2024-01-01', 'yyyy-MM-dd'))" },
+            { "text": "dayofyear(date('2024-12-31', 'yyyy-MM-dd')", "expr": "dayofyear(date('2024-12-31', 'yyyy-MM-dd'))" },
+            { "text": "dayofyear(date('2025-12-31', 'yyyy-MM-dd')", "expr": "dayofyear(date('2025-12-31', 'yyyy-MM-dd'))" },
+            { "text": "dayofyear(date(model.date, 'dd MMMM yyyy HH:mm:ss'))", "expr": "dayofyear(date(model.date, 'dd MMMM yyyy HH:mm:ss'))" }
+          ]
+        },
+        {
+          "id": "daysbetween",
+          "name": "DaysBetween Function",
+          "desc": "Returns the total number of days (inc partial days) that have passed between the two provided dates",
+          "notes": "If the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{daysBetween(startdate, enddate)}}",
+          "parameters": [{
+            "name": "startdate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "enddate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "double",
+            "desc": "The total number of days and partial days between the startdate and enddate."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "daysBetween(date('2024-01-01', 'yyyy-MM-dd'), date())", "expr": "daysBetween(date('2024-01-01', 'yyyy-MM-dd'), date())" },
+            { "text": "floor(daysBetween(date('2024-01-01', 'yyyy-MM-dd'), date()))", "expr": "floor(daysBetween(date('2024-01-01', 'yyyy-MM-dd'), date()))" },
+            { "text": "daysBetween(date('24-01-01', 'yy-MM-dd'), date('24-01-02', 'yy-MM-dd'))", "expr": "daysBetween(date('24-01-01', 'yy-MM-dd'), date('24-01-02', 'yy-MM-dd'))" },
+            { "text": "daysBetween(date(model.date, 'dd MMMM yyyy hh:mm:ss'), date())", "expr": "daysBetween(date(model.date, 'dd MMMM yyyy hh:mm:ss'), date())" }
+          ]
+        },
+        {
+          "id": "hourof",
+          "name": "HourOf Function",
+          "desc": "Returns the discreet number of hours passed for the date expr parameter",
+          "notes": "If the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{hourof(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The total number hours passed in the date tme of day (0 to 23)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "hourof(date())", "expr": "hourof(date())" },
+            { "text": "hourof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "hourof(date('2024-01-01', 'yyyy-MM-dd'))" },
+            { "text": "hourOf(addSeconds(date('24-01-01', 'yy-MM-dd'),-1))", "expr": "hourOf(addSeconds(date('24-01-01', 'yy-MM-dd'),-1))" },
+            { "text": "hourof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "hourof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" }
+          ]
+        },
+        {
+          "id": "hoursbetween",
+          "name": "HoursBetween Function",
+          "desc": "Returns the total number of hours (inc partial hours) that have passed between the two provided dates",
+          "notes": "If the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{hoursBetween(startdate, enddate)}}",
+          "parameters": [{
+            "name": "startdate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "enddate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "double",
+            "desc": "The total number of hours and partial hours between the startdate and enddate, where 30 minutes = 0.5."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "hoursBetween(date('2024-01-01', 'yyyy-MM-dd'), date())", "expr": "hoursBetween(date('2024-01-01', 'yyyy-MM-dd'), date())" },
+            { "text": "floor(hoursBetween(date('2024-01-01', 'yyyy-MM-dd'), date()))", "expr": "floor(hoursBetween(date('2024-01-01', 'yyyy-MM-dd'), date()))" },
+            { "text": "hoursBetween(date('24-01-01', 'yy-MM-dd'), date('24-01-02', 'yy-MM-dd'))", "expr": "hoursBetween(date('24-01-01', 'yy-MM-dd'), date('24-01-02', 'yy-MM-dd'))" },
+            { "text": "hoursBetween(date(model.date, 'dd MMMM yyyy hh:mm:ss'), date())", "expr": "hoursBetween(date(model.date, 'dd MMMM yyyy hh:mm:ss'), date())" }
+          ]
+        },
+        {
+          "id": "millisecondof",
+          "name": "MillisecondOf Function",
+          "desc": "Returns the discreet number of milliseconds passed in the current second for the date expr parameter",
+          "notes": "Conversion of the current date with added milli-seconds may result in inaccuracies. Store the current sate in a variable or field to be used during execution. \r\nIf the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{millisecondof(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The number of milliseconds in the second, for the date time of day (0 to 999)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "millisecondof(date())", "expr": "millisecondof(date())" },
+            { "text": "millisecondof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "millisecondof(date('2024-01-01', 'yyyy-MM-dd'))" },
+            { "text": "millisecondof(addSeconds(date('24-01-01', 'yy-MM-dd'),0.5))", "expr": "millisecondof(addSeconds(date('24-01-01', 'yy-MM-dd'),0.5))" },
+            { "text": "millisecondof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "millisecondof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" },
+            { "text": "millisecondof(date())", "expr": "millisecondof(date())" }
+          ]
+        },
+        {
+          "id": "millisecondsbetween",
+          "name": "MillisecondsBetween Function",
+          "desc": "Returns the total number of hours (inc partial hours) that have passed between the two provided dates",
+          "notes": "Conversion of the current date with added milli-seconds may result in inaccuracies. Store the current sate in a variable or field to be used during execution. \r\nIf the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{millisecondsBetween(startdate, enddate)}}",
+          "parameters": [{
+            "name": "startdate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "enddate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "double",
+            "desc": "The total number of milli-seconds and partial milli-seconds between the startdate and enddate."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "millisecondsBetween(addHours(date(),1.5), date())", "expr": "millisecondsBetween(addHours(date(),1.5), date())" },
+            { "text": "floor(millisecondsBetween(date('2024-01-01', 'yyyy-MM-dd'), date('2024-01-02', 'yyyy-MM-dd')))", "expr": "floor(millisecondsBetween(date('2024-01-01', 'yyyy-MM-dd'), date('2024-01-02', 'yyyy-MM-dd')))" }
+          ]
+        },
+        {
+          "id": "monthof",
+          "name": "MonthOf Function",
+          "desc": "Returns the current month number passed for the date expr parameter - non-zero based",
+          "notes": "If the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{monthof(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The current month number in the current year for the date (1 to 12)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "monthof(date())", "expr": "monthofyear(date())" },
+            { "text": "monthof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "monthofyear(date('2024-01-01', 'yyyy-MM-dd'))" },
+            { "text": "monthof(date('2024-12-01', 'yyyy-MM-dd'))", "expr": "monthofyear(date('2024-12-01', 'yyyy-MM-dd'))" },
+            { "text": "monthof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "monthofyear(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" }
+          ]
+        }, {
+          "id": "secondof",
+          "name": "SecondOf Function",
+          "desc": "Returns the discreet number of seconds passed in the current minute for the date expr parameter",
+          "notes": "Conversion of the current date with added seconds may, potentially, result in inaccuracies. Store the current state in a variable or field to be used during execution. \r\nIf the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{secondOf(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The number of seconds in the minute, for the date time of day (0 to 59)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "secondof(date())", "expr": "secondof(date())" },
+            { "text": "secondof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "secondof(date('2024-01-01', 'yyyy-MM-dd'))" },
+            { "text": "secondof(addMinutes(date('24-01-01', 'yy-MM-dd'),0.5))", "expr": "secondof(addMinutes(date('24-01-01', 'yy-MM-dd'),0.5))" },
+            { "text": "secondof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "secondof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" },
+            { "text": "secondof(date())", "expr": "secondof(date())" }
+          ]
+        }, {
+          "id": "secondsbetween",
+          "name": "SecondsBetween Function",
+          "desc": "Returns the total number of seconds (inc partial seconds) that have passed between the two provided dates",
+          "notes": "Conversion of the current date with added seconds may result in inaccuracies. Store the current sate in a variable or field to be used during execution. \r\nIf the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{secondsBetween(startdate, enddate)}}",
+          "parameters": [{
+            "name": "startdate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          },{
+            "name": "enddate",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "double",
+            "desc": "The total number of seconds and partial seconds between the startdate and enddate."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "secondsBetween(addHours(date(),1.5), date())", "expr": "secondsBetween(addHours(date(),1.5), date())" },
+            { "text": "secondsBetween(date('2024-01-01', 'yyyy-MM-dd'), date('2024-01-02', 'yyyy-MM-dd'))", "expr": "secondsBetween(date('2024-01-01', 'yyyy-MM-dd'), date('2024-01-02', 'yyyy-MM-dd'))" }
+          ]
+        }, {
+          "id": "yearof",
+          "name": "YearOf Function",
+          "desc": "Returns the current year for the date expr parameter - non-zero based",
+          "notes": "If the dates are not passed as a DateTime, then a conversion attempt will be made. However, explicit conversion before execution is a better option.",
+          "usage": "{{monthof(expr)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "datetime",
+            "desc": "Required. Any date value, constant or expression (that will be evaluated and converted to a DateTime)."
+          }],
+          "returns": {
+            "type": "integer",
+            "desc": "The current year for the date (e.g. 2024)."
+          },
+          "examples": [
+            { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
+            { "text": "yearof(date())", "expr": "yearof(date())" },
+            { "text": "yearof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "yearof(date('2024-01-01', 'yyyy-MM-dd'))" },
+            { "text": "yearof(date('2025-12-01', 'yyyy-MM-dd'))", "expr": "yearof(date('2025-12-01', 'yyyy-MM-dd'))" },
+            { "text": "yearof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "yearof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "logical-func",
+      "name": "Logical Functions",
+      "funcs": [
+        {
+          "id": "iffunc",
+          "name": "If Function",
+          "desc": "Checks the first parameter and if the result is true, then returns the second parameter, otherwise the third parameter is evaluated and returned.",
+          "notes": "If the first expression is, or results in null or 0, then  is is considered false.",
+          "usage": "{{if(expr, truevalue, falsevalue)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be evaluated and if successful will be returned."
+          },{
+            "name": "truevalue",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be evaluated and returned if the first parameter is equivalent to true."
+          },{
+            "name": "falsevalue",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be evaluated and returned if the first parameter is equivalent to false."
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "Either the truevalue, or the falsevalue. No matching type checking or validation is done."
+          },
+          "examples": [
+            { "text": "if(0, 'is true', 'is false')", "expr": "if(0, 'is true', 'is false')" },
+            { "text": "if(1, 'is true', 'is false')", "expr": "if(1, 'is true', 'is false')" },
+            { "text": "if(model.number > 20, model.number, 20)", "expr": "if(model.number > 20, model.number, 20)" },
+            { "text": "if(count(model.array) >= 4, model.array[3], model.array[2])", "expr": "if(count(model.array) >= 4, model.array[3], model.array[2])" },
+            { "text": "if(model.notset, model.notset, model.number)", "expr": "if(model.notset, model.notset, model.number)" }
+          ]
+        },{
+          "id": "iferrorfunc",
+          "name": "IfError Function",
+          "desc": "Checks the first parameter and if the evaluated result does not cause an error, then it will be returned, otherwise the second parameter is evaluated and returned.",
+          "notes": "If the first expression is, or results in null, then null will be returned, no error - this includes property accessors that are not present. However index out of bounds for array and keys not present for dictionaries will result in the error fallback.\r\nThe if error function does not wrap around invalid expression structure - this is considered a FATAL error with the template. But it will wrap around any errors for the eval function execution.",
+          "usage": "{{ifError(expr, fallback)}}",
+          "parameters": [{
+            "name": "expr",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be evaluated and if successful will be returned."
+          },{
+            "name": "fallback",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be evaluated and returned if the first parameter fails."
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "Either the expr value, or the fallback value. No matching type checking or validation is done."
+          },
+          "examples": [
+            { "text": "iferror(date(), 'no date')", "expr": "iferror(date(), 'no date')" },
+            { "text": "iferror(date('32 13 2024'), 'not date')", "expr": "iferror(date('32 13 2024'), 'not date')" },
+            { "text": "iferror(substring('32 13 2024', 5, 10), 'too short')", "expr": "iferror(substring('32 13 2024', 5, 10), 'too short')" },
+            { "text": "iferror(model.notset, 'null is valid')", "expr": "iferror(model.notset, 'null is valid')" },
+            { "text": "iferror(model.notset, 'null is valid') ?? 'null replacement'", "expr": "iferror(model.notset, 'null is valid') ?? 'null replacement'" },
+            { "text": "iferror(model['notset'], 'key not present')", "expr": "iferror(model['notset'], 'key not present')" },
+            { "text": "iferror(model.array[4], 'out of bounds')", "expr": "iferror(model.array[4], 'out of bounds')" },
+            { "text": "iferror(model['notset'], model['number'])", "expr": "iferror(model['notset'], model['number'])" },
+            { "text": "iferror(eval('date(('), 'invalid expression')", "expr": "iferror(eval('date(('), 'invalid expression')" }
+          ]
+        },{
+          "id": "in",
+          "name": "In Function",
+          "desc": "The in function takes the first parameter, and checks any following parameters to see if they are equal to the first. If so then it returns true, otherwise false. If one of the following parameters is an collection or array, then it will expand the contents and check each individual item.",
+          "notes": "When one or more of the items is a collection, then the inner items will be checked. However, if one of the inner items is an array, this will not be expanded, only compared directly.\r\n\r\nIndividual characters will not be searched for within a string - use the contains or matches functions for strings.",
+          "usage": "{{in(compareTo, item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "compareTo",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be compared to each of the following items."
+          },{
+            "name": "item1 etc.",
+            "type": "object",
+            "desc": "Required. Any object, constant or expression that will be compared against. If it is an array then each of the contents will be checked to find if the  and returned if the first parameter fails."
+          }],
+          "returns": {
+            "type": "boolean",
+            "desc": "Either true if the value of compareTo was found in the following parameters, otherwise false."
+          },
+          "examples": [
+            { "text": "in(12, 10, 11, 12, 13)", "expr": "in(12, 10, 11, 12, 13)" },
+            { "text": "in(14, 10, 11, 12, 13)", "expr": "in(14, 10, 11, 12, 13)" },
+            { "text": "in('sun', model.days)", "expr": "in('sun',model.days)" },
+            { "text": "in(12, model.array)", "expr": "in(12, model.array)" },
+            { "text": "in(14, model.array)", "expr": "in(14, model.array)" },
+            { "text": "in('12', model.days,'other', model.array)", "expr": "in('12', model.days, 'other', model.array)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aggregate-func",
+      "name": "Aggregate Functions",
+      "funcs": [
+        {
+          "id": "average",
+          "name": "Average Function",
+          "desc": "The average function (synonyous with mean) will return the sum of the arguments passed to the function, divided by the number of arguments. If one of those arguments is a collection or array (or a function that returns an array), then each item in the array will be included in the calculation.",
+          "notes": "When one or more of the items is a collection, then the inner items will be checked. However, if one of the inner items is an array, this will not be expanded and the expression will fail as a whole.",
+          "usage": "{{average(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "number or array of numbers",
+            "desc": "Required, one or more. Any object, constant or expression that will return in a number or an array of numbers."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The total sum of the numbers divided by the count of numbers."
+          },
+          "examples": [
+            { "text": "average(10, 11, 12, 13.4)", "expr": "average(10, 11, 12, 13.4)" },
+            { "text": "average(model.array)", "expr": "average(model.array)" },
+            { "text": "average(model.days)", "expr": "average(model.days)", "isinvalid": true },
+            { "text": "average(9, model.array, 13, 101)", "expr": "average(9, model.array, 13, 101)" }
+          ]
+        },{
+          "id": "averageof",
+          "name": "AverageOf Function",
+          "desc": "The averageOf function will return the sum of evaluation of the second argument in the context of the current item from the first array or collection argument.",
+          "notes": "When one or more of the items is a collection, then the inner items will be added. If the value is null (including inside the array) then it will be treated as zero.",
+          "usage": "{{averageof(collection, valueExpr)}}",
+          "parameters": [{
+            "name": "collection.",
+            "type": "array",
+            "desc": "Required. Any object, constant or expression that will return an array of values."
+          },{
+            "name": "valueExpr.",
+            "type": "number",
+            "desc": "Required. Any object, constant or expression that will return a number (or null) based on the current item in the collection."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The total sum of the extracted numbers divided by the count of items in collection."
+          },
+          "examples": [
+            { "text": "averageof(model.items, .index)", "expr": "averageof(model.items, .index)" },
+            { "text": "averageof(model.array, .)", "expr": "averageof(model.array, .)" },
+            { "text": "averageof(model.days, length(.))", "expr": "averageof(model.days, length(.))" },
+            { "text": "averageof(collect(9,model.array,13, 101), if(. < 100, ., null))", "expr": "averageof(collect(9,model.array,13, 101), if(. < 100, ., null))" }
+          ]
+        },{
+          "id": "count",
+          "name": "Count Function",
+          "desc": "The count function will return the number of non-null arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then it will add the non-null array length to the count.",
+          "notes": "When one or more of the items is a collection, then the inner items will be added. If the inner item itself is an array, then it will be treated as *one*.\r\n\r\nIf the value is null (including inside the array) then it will *NOT* be counted.",
+          "usage": "{{count(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "object or array",
+            "desc": "Required, one or more. Any object, constant or expression that will return a value or an array of values."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The total number of values extracted in the parameters."
+          },
+          "examples": [
+            { "text": "count(10, 11, 12, 13.4)", "expr": "count(10, 11, 12, 13.4)" },
+            { "text": "count(10, 11, null, 12, 13.4)", "expr": "average(10, 11, null, 12, 13.4)" },
+            { "text": "count(model.items)", "expr": "count(model.items)" },
+            { "text": "count('one', model.array, model.days, null)", "expr": "count('one', model.array, model.days, null)" }
+          ]
+        }, {
+          "id": "max",
+          "name": "Max Function",
+          "desc": "The max function will return the largest value based on the non-null arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then it will check the non-null array values for the maximum.",
+          "notes": "If one or more of the values is a string, then the comparison will revert to checking as a group of strings. If conversion of the value to a number from a string is needed, then use the maxof function.",
+          "usage": "{{max(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "object or array",
+            "desc": "Required, one or more. Any object, constant or expression that will return a value or an array of values."
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "The maximum value of the extracted in the parameters."
+          },
+          "examples": [
+            { "text": "max(10, 11, 12, 13.4)", "expr": "max(10, 11, 12, 13.4)" },
+            { "text": "max(10, 13.4, null, 12, 11)", "expr": "max(10, 13.4, null, 12, 11)" },
+            { "text": "max(model.array)", "expr": "max(model.array)" },
+            { "text": "max('one', model.array, model.days, null)", "expr": "max('one', model.array, model.days, null)" }
+          ]
+        }, {
+          "id": "maxof",
+          "name": "MaxOf Function",
+          "desc": "The maxof function will return the largest value based on the second parameter in the context of the current item from the array of collection in the first parameter.",
+          "notes": "The value returned from the second expression parameter should be comparable (e.g. integer or double or date or string), null will be ignored and skipped.",
+          "usage": "{{maxof(colleciton, valueExpr)}}",
+          "parameters": [{
+            "name": "collection",
+            "type": "array",
+            "desc": "Required. Any object, constant or expression that will return an array of values."
+          },{
+            "name": "valueExpr",
+            "type": "expression",
+            "desc": "Required. Any current data expression that will return the value to compare to."
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "The maximum value of all the non-null extracted values in the collection based on the expression."
+          },
+          "examples": [
+            { "text": "maxof(model.items, .index)", "expr": "maxof(model.items, .index)" },
+            { "text": "maxof(model.items, .name)", "expr": "maxof(model.items, .name)" },
+            { "text": "maxof(collect('one', 'two', 'three', 'four'), length(.))", "expr": "maxof(collect('one', 'two', 'three', 'four'), length(.))" },
+            { "text": "maxof(collect(9,model.array,13, 101), if(. < 100, ., null))", "expr": "maxof(collect(9,model.array,13, 101), if(. < 100, ., null))" }
+          ]
+        }, {
+          "id": "min",
+          "name": "Min Function",
+          "desc": "The min function will return the smallest value based on the non-null arguments passed to the function. If one of those arguments is a collection or array (or an expression that returns an array), then it will check the non-null array values for the minimum.",
+          "notes": "If one or more of the values is a string, then the comparison will revert to checking as a group of strings. If conversion of the value to a number from a string is needed, then use the maxof function.",
+          "usage": "{{min(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "object or array",
+            "desc": "Required, one or more. Any object, constant or expression that will return a value or an array of values."
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "The minimum value of the extracted in the parameters."
+          },
+          "examples": [
+            { "text": "min(10, 11, 12, 13.4)", "expr": "min(10, 11, 12, 13.4)" },
+            { "text": "min(10, 13.4, null, 12, 1)", "expr": "min(10, 13.4, null, 12, 1)" },
+            { "text": "min(model.array)", "expr": "min(model.array)" },
+            { "text": "min('!', model.array, model.days, null)", "expr": "min('!', model.array, model.days, null)" }
+          ]
+        }, {
+          "id": "minof",
+          "name": "MinOf Function",
+          "desc": "The minof function will return the smallest value based on the second parameter in the context of the current item from the array of collection in the first parameter.",
+          "notes": "The value returned from the second expression parameter should be comparable (e.g. integer or double or date or string), null will be ignored and skipped.",
+          "usage": "{{minof(collection, valueExpr)}}",
+          "parameters": [{
+            "name": "collection",
+            "type": "array",
+            "desc": "Required. Any object, constant or expression that will return an array of values."
+          },{
+            "name": "valueExpr",
+            "type": "expression",
+            "desc": "Required. Any current data expression that will return the value to compare to."
+          }],
+          "returns": {
+            "type": "object",
+            "desc": "The minimum value of all the non-null extracted values in the collection based on the expression."
+          },
+          "examples": [
+            { "text": "minof(model.items, .index)", "expr": "minof(model.items, .index)" },
+            { "text": "minof(model.items, .name)", "expr": "minof(model.items, .name)" },
+            { "text": "minof(collect('one', 'two', 'three', 'four'), length(.))", "expr": "minof(collect('one', 'two', 'three', 'four'), length(.))" },
+            { "text": "minof(collect(9,model.array,13, -10), if(. > 0, ., null))", "expr": "minof(collect(9,model.array,13, -10), if(. > 0, ., null))" }
+          ]
+        }, {
+          "id": "mean",
+          "name": "Mean Function",
+          "desc": "The mean function (synonyous with average, but explicit in the mechanism is being used), will return the sum of the arguments passed to the function, divided by the number of arguments. If one of those arguments is a collection or array (or a function that returns an array), then each item in the array will be included in the calculation.",
+          "notes": "When one or more of the items is a collection, then the inner items will be checked. However, if one of the inner items is an array, this will not be expanded, and the expression will fail as a whole.",
+          "usage": "{{mean(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "number or array of numbers",
+            "desc": "Required, one or more. Any object, constant or expression that will return in a number or an array of numbers."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The total sum of the numbers divided by the count of numbers."
+          },
+          "examples": [
+            { "text": "mean(10, 11, 12, 13.4)", "expr": "mean(10, 11, 12, 13.4)" },
+            { "text": "mean(model.array)", "expr": "mean(model.array)" },
+            { "text": "mean(model.days)", "expr": "mean(model.days)", "isinvalid": true },
+            { "text": "mean(9, model.array, 13, 101)", "expr": "mean(9, model.array, 13, 101)" }
+          ]
+        }, {
+          "id": "median",
+          "name": "Median Function",
+          "desc": "The median function, will return the middle value of all the arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then each item in the array will be included in the calculation.",
+          "notes": "The values should all be numeric",
+          "usage": "{{median(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "number or array of numbers",
+            "desc": "Required, one or more. Any object, constant or expression that will return in a number or an array of numbers."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The middle value out of all of numbers collected and sorted."
+          },
+          "examples": [
+            { "text": "median(10, 11, 12, 13.4)", "expr": "median(10, 11, 12, 13.4)" },
+            { "text": "median(model.array)", "expr": "median(model.array)" },
+            { "text": "median(model.days)", "expr": "median(model.days)", "isinvalid": true },
+            { "text": "median(9, model.array, 13, 101)", "expr": "median(9, model.array, 13, 101)" }
+          ]
+        }, {
+          "id": "mode",
+          "name": "Mode Function",
+          "desc": "The mode function, will return the number value that occurs most often in all the arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then each item in the array will be included in the calculation.",
+          "notes": "The values should all be numeric. When all values are unique, or there are multiple values with the same occurance the first will be returned",
+          "usage": "{{mode(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "number or array of numbers",
+            "desc": "Required, one or more. Any object, constant or expression that will return in a number or an array of numbers."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The most occurant value out of all of numbers collected and sorted."
+          },
+          "examples": [
+            { "text": "mode(10, 11, 12, 11)", "expr": "mode(10, 11, 12, 11)" },
+            { "text": "mode(10, 11, 12, 11)", "expr": "mode(10, 11, 12, 11)" },
+            { "text": "mode(10, 110, 12, 110)", "expr": "mode(10, 110, 12, 110)" },
+            { "text": "mode(model.array)", "expr": "mode(model.array)" },
+            { "text": "mode(model.days)", "expr": "mode(model.days)", "isinvalid": true },
+            { "text": "mode(model.array, 13, 11)", "expr": "mode(model.array, 13, 11)" }
+          ]
+        },
+        {
+          "id": "sum",
+          "name": "Sum function",
+          "desc": "The sum function will return the total accumulated value based on the non-null arguments passed to the function. If one of those arguments is a collection or array (or an expression that returns an array), then it will include the sum of the non-null array values.",
+          "notes": "The individual values should be numeric, i.e. indeger or real, (or null) so the total can be calculated. If the value cannot be added then the expression will fail as a whole.",
+          "usage": "{{sum(item1 [,item2,item3, ...])}}",
+          "parameters": [{
+            "name": "item1 etc...",
+            "type": "object or array",
+            "desc": "Required, one or more. Any object, constant or expression that will return a value or an array of values."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The total summed value of the extracted in the parameters."
+          },
+          "examples": [
+            { "text": "sum(10, 11, 12, 13.4)", "expr": "sum(10, 11, 12, 13.4)" },
+            { "text": "sum(10, 13.4, null, 12, 1)", "expr": "sum(10, 13.4, null, 12, 1)" },
+            { "text": "sum(model.array)", "expr": "sum(model.array)" },
+            { "text": "sum(9, model.array, null, 13.6)", "expr": "sum(9, model.array, null, 13.6)" }
+          ]
+        },
+        {
+          "id": "sumof",
+          "name": "SumOf function",
+          "desc": "The sumof function will return the total value based on the second parameter in the context of the current item from the array of collection in the first parameter.",
+          "notes": "The value returned from the second expression parameter should be a number (e.g. integer or double), null will be ignored and skipped.",
+          "usage": "{{sumof(collection, valueExpr)}}",
+          "parameters": [{
+            "name": "collection",
+            "type": "array",
+            "desc": "Required. Any object, constant or expression that will return an array of values."
+          },{
+            "name": "valueExpr",
+            "type": "expression",
+            "desc": "Required. Any current data expression that will return the value to add to."
+          }],
+          "returns": {
+            "type": "number",
+            "desc": "The minimum value of all the non-null extracted values in the collection based on the expression."
+          },
+          "examples": [
+            { "text": "sumof(model.array, .)", "expr": "sumof(model.array, .)" },
+            { "text": "sumof(model.items, .index)", "expr": "sumof(model.items, .index)" },
+            { "text": "sumof(collect('one', 'two', 'three', null, 'four'), length(.))", "expr": "sumof(collect('one', 'two', 'three', null, 'four'), length(.))" },
+            { "text": "sumof(model.items, .name)", "expr": "sumof(model.items, .name)", "isinvalid": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "collection-func",
+      "name": "Collection Functions",
+      "funcs": [
+        {
+          "id": "collect",
+          "name": "Each Function",
+          "desc": "The count function will return the numer of arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then it will add the array length to the count."
+        }, {
+          "id": "eachof",
+          "name": "EachOf Function",
+          "desc": "The count function will return the numer of arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then it will add the array length to the count."
+        }, {
+          "id": "selectwhere",
+          "name": "SelectWhere Function",
+          "desc": "The count function will return the numer of arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then it will add the array length to the count."
+        }, {
+          "id": "sortby",
+          "name": "SortBy Function",
+          "desc": "The count function will return the numer of arguments passed to the function. If one of those arguments is a collection or array (or a function that returns an array), then it will add the array length to the count."
+        }, {
+          "id": "firstwhere",
+          "name": "FirstWhere function",
+          "desc": "Returns the first entry of the collection or array where the second expression returns true"
+        }, {
+          "id": "indexfunc",
+          "name": "Index Function",
+          "desc": "During processing of a collection by a template, the current index (zero-based) is remembered. As a template goes through each item and processes the content it increments the current index. This value can be accessed by the index() function. Only 1 value is available, however the current value can be stored in a variable before an inner loop is executed.",
+          "notes": "As the document here is created dynamically, the examples use an index value that increments each time.\r\nThe final example calls back up the hierachy for stored values on each of the parent template indexes.",
+          "usage": "{{index()}}",
+          "returns": {
+            "type": "integer",
+            "desc": "The zero based index of the looping content template."
+          },
+          "examples": [
+            { "text": "index()", "expr": "index()" },
+            { "text": "index()", "expr": "index()" },
+            { "text": "if(index() % 2 == 1,'odd', 'even')", "expr": "if(index() % 2 == 1,'odd', 'even')" },
+            { "text": "concat('This is the ', index()+ 1, 'th item')", "expr": "concat('This is the ', index() + 1, 'th item')" },
+            { "text": "concat(sectionIndex,'.', funcIndex, '.', index())", "expr": "concat(sectionIndex,'.', funcIndex, '.', index())" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

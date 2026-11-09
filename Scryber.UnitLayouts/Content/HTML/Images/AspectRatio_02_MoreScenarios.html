@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>Image Aspect Ratio - height-only, both-set, standalone CSS ratio and attribute ordering</title>
+        <style>
+            @page{
+                size: 300pt 500pt;
+                margin : 0;
+            }
+            body{ margin: 0; padding: 0; }
+        </style>
+    </head>
+    <body>
+    <!-- 0: height-only styled, width/height attributes (400x200, 2:1) provide the ratio -->
+    <img src="../../Images/Toroid32.png" width="400" height="200" style="height: 60pt;" />
+
+    <!-- 1: both width and height styled explicitly - the 400x200 (2:1) attribute ratio must be ignored -->
+    <img src="../../Images/Toroid32.png" width="400" height="200" style="width: 150pt; height: 150pt; page-break-before: always;" />
+
+    <!-- 2: standalone CSS aspect-ratio with no width/height HTML attributes at all -->
+    <img src="../../Images/Toroid32.png" style="height: 100pt; aspect-ratio: 2/1; page-break-before: always;" />
+
+    <!-- 3: width/height attributes appear BEFORE the style attribute in source order -->
+    <img src="../../Images/Toroid32.png" width="300" height="150" style="width: 60pt; page-break-before: always;" />
+
+    <!-- 4: style attribute appears BEFORE the width/height attributes in source order (should match case 3) -->
+    <img style="width: 60pt; page-break-before: always;" src="../../Images/Toroid32.png" width="300" height="150" />
+    </body>
+
+</html>

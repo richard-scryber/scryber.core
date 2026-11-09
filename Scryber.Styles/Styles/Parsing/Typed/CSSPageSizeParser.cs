@@ -198,6 +198,11 @@ namespace Scryber.Styles.Parsing.Typed
                 size = u;
                 return true;
             }
+            else if(value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return ParseCSSUnit(str, out size);
+            }
             else if(ParseCSSUnit(value.ToString(), out size))
             {
                 return true;

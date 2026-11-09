@@ -12,6 +12,6 @@
         /// <param name="currentIndex">Where to look within the <paramref name="expression"/>.</param>
         /// <param name="context">Any additional rules to apply when extracting.</param>
         /// <returns>The <see cref="Token"/> that is extract, null if extraction fails.</returns>
-        Token ExtractToken(string expression, int currentIndex, Context context);
+        Token ExtractToken(string expression, int currentIndex, ExpressionContext context);
     }
 }

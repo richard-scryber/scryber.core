@@ -883,7 +883,7 @@
       <tr><td>substring()</td></tr>
       <tr><td>padleft()</td></tr>
       <tr><td>padright()</td></tr>
-      <tr><td>regex()</td></tr>
+      <tr><td>ismatch()</td></tr>
     </table>
     <table class='expressions string'>
       <tr>
@@ -1062,14 +1062,14 @@
       
     <table class='expressions string' >
       <tr>
-        <td class='name'>regex(value1, value2....)</td>
-        <td>regex('The quick brown fox','\squick\s')</td>
-        <td class='result'>{{regex('The quick brown fox','\squick\s')}}</td>
+        <td class='name'>ismatch(value1, value2....)</td>
+        <td>ismatch('The quick brown fox','\squick\s')</td>
+        <td class='result'>{{ismatch('The quick brown fox','\squick\s')}}</td>
       </tr>
       <tr>
-        <td class='name'>regex(value1, value2....)</td>
-        <td>regex('The quick brown fox','\jump\s')</td>
-        <td class='result'>{{regex('The quick brown fox','\sjump\s')}}</td>
+        <td class='name'>ismatch(value1, value2....)</td>
+        <td>ismatch('The quick brown fox','\jump\s')</td>
+        <td class='result'>{{ismatch('The quick brown fox','\sjump\s')}}</td>
       </tr>
     </table>
   </section>

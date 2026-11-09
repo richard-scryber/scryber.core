@@ -40,7 +40,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        [PDFAttribute("data-li-alignment")]
+        [PDFAttribute("data-li-align")]
         public override HorizontalAlignment NumberAlignment { get => base.NumberAlignment; set => base.NumberAlignment = value; }
 
         [PDFAttribute("data-li-inset")]
@@ -57,9 +57,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLListItem()
-            : base()
+            : this(HTMLObjectTypes.ListItem)
         {
         }
+
+        protected HTMLListItem(ObjectType type) : base(type)
+        { }
 
         protected override Style GetBaseStyle()
         {

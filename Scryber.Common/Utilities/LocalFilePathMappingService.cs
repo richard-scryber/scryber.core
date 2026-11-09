@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+
 namespace Scryber.Utilities
 {
     public class LocalFilePathMappingService : IPathMappingService
@@ -9,6 +11,11 @@ namespace Scryber.Utilities
 
         public string MapPath(ParserLoadType loadtype, string reference, string parent, out bool isFile)
         {
+            if (IsDataUrl(reference))
+            {
+                isFile = false;
+                return reference;
+            }
             if(Uri.IsWellFormedUriString(reference, UriKind.Absolute))
             {
                 isFile = false;
@@ -85,6 +92,17 @@ namespace Scryber.Utilities
                 return clean;
             }
             
+        }
+        
+        private static readonly Regex DataUrlMatch = new Regex("^\\s*data:([a-z0-9]+)\\/([a-z0-9\\+]+\\;).*",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+
+        public bool IsDataUrl(string path)
+        {
+            if (DataUrlMatch.IsMatch(path))
+                return true;
+
+            return false;
         }
     }
 }

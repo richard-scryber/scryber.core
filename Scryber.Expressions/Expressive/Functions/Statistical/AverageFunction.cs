@@ -12,7 +12,7 @@ namespace Scryber.Expressive.Functions.Statistical
 
         public override string Name { get { return "Average"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
@@ -23,9 +23,9 @@ namespace Scryber.Expressive.Functions.Statistical
             {
                 int increment = 1;
                 object evaluatedValue = value.Evaluate(variables);
-                IEnumerable enumerable = evaluatedValue as IEnumerable;
+                IEnumerable enumerable;
 
-                if (enumerable != null)
+                if (Collections.TryIsCollection(evaluatedValue, out enumerable))
                 {
                     int enumerableCount = 0;
                     object enumerableSum = 0;
@@ -33,18 +33,18 @@ namespace Scryber.Expressive.Functions.Statistical
                     foreach (var item in enumerable)
                     {
                         enumerableCount++;
-                        enumerableSum = Numbers.Add(enumerableSum, item);
+                        enumerableSum = Numbers.Add(enumerableSum, item, variables);
                     }
 
                     increment = enumerableCount;
                     evaluatedValue = enumerableSum;
                 }
 
-                result = Numbers.Add(result, evaluatedValue);
+                result = Numbers.Add(result, evaluatedValue, variables);
                 count += increment;
             }
 
-            return Convert.ToDouble(result) / count;
+            return Convert.ToDouble(result, context.DecimalCurrentCulture) / count;
         }
 
         #endregion

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Html.Parsing;
 using Scryber.PDF.Native;
 using Scryber.PDF;
 using Scryber.Options;
@@ -27,24 +28,7 @@ using Scryber.Options;
 namespace Scryber
 {
 
-    /// <summary>
-    /// Adds Extension methods to the PDFArray class
-    /// </summary>
-    public static class PDFArrayExtensions
-    {
-        public static T[] ContentAs<T>(this PDFArray ary) where T : IPDFFileObject
-        {
-            if (null == ary)
-                return null;
-
-            T[] all = new T[ary.Count];
-            for (int i = 0; i < ary.Count; i++)
-            {
-                all[i] = (T)ary[i];
-            }
-            return all;
-        }
-    }
+    
 
     /// <summary>
     /// Adds the factory method for the parsers configuration, that returns a dictionary of all the supported mime-types and their associated factories
@@ -58,7 +42,7 @@ namespace Scryber
             var all = new ParserFactoryDictionary();
             var standard = GetStandardFactories();
 
-            if (null != options && null != options.Parsers && options.Parsers.Length > 0)
+            if (null != options && null != options.Parsers && options.Parsers.Count > 0)
             {
                 foreach (var configFactory in options.Parsers)
                 {
@@ -101,7 +85,9 @@ namespace Scryber
         private static IParserFactory[] _standards = new IParserFactory[] {
 
             new Scryber.Generation.PDFXMLReflectionParserFactory(),
-            new Scryber.Html.Parsing.HTMLParserFactory()
+            new Scryber.Html.Parsing.HTMLParserFactory(),
+            new Scryber.Generation.PlainTextParserFactory(),
+            new Scryber.Html.Parsing.MarkdownParserFactory(new HTMLParserFactory())
         };
 
 

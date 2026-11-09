@@ -34,7 +34,7 @@ namespace Scryber.PDF.Resources
     /// <remarks>
     /// Font Definitions are unique to a document and instances are not shared across multiple files
     /// </remarks>
-    [Obsolete("Use teh base FontDefinition or the PDFOpenTypeFontDefinition classes", true)]
+    [Obsolete("Use the base FontDefinition or the PDFOpenTypeFontDefinition classes", true)]
     public class PDFFontDefinition : FontDefinition
     {
 
@@ -258,7 +258,7 @@ namespace Scryber.PDF.Resources
             var size = this.TTFFile.MeasureString(encoding, chars, startOffset, fontSize, available, wordSpace, 
                 charSpace.HasValue ? charSpace.Value : 0.0, 
                 hScale.HasValue ? hScale.Value : 1.0, 
-                vertical, wordBoundary, out charsfitted);
+                vertical, wordBoundary, wordBoundary, out charsfitted);
             
             return new Size(size.RequiredWidth, size.RequiredHeight);
         }
@@ -326,6 +326,11 @@ namespace Scryber.PDF.Resources
         /// Returns the PDFFontWidths for this font definition
         /// </summary>
         /// <returns></returns>
+        /// <remarks>
+        /// The non-standard, non-Unicode branch returns this definition's OWN widths instance,
+        /// and definitions are cached process-wide, so the returned object is shared between
+        /// concurrently rendering documents. It must stay free of per-call mutable state.
+        /// </remarks>
         public override PDFFontWidths GetWidths()
         {
 
@@ -470,11 +475,12 @@ namespace Scryber.PDF.Resources
                 writer.WriteLine();
                 writer.WriteRaw("endcodespacerange");
                 writer.WriteLine();
-                writer.WriteRaw(comp.Count.ToString());
+                var offsets = comp.RegisterdGlyphOffsets;
+                writer.WriteRaw(offsets.Count.ToString());
                 writer.WriteRaw(" beginbfrange");
                 writer.WriteLine();
                 int count = 0;
-                foreach (int glyphindex in comp.RegisterdGlyphOffsets)
+                foreach (int glyphindex in offsets)
                 {
                     char ch = comp.GetCharacterForGlyphOffset(glyphindex);
                     string g = "<" + Convert.ToString(glyphindex, 16).PadLeft(4, '0') + ">";

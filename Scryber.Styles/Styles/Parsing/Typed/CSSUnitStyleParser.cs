@@ -28,7 +28,7 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     result = AttachExpressionBindingHandler(onStyle, this.StyleAttribute, value, this.DoConvertUnit);
                 }
-                if (this.DoConvertUnit(onStyle, value, out parsed))
+                else if (this.DoConvertUnit(onStyle, value, out parsed))
                 {
                     onStyle.SetValue(this.StyleAttribute, parsed);
                     result = true;
@@ -49,7 +49,7 @@ namespace Scryber.Styles.Parsing.Typed
                 result = (Unit)value;
                 return true;
             }
-            else if (Unit.TryParse(value.ToString(), out result))
+            else if (TryConvertToUnit(value, out result))
                 return true;
             else
                 return false;

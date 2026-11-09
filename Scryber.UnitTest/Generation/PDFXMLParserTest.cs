@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Scryber;
 using System.Xml;
 using Scryber.Logging;
@@ -75,14 +76,16 @@ namespace Scryber.Core.UnitTests.Generation
         private ParserSettings GetSettings()
         {
             Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type whitespaceType = typeof(Scryber.Components.Whitespace);
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
             Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
+            PDFReferenceResolverAsync resolverAsync = new PDFReferenceResolverAsync(this.ShimResolverAsync);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor perfmon = new PerformanceMonitor(true);
-            ParserSettings settings = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
+            ParserSettings settings = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, resolverAsync, conformance, loadtype, log, perfmon, null, false);
 
             return settings;
         }
@@ -156,7 +159,9 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(2.5, obj.Complex.Size);
             Assert.AreEqual(0, obj.Complex.AnotherIndex); //not set
 
-            Assert.IsNull(obj.DefaultCollection);
+            if (null == obj.DefaultCollection && obj.DefaultCollection.Count > 0)
+                throw new InvalidOperationException("The default collection is not null or empty");
+
             Assert.IsNull(obj.CollectionOne);
         }
 
@@ -378,6 +383,33 @@ namespace Scryber.Core.UnitTests.Generation
         /// <param name="settings"></param>
         /// <returns></returns>
         IComponent ShimResolver(string filename, string xpath, ParserSettings settings)
+        {
+            resolverCallCount++;
+            IComponent resolverReturnValue;
+            Assert.IsNotNull(settings);
+
+            if (string.Equals(filename, "ShimFile2.pcfx"))
+            {
+                Assert.AreEqual("//xpath/node", xpath);
+                Fakes.ParserInnerComplex complex = new Fakes.ParserInnerComplex();
+                complex.Inheritable = "ShimFile2" + xpath;
+                complex.Index = 42;
+                resolverReturnValue = complex;
+            }
+            else if (string.Equals(filename, "ShimFile.pcfx"))
+            {
+                Assert.IsTrue(String.IsNullOrEmpty(xpath));
+                Fakes.ParserInnerComplex complex = new Fakes.ParserInnerComplex();
+                complex.Inheritable = "ShimFile";
+                resolverReturnValue = complex;
+            }
+            else
+                throw new ArgumentOutOfRangeException("Unknown remote file : " + filename);
+
+            return resolverReturnValue;
+        }
+        
+        async Task<IComponent> ShimResolverAsync(string filename, string xpath, ParserSettings settings)
         {
             resolverCallCount++;
             IComponent resolverReturnValue;

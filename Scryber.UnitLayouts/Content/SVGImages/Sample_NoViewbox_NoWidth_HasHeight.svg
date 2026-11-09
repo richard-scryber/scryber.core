@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="100" >
+    <rect x="20" y="10" width="160" height="130" fill="green" stroke="blue" stroke-width="1" />
+    <ellipse cx="100" cy="75" rx="70" ry="50" fill="lime" stroke="blue" stroke-width="1" />
+</svg>

@@ -37,5 +37,6 @@ namespace Scryber.PDF
         public const string ViewerPrefs = "ViewerPreferences";
         public const string PageLabels = "PageLabels";
         public const string AcrobatForms = "AcroForm";
+        public const string EmbeddedFiles = "EmbeddedFiles";
     }
 }

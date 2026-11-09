@@ -221,9 +221,16 @@ namespace Scryber.PDF
                 prev = orig.DocumentXRefs;
                 startindex = prev.MaxReference + 1;
                 gen = prev.Generation;
+                this.InitXRefTable(startindex, gen, prev);
                 
             }
-            this.InitXRefTable(startindex, gen, prev);
+            else
+            {
+                this.InitXRefTable(startindex, gen, null);
+                this.WritePDFHeader();
+            }
+            
+            
         }
 
         #endregion
@@ -1191,6 +1198,9 @@ namespace Scryber.PDF
                     break;
                 case PDFOpCode.GraphSetClip:
                     s = "W";
+                    break;
+                case PDFOpCode.GraphSetClipEvenOdd:
+                    s = "W*";
                     break;
                 default:
                     break;

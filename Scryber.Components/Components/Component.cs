@@ -25,17 +25,19 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Graphics;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.Components
 {
     /// <summary>
     /// Base class for all complex pdf Components
     /// </summary>
-    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent
+    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent, IMetadataContainer, ISiblingIndexProvider
     {
         // static event keys for the PDFEventList
 
@@ -371,7 +373,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or Sets the Parent of this Component in the PDF Hierarchy
         /// </summary>
-        public Component Parent
+        public virtual Component Parent
         {
             get { return _par; }
             set 
@@ -486,7 +488,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the document that this Component belongs to.
         /// </summary>
-        public Document Document
+        public virtual Document Document
         {
             get
             {
@@ -694,6 +696,178 @@ namespace Scryber.Components
 
         #endregion
 
+        #region ISiblingIndexProvider
+
+        /// <summary>
+        /// Lazily computed and cached sibling position values used by the CSS :nth-child family.
+        /// A single field cost on Component (only allocated the first time a structural
+        /// pseudo-class is evaluated against this component), since a single selector match can
+        /// request the same value repeatedly - e.g. a nested selector like 'td:nth-child(odd)
+        /// :first-child' re-evaluating the same candidate components many times.
+        /// </summary>
+        private class SiblingIndexes
+        {
+            public int Index = -1;
+            public int Count = -1;
+            public int OfTypeIndex = -1;
+            public int OfTypeCount = -1;
+        }
+
+        private SiblingIndexes _siblingIndexes;
+
+        /// <summary>
+        /// Supports the CSS :nth-child family of structural pseudo-classes. Element siblings are
+        /// this component's parent's children that have an ElementName set - text/whitespace nodes
+        /// are not counted, matching real CSS :nth-child semantics.
+        /// </summary>
+        int ISiblingIndexProvider.SiblingIndex
+        {
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.Index < 0)
+                    this.PopulateSiblingPosition(indexes, false);
+                return indexes.Index;
+            }
+        }
+
+        int ISiblingIndexProvider.SiblingCount
+        {
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.Count < 0)
+                    this.PopulateSiblingPosition(indexes, false);
+                return indexes.Count;
+            }
+        }
+
+        int ISiblingIndexProvider.SiblingOfTypeIndex
+        {
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.OfTypeIndex < 0)
+                    this.PopulateSiblingPosition(indexes, true);
+                return indexes.OfTypeIndex;
+            }
+        }
+
+        int ISiblingIndexProvider.SiblingOfTypeCount
+        {
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.OfTypeCount < 0)
+                    this.PopulateSiblingPosition(indexes, true);
+                return indexes.OfTypeCount;
+            }
+        }
+
+        private SiblingIndexes EnsureSiblingIndexes()
+        {
+            if (null == _siblingIndexes)
+                _siblingIndexes = new SiblingIndexes();
+            return _siblingIndexes;
+        }
+
+        /// <summary>
+        /// Scans this component's element siblings once, populating either the plain
+        /// (Index/Count) or of-type (OfTypeIndex/OfTypeCount) pair on the cache - optionally
+        /// restricted to children sharing this component's ElementName (for the :nth-of-type
+        /// family). Defaults to (1, 1) for a component with no real parent container, so a
+        /// lone/root component matches :first-child, :last-child, and :only-child as expected.
+        ///
+        /// "Element siblings" is not simply this.Parent's direct Content: an IInvisibleContainer
+        /// (e.g. the per-iteration wrapper a {{#each}} produces) doesn't create a real level in
+        /// the field/structural hierarchy - its own content is meant to read as if it were
+        /// spliced directly into whichever real container encloses it, matching the same
+        /// flattening ComponentWrappingList&lt;T&gt;.BuildAllItems already does for typed child
+        /// collections (e.g. HTMLSelect's Choices). So this walks up past any IInvisibleContainer
+        /// ancestors to find the nearest real one, then recursively flattens *that* container's
+        /// entire content (expanding any IInvisibleContainer found at any depth within it, not
+        /// just along the direct path to this component - the hierarchy can nest, e.g. an
+        /// {{#each}} inside an {{#if}}) into one ordered list before counting position in it.
+        /// </summary>
+        private void PopulateSiblingPosition(SiblingIndexes indexes, bool ofTypeOnly)
+        {
+            Component realParent = this.Parent;
+            while (realParent is IInvisibleContainer)
+                realParent = realParent.Parent;
+
+            if (!(realParent is IContainerComponent container) || !container.HasContent)
+            {
+                if (ofTypeOnly)
+                {
+                    indexes.OfTypeIndex = 1;
+                    indexes.OfTypeCount = 1;
+                }
+                else
+                {
+                    indexes.Index = 1;
+                    indexes.Count = 1;
+                }
+                return;
+            }
+
+            int index = 0;
+            int total = 0;
+            CountSiblingContent(container.Content, this, ofTypeOnly, ref index, ref total);
+
+            if (ofTypeOnly)
+            {
+                indexes.OfTypeIndex = index;
+                indexes.OfTypeCount = total;
+            }
+            else
+            {
+                indexes.Index = index;
+                indexes.Count = total;
+            }
+        }
+
+        /// <summary>
+        /// Walks <paramref name="content"/>, counting element siblings in place (no intermediate
+        /// list) - descending into any IInvisibleContainer found along the way instead of
+        /// counting it as a single sibling, so an {{#each}}/{{#if}} wrapper's own items count as
+        /// if they were direct entries of the real enclosing container, exactly like
+        /// ComponentWrappingList&lt;T&gt;.BuildAllItems already does for typed collections. Only
+        /// <paramref name="total"/> and (once <paramref name="find"/> is reached) <paramref name="index"/>
+        /// are tracked - never the members themselves - since this can run once per structural
+        /// pseudo-class check against every sibling in a row, not just once per parent.
+        /// </summary>
+        private static void CountSiblingContent(ComponentList content, Component find, bool ofTypeOnly, ref int index, ref int total)
+        {
+            foreach (Component child in content)
+            {
+                if (child is IInvisibleContainer invisible)
+                {
+                    if (invisible.HasContent)
+                        CountSiblingContent(invisible.Content, find, ofTypeOnly, ref index, ref total);
+                    continue;
+                }
+
+                //Matches ComponentWrappingList<T>.BuildAllItems's own filtering - binding
+                //machinery (e.g. {{#each}}'s template prototype) can leave a NoOp-typed node
+                //sitting in the real content alongside the actual generated items, which isn't
+                //a real rendered sibling and must not inflate the count.
+                if (child.Type == ObjectTypes.NoOp)
+                    continue;
+
+                if (string.IsNullOrEmpty(child.ElementName))
+                    continue;
+
+                if (ofTypeOnly && !string.Equals(child.ElementName, find.ElementName, StringComparison.Ordinal))
+                    continue;
+
+                total++;
+                if (ReferenceEquals(child, find))
+                    index = total;
+            }
+        }
+
+        #endregion
+
         #region string StyleClass {get;set;}
 
         private string _class;
@@ -709,7 +883,8 @@ namespace Scryber.Components
             get { return _class; }
             set 
             {
-                _class = value; 
+                _class = value;
+                _appliedStyle = null;
             }
         }
 
@@ -855,6 +1030,89 @@ namespace Scryber.Components
         public bool HasOutline
         {
             get { return null != this._outline && !string.IsNullOrEmpty(this._outline.Title); }
+        }
+
+        #endregion
+
+        #region public metadata helpers
+
+        private static readonly IReadOnlyDictionary<string, string> EmptyMetadata =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        private Dictionary<string, string> _metadata;
+
+        /// <summary>
+        /// Gets all custom metadata assigned to this component.
+        /// </summary>
+        public IReadOnlyDictionary<string, string> Metadata
+        {
+            get { return _metadata ?? EmptyMetadata; }
+        }
+
+        /// <summary>
+        /// Stores metadata under the specified key.
+        /// </summary>
+        public void SetMetadata(string key, string value)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return;
+
+            if (_metadata == null)
+                _metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            _metadata[key.Trim()] = value;
+        }
+
+        /// <summary>
+        /// Tries to get metadata by key. Falls back to parsing key/value pairs from Tag.
+        /// </summary>
+        public bool TryGetMetadata(string key, out string value)
+        {
+            value = null;
+
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
+            if (_metadata != null && _metadata.TryGetValue(key, out value))
+                return true;
+
+            return TryGetMetadataFromTag(key, out value);
+        }
+
+        /// <summary>
+        /// Gets metadata by key, or defaultValue when not found.
+        /// </summary>
+        public string GetMetadata(string key, string defaultValue = null)
+        {
+            string value;
+            if (TryGetMetadata(key, out value))
+                return value;
+            return defaultValue;
+        }
+
+        private bool TryGetMetadataFromTag(string key, out string value)
+        {
+            value = null;
+
+            if (string.IsNullOrWhiteSpace(_tag) || string.IsNullOrWhiteSpace(key))
+                return false;
+
+            string[] parts = _tag.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string pair in parts)
+            {
+                int eq = pair.IndexOf('=');
+                if (eq <= 0)
+                    continue;
+
+                string pairKey = pair.Substring(0, eq).Trim();
+                if (!pairKey.Equals(key, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                value = pair.Substring(eq + 1).Trim();
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -1145,22 +1403,44 @@ namespace Scryber.Components
 
         #endregion
 
+        /// <summary>
+        /// Returns all the components that are in this components hierarchy (including itself) that match the specified pattern (e.g. 'div.boxed > .known')
+        /// </summary>
+        /// <param name="cssPattern">The css selector pattern to match against.</param>
+        /// <returns>An enumerable set of matches or an empty set if nothing matched</returns>
+        public IMatchedEnumerable FindMatches(string cssPattern)
+        {
+            if (string.IsNullOrEmpty(cssPattern))
+                return new MatchedComponentList(cssPattern, null);
+            
+            var matcher = (StyleMatcher)cssPattern;
+            
+            return FindMatches(matcher);
+        }
 
-
-        //
-        // private and protected methods
-        //
-
-        
-
-        #region protected virtual PDFStyle GetAppliedStyle() + public virtual PDFStyle GetAppliedStyle(PDFComponent forComponent)
-
+        /// <summary>
+        /// Returns all the components that are in this components hierarchy (including itself) that the provided matcher returns true for.
+        /// </summary>
+        /// <param name="matcher">The StyleMatcher to use. A StyleMatcher will always return true if the component it is checking should match</param>
+        /// <returns>An enumerable set of matches or an empty set if nothing matched</returns>
+        public MatchedComponentList FindMatches(StyleMatcher matcher)
+        {
+            if(matcher ==  null)
+                throw new ArgumentNullException(nameof(matcher));
+            var all = new  MatchedComponentList(matcher, null);
+            
+            this.DoFindMatches(all, matcher);
+            
+            return all;
+        }
         
         /// <summary>
-        /// Gets the Defined Style for this Component (Style Items that are to be applied directly)
+        /// Gets the Defined Style for this Component. The base (default) style, any style values that are to be applied directly
+        /// and any styles defined within the parent hierarchy. e.g. at the document level).
         /// </summary>
-        /// <returns></returns>
-        public Style GetAppliedStyle()
+        /// <remarks>NOTE: This does not take into account the cascading styles that would be applied based on inheritance in the style stack at layout time.</remarks>
+        /// <returns>A full style description for the component.</returns>
+        public virtual Style GetAppliedStyle()
         {
             if (null == _appliedStyle)
             {
@@ -1171,6 +1451,29 @@ namespace Scryber.Components
             }
             return _appliedStyle;
         }
+        
+        /// <summary>
+        /// Traverses the hierarchy up to the top level to retrieve the defined style for the Component provided
+        /// </summary>
+        /// <param name="forComponent">The Component to get the style for</param>
+        /// <param name="baseStyle"></param>
+        /// <returns>The merged style</returns>
+        public virtual Style GetAppliedStyle(Component forComponent, Style baseStyle)
+        {
+            if (this.Parent != null)
+                return this.Parent.GetAppliedStyle(forComponent, baseStyle);
+            else
+                return baseStyle;
+        }
+        
+        //
+        // private and protected methods
+        //
+
+        
+
+        #region protected virtual PDFStyle GetAppliedStyle() + public virtual PDFStyle GetAppliedStyle(PDFComponent forComponent)
+        
 
         /// <summary>
         /// Merges any explictly declared styles on this component, onto the cacluated applied style
@@ -1193,20 +1496,7 @@ namespace Scryber.Components
         {
             return new Style();
         }
-
-        /// <summary>
-        /// Traverses the hierarchy of Components to retrieve the defined style for the Component provided
-        /// </summary>
-        /// <param name="forComponent">The Component to get the style for</param>
-        /// <param name="baseStyle"></param>
-        /// <returns>The merged style</returns>
-        public virtual Style GetAppliedStyle(Component forComponent, Style baseStyle)
-        {
-            if (this.Parent != null)
-                return this.Parent.GetAppliedStyle(forComponent, baseStyle);
-            else
-                return baseStyle;
-        }
+        
 
         #endregion
 
@@ -1297,7 +1587,9 @@ namespace Scryber.Components
         {
             if (System.Uri.IsWellFormedUriString(path, UriKind.Absolute))
                 return path;
-            
+             
+            if(path.StartsWith(Scryber.Const.ResourcePathTransport))
+                return path;
 
             if (path.IndexOf('\\') > -1 && System.IO.Path.IsPathRooted(path))
                 return path;
@@ -1373,6 +1665,23 @@ namespace Scryber.Components
         }
 
         #endregion
+        
+        #region protected virtual IPDFComponent ParseComponentAtPath(string path)
+
+        /// <summary>
+        /// Parses a pdfx file located at the full path 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        protected virtual async Task<IComponent> ParseComponentAtPathAsync(string path)
+        {
+            if (null == this.Parent)
+                throw RecordAndRaise.NullReference(Errors.ParentDocumentCannotBeNull);
+            else
+                return await this.Parent.ParseComponentAtPathAsync(path);
+        }
+
+        #endregion
 
         #region protected virtual IPDFRemoteComponent GetParsedParent()
 
@@ -1406,16 +1715,27 @@ namespace Scryber.Components
 
         #endregion
 
+        #region protected internal virtual void DoFindMatches(List<Component> found, StyleMatcher matcher)
+        
+        protected internal virtual void DoFindMatches(MatchedComponentList found, StyleMatcher matcher)
+        {
+            if(matcher.IsMatchedTo(this, ComponentState.Normal, out int priority))
+                found.Add(this);
+        }
+        
+        #endregion
+
         #region public void SetArrangement(PDFComponentArrangement arrange) + GetArrangement() + ClearArrangement()
 
 
-        public void SetArrangement(PDFRenderContext context, Style style, Rect contentBounds)
+        public ComponentArrangement SetArrangement(PDFRenderContext context, Style style, Rect borderBounds)
         {
             ComponentMultiArrangement arrange = new ComponentMultiArrangement();
             arrange.PageIndex = context.PageIndex;
-            arrange.RenderBounds = contentBounds;
+            arrange.RenderBounds = borderBounds;
             arrange.FullStyle = style;
-            this.SetArrangement(arrange);
+            this.SetArrangement(arrange, context);
+            return arrange;
         }
         
         
@@ -1423,7 +1743,7 @@ namespace Scryber.Components
         /// Sets an arrangement for this component
         /// </summary>
         /// <param name="arrange"></param>
-        protected virtual void SetArrangement(ComponentArrangement arrange)
+        protected virtual void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
             if (arrange is ComponentMultiArrangement)
             {

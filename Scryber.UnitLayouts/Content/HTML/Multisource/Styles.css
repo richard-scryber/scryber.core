@@ -1,0 +1,373 @@
+@page{
+    size: A4 portrait;
+}
+
+body {
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 0pt;
+    font-family: sans-serif;
+    background-color: #eee;
+}
+
+.mt-1{
+    margin-top: 0.75rem;
+}
+
+.mt-2{
+    margin-top: 1rem;
+}
+
+.mb-1{
+    margin-bottom: 0.75rem;
+}
+
+.mtb-1{
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.new-page{
+    page-break-before: always;
+}
+
+.branding{
+    color: #fff;
+    opacity: 1;
+    position: absolute;
+    left: 20pt;
+    top: 20pt;
+    font-size: 20pt;
+}
+
+.branding-name{
+    padding-left: 2pt;
+}
+
+.pwk-name {
+    font-weight: 800;
+    color: #006b6b;
+    font-family: "Nunito", sans-serif;
+}
+
+.title{
+    background-color: #006b6b;
+    height: 150pt;
+    padding-right: 30pt;
+    color: #ccc;
+    opacity: 0.5;
+    text-align: right;
+    vertical-align: bottom;
+    font-weight: 800;
+    font-size: 60pt;
+    line-height: 20pt;
+    padding-top: 100pt;
+}
+
+.title .cb-type{
+    font-size: 48pt;
+    opacity: 1;
+    color: white;
+    font-family: "Nunito", sans-serif;
+    font-weight: 400;
+}
+
+.sub-title {
+    color: #ffffff;
+    font-family: "Nunito", sans-serif;
+    border-bottom: 2px solid #fff;
+    background-color: #006b6b;
+    margin: 0pt;
+    padding: 10pt 15pt 5pt 10pt;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.sub-title img.logo{
+    width: 28pt;
+    height: 25pt;
+}
+
+.function-group{
+    page-break-before: always;
+}
+
+.sub-title{
+    margin-left: -20pt;
+    margin-right: -10pt;
+}
+
+
+.group-title{
+    font-size: 16pt;
+    font-family: "Nunito", sans-serif;
+    border-bottom: solid 1px #006b6b;
+    font-weight: 800;
+    width: calc(100% - 20pt);
+}
+
+.sub-group{
+    break-inside: avoid;
+}
+
+.sub-group-title{
+    margin-top: 10pt;
+    padding-top:0pt;
+    font-size: 14pt;
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    border-bottom: solid 1pt silver;
+    width: calc(100% - 20pt);
+}
+
+.sub-group-content{
+    font-size: 10pt;
+    margin-left: 10pt;
+    width: calc(100% - 40pt);
+}
+
+.foot-note{
+    font-size: 10pt;
+    font-style: italic;
+}
+
+a{
+    color: #00b6b6;
+}
+
+a.home-link{
+    text-decoration: none;
+    font-size:16pt;
+    color: #ddd;
+    padding-top: 10pt;
+}
+
+a .section-link-content{
+    color: white;
+    text-decoration: none;
+}
+
+p, ul, ol {
+    font-size: 12pt;
+    padding-right: 10pt;
+}
+
+section{
+    padding-left: 20pt;
+    padding-right: 10pt;
+}
+
+section > p, section > table, section > div, section > .group-title, section > pre{
+    margin-left: 0pt;
+}
+
+.centered{
+    text-align: center;
+}
+
+pre.code-block{
+    border: solid 1px #006b6b;
+    padding: 5pt;
+    background-color: #eff;
+    margin-left:10pt;
+    width: calc(100% - 40pt);
+    break-inside: avoid;
+}
+pre.sample-block{
+    border: solid 1px #006b6b;
+    padding: 10pt;
+    margin-left:10pt;
+    font-family: sans-serif;
+    width: calc(100% - 40pt);
+    break-inside: avoid;
+}
+
+pre span.comment{
+    color: green;
+}
+
+table.expressions,
+table.toc,
+table.parameters{
+    width: 90%;
+    margin: 20pt;
+    font-size: 10pt;
+}
+
+table.toc td{
+    border: none;
+    border-bottom: solid 1px white;
+    font-size: 12pt;
+}
+
+table.toc a{
+    text-decoration: none;
+}
+
+table.toc td.pg-num{
+    width:60pt;
+}
+
+table.expressions td {
+    padding: 4pt 4pt;
+    font-size: 10pt;
+}
+
+.cover{
+    position: relative;
+}
+
+table.expressions td,
+table.parameters td{
+    border-width: 0px;
+    border-bottom: 1px solid white;
+}
+
+table.expressions td.invalid{
+    color: red;
+}
+
+table.parameters td.param-name,
+table.parameters td.param-type
+{
+    width: 15%;
+}
+
+table.aside, table.legend{
+    font-size: 10pt;
+    border: solid 1px #aaa;
+}
+
+table.legend{
+    position: absolute;
+    left: -170pt;
+    width: 140pt;
+    top:70pt;
+}
+
+table.aside td,
+table.legend td{
+    border-color: white;
+}
+
+table.aside thead,
+table.legend thead{
+    background-color: #ddd;
+}
+
+.alert{
+    border: solid 0.5pt #444;
+    background-color: #AAAAAA;
+    border-radius: 5pt;
+    margin-right: 20pt;
+    padding: 10pt;
+}
+
+.alert .alert-title{
+    font-size: 12pt;
+    font-weight: 400;
+    margin: 0pt;
+    padding: 0pt;
+    margin-bottom: 4pt;
+    border-bottom: solid 0.5pt #444;
+}
+
+.alert .alert-body{
+    font-size: 10pt;
+    margin: 0pt;
+}
+
+.alert.alert-warning{
+    background-color: #ffc107;
+}
+
+.about {
+    width: 30%;
+    margin-left: 100pt;
+    font-family: 'Nunito';
+}
+
+.about h3{
+    position: relative;
+    color: #00b6b6;
+    font-size: 20pt;
+    margin-bottom: 0pt;
+}
+
+
+.about p{
+    padding-top:0pt;
+    margin-top:0pt;
+    opacity: 0.8;
+}
+
+.history{
+    position: absolute;
+    width: 37%;
+    left: 60%;
+    top: 20pt;
+}
+
+.history table.aside{
+    width: 100%;
+}
+
+.history td.value{
+    width: 60%;
+    background-color: #ddd;
+    text-align: right;
+}
+
+.result{
+    text-align: right;
+    width: 28%;
+    border-left: 1px solid white;
+    background-color: #ddd;
+}
+
+.footnote{
+    font-size: 10pt;
+    font-style: normal;
+}
+
+.seealso-group a.seealso-link{
+    display: inline-block;
+    text-decoration: none;
+    padding: 4pt 8pt;
+    border: solid 1pt #006b6b;
+    border-radius: 4pt;
+    margin-top: 2pt;
+    margin-right: 2pt;
+    background-color: #006b6b;
+    color: white;
+    width: 24%;
+}
+
+#func_index a{
+    color: black;
+    text-decoration: none;
+}
+
+footer{
+    margin: 0px;
+    background-color: #ddd;
+    border-top: 1px solid #006b6b;
+    padding: 10pt 20pt;
+    font-size: 10pt;
+}
+
+footer table.foot{
+    width:100%
+}
+
+footer table.foot td{
+    text-align: center;
+    border: none;
+}
+
+footer table.foot td.first{
+    text-align: left;
+}
+
+footer table.foot td.last{
+    text-align: right;
+}

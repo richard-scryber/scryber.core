@@ -20,18 +20,18 @@ namespace Scryber.Expressive.Functions.Coalesce
 		{
 		}
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
 			this.ValidateParameterCount(parameters, 2, 2);
 
 			object value;
-			IExpression lookup = parameters[1];
+			IExpression lookup = Helpers.Lookups.Resolve(parameters[1], context);
 
 			IExpression each = parameters[0];
 
 			value = each.Evaluate(variables);
 
-			ArrayList all = new ArrayList();
+			ArrayList all = new ResultList();
 			IEnumerable enumerate;
 
 			if(Helpers.Collections.TryIsCollection(value, out enumerate))

@@ -1,0 +1,55 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style type="text/css">
+        body{
+            font-size: 12pt;
+            margin: 10pt;
+            padding: 10pt;
+            border: solid 1px lime;
+            line-height: 15pt;
+        }
+        
+       svg{
+           margin: 30pt;
+           width: 300pt;
+           height: 100pt;
+           display: block;
+           border: solid 1pt silver;
+           background-color: #AAA;
+           font-family: sans-serif;
+       }
+
+        .small {
+            font: italic 13pt sans-serif;
+        }
+        .heavy {
+            font: bold 30pt sans-serif;
+        }
+
+        /* Note that the color of the text is set with the    *
+         * fill property, the color property is for HTML only */
+        .Rrrrr {
+            font: italic 40pt serif;
+            fill: red;
+        }
+        
+    </style>
+</head>
+<body>
+Before the SVG
+<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+    <style>
+       
+    </style>
+
+    <text x="20" y="35" transform="translate" class="small">My</text>
+    <text x="40" y="35" class="heavy">cat</text>
+    <text x="55" dx="0" y="50" class="small">is</text>
+    <text x="65" y="55" class="Rrrrr">Grumpy!</text>
+</svg>
+After the SVG
+</body>
+</html>

@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Functions.Mathematical
 
         public override string Name { get { return "Sign"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 1, 1);
 
@@ -24,9 +24,9 @@ namespace Scryber.Expressive.Functions.Mathematical
                 switch (valueType)
                 {
                     case TypeCode.Decimal:
-                        return Math.Sign(Convert.ToDecimal(value));
+                        return Math.Sign(Convert.ToDecimal(value, context.DecimalCurrentCulture));
                     case TypeCode.Double:
-                        return Math.Sign(Convert.ToDouble(value));
+                        return Math.Sign(Convert.ToDouble(value, context.DecimalCurrentCulture));
                     case TypeCode.Int16:
                         return Math.Sign(Convert.ToInt16(value));
                     case TypeCode.UInt16:
@@ -40,7 +40,7 @@ namespace Scryber.Expressive.Functions.Mathematical
                     case TypeCode.SByte:
                         return Math.Sign(Convert.ToSByte(value));
                     case TypeCode.Single:
-                        return Math.Sign(Convert.ToSingle(value));
+                        return Math.Sign(Convert.ToSingle(value, context.DecimalCurrentCulture));
                     default:
                         break;
                 }

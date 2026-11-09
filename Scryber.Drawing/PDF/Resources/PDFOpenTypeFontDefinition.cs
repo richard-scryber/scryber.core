@@ -197,8 +197,8 @@ namespace Scryber.PDF.Resources
         // string measurement
         //
 
-        private static readonly TypeMeasureOptions WordBreaks = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = true };
-        private static readonly TypeMeasureOptions Default = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = false };
+        private static readonly TypeMeasureOptions WordBreaks = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = true, BreakOnHyphens = true };
+        private static readonly TypeMeasureOptions Default = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = false, BreakOnHyphens = false };
         
         #region public override TypeMeasureOptions GetMeasurementOptions(..)
         
@@ -211,8 +211,8 @@ namespace Scryber.PDF.Resources
 
             if (wordSpace.HasValue || charSpace.HasValue)
                 return new TypeMeasureOptions()
-                    {WordSpacing = wordSpace, CharacterSpacing = charSpace, BreakOnWordBoundaries = wordBoundary};
-            
+                { WordSpacing = wordSpace, CharacterSpacing = charSpace, BreakOnWordBoundaries = wordBoundary, BreakOnHyphens = wordBoundary };
+
             else if (wordBoundary)
                 return WordBreaks;
             else
@@ -327,6 +327,11 @@ namespace Scryber.PDF.Resources
         /// Returns the PDFFontWidths for this font definition
         /// </summary>
         /// <returns></returns>
+        /// <remarks>
+        /// The non-standard, non-Unicode branch returns this definition's OWN widths instance,
+        /// and definitions are cached process-wide, so the returned object is shared between
+        /// concurrently rendering documents. It must stay free of per-call mutable state.
+        /// </remarks>
         public override PDFFontWidths GetWidths()
         {
             if (this.IsStandard)
@@ -456,9 +461,7 @@ namespace Scryber.PDF.Resources
             {
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Debug, "Font Definition", "Rendering the CID map stream with encoding " + this.Widths.Encoding.ToString());
-                else //Temporary to check
-                    context.TraceLog.Add(TraceLevel.Message, "Font Definition", "Rendering the CID map stream with encoding " + this.Widths.Encoding.ToString());
-
+                
                 PDFCompositeFontWidths comp = (PDFCompositeFontWidths)widths;
 
                 PDFObjectRef tounicode = writer.BeginObject();
@@ -484,11 +487,12 @@ namespace Scryber.PDF.Resources
                 writer.WriteLine();
                 writer.WriteRaw("endcodespacerange");
                 writer.WriteLine();
-                writer.WriteRaw(comp.Count.ToString());
+                var offsets = comp.RegisterdGlyphOffsets;
+                writer.WriteRaw(offsets.Count.ToString());
                 writer.WriteRaw(" beginbfrange");
                 writer.WriteLine();
                 int count = 0;
-                foreach (int glyphindex in comp.RegisterdGlyphOffsets)
+                foreach (int glyphindex in offsets)
                 {
                     char ch = comp.GetCharacterForGlyphOffset(glyphindex);
                     string g = "<" + Convert.ToString(glyphindex, 16).PadLeft(4, '0') + ">";

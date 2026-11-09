@@ -1,4 +1,6 @@
-﻿using Scryber.Styles;
+﻿#pragma warning disable CS0618 // Type or member is obsolete for AppliedClass, AppliedID and AppliedState
+
+using Scryber.Styles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
@@ -63,8 +65,8 @@ namespace Scryber.Core.UnitTests.Styles
         //}
         //
         #endregion
-
-
+        
+        
         /// <summary>
         ///A test for PDFStyleDefn Constructor
         ///</summary>
@@ -75,7 +77,9 @@ namespace Scryber.Core.UnitTests.Styles
             StyleDefn target = new StyleDefn();
             Assert.IsNotNull(target);
             Assert.AreEqual(false, target.HasValues);
+
             Assert.IsTrue(string.IsNullOrEmpty(target.AppliedClass));
+
             Assert.IsTrue(string.IsNullOrEmpty(target.AppliedID));
             Assert.IsNull(target.AppliedType);
             Assert.AreEqual(ComponentState.Normal, target.AppliedState);
@@ -313,3 +317,5 @@ namespace Scryber.Core.UnitTests.Styles
         }
     }
 }
+
+#pragma warning restore CS0618 // Type or member is obsolete

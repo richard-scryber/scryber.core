@@ -75,60 +75,61 @@ namespace Scryber.PDF.Graphics
             Rect rect = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
-            pen.SetUpGraphics(this, rect);
-
-            //check to see if we are outputting all sides
-            if (sides == (Sides.Top | Sides.Right | Sides.Left | Sides.Bottom))
-                this.RenderRectangle(x, y, width, height);
-            else
+            if (pen.SetUpGraphics(this, rect))
             {
-                bool recalc = true; //flag to identifiy if the last op moved the cursor to the next correct position
-                
-                if ((sides & Sides.Top) > 0)
-                {
-                    this.RenderLine(x, y, x + width, y);
-                    recalc = false;
-                }
-                else
-                    recalc = true;
 
-                if ((sides & Sides.Right) > 0)
+                //check to see if we are outputting all sides
+                if (sides == (Sides.Top | Sides.Right | Sides.Left | Sides.Bottom))
+                    this.RenderRectangle(x, y, width, height);
+                else
                 {
-                    if (recalc == false)
+                    bool recalc = true; //flag to identifiy if the last op moved the cursor to the next correct position
+
+                    if ((sides & Sides.Top) > 0)
                     {
-                        this.RenderContinuationLine(x + width, y + height);
+                        this.RenderLine(x, y, x + width, y);
+                        recalc = false;
                     }
                     else
+                        recalc = true;
+
+                    if ((sides & Sides.Right) > 0)
                     {
-                        this.RenderLine(x + width, y, x + width, y + height);
+                        if (recalc == false)
+                        {
+                            this.RenderContinuationLine(x + width, y + height);
+                        }
+                        else
+                        {
+                            this.RenderLine(x + width, y, x + width, y + height);
+                        }
+                        recalc = false;
                     }
-                    recalc = false;
-                }
-                else
-                    recalc = true;
-
-                if ((sides & Sides.Bottom) > 0)
-                {
-                    if (recalc == false)
-                        this.RenderContinuationLine(x, y + height);
                     else
-                        this.RenderLine(x + width, y + height, x, y + height);
-                    recalc = false;
-                }
-                else
-                    recalc = true;
+                        recalc = true;
 
-                if ((sides & Sides.Left) > 0)
-                {
-                    if (recalc == false)
-                        this.RenderContinuationLine(x, y);
+                    if ((sides & Sides.Bottom) > 0)
+                    {
+                        if (recalc == false)
+                            this.RenderContinuationLine(x, y + height);
+                        else
+                            this.RenderLine(x + width, y + height, x, y + height);
+                        recalc = false;
+                    }
                     else
-                        this.RenderLine(x, y + height, x, y);
+                        recalc = true;
+
+                    if ((sides & Sides.Left) > 0)
+                    {
+                        if (recalc == false)
+                            this.RenderContinuationLine(x, y);
+                        else
+                            this.RenderLine(x, y + height, x, y);
+                    }
                 }
+                this.RenderStrokePathOp();
+                pen.ReleaseGraphics(this, rect);
             }
-            this.RenderStrokePathOp();
-            pen.ReleaseGraphics(this, rect);
-
             this.RestoreGraphicsState();
         }
 
@@ -182,6 +183,11 @@ namespace Scryber.PDF.Graphics
 
         public void DrawRoundRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
+            this.DrawRoundRectangle(pen, x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
+        }
+
+        public void DrawRoundRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
+        {
             if (pen == null)
                 throw new ArgumentNullException("pen");
 
@@ -189,7 +195,7 @@ namespace Scryber.PDF.Graphics
             Rect bounds = new Rect(x, y, width, height);
 
             pen.SetUpGraphics(this, bounds);
-            this.DoOutputRoundRectangle(x, y, width, height, cornerRadius);
+            this.DoOutputRoundRectangle(x, y, width, height, topLeft, topRight, bottomLeft, bottomRight);
             this.RenderStrokePathOp();
             pen.ReleaseGraphics(this, bounds);
 
@@ -198,15 +204,15 @@ namespace Scryber.PDF.Graphics
 
         public void DrawRoundRectangle(PDFPen pen, Rect rect, Sides sides, Unit cornerRadius)
         {
-            this.DrawRoundRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height, sides, cornerRadius);
-        }
-
-        public void DrawRoundRectangle(PDFPen pen, Point pos, Size size, Sides sides, Unit cornerRadius)
-        {
-            this.DrawRoundRectangle(pen, pos.X, pos.Y, size.Width, size.Height, sides, cornerRadius);
+            this.DrawRoundRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height, sides, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
         }
 
         public void DrawRoundRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit cornerRadius)
+        {
+            this.DrawRoundRectangle(pen, x, y, width, height, sides, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
+        }
+
+        public void DrawRoundRectangle(PDFPen pen, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
         {
             if (pen == null)
                 throw new ArgumentNullException("pen");
@@ -214,10 +220,13 @@ namespace Scryber.PDF.Graphics
             Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
-            pen.SetUpGraphics(this, bounds);
-            this.DoOutputRoundRectangleWithSidesPath(x, y, width, height, cornerRadius, sides);
-            this.RenderStrokePathOp();
-            pen.ReleaseGraphics(this, bounds);
+            if (pen.SetUpGraphics(this, bounds))
+            {
+                this.DoOutputRoundRectangleWithSidesPath(x, y, width, height, sides, topLeft, topRight, bottomLeft, bottomRight);
+                this.RenderStrokePathOp();
+                pen.ReleaseGraphics(this, bounds);
+            }
+
             this.RestoreGraphicsState();
         }
 
@@ -227,33 +236,36 @@ namespace Scryber.PDF.Graphics
 
         public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
-            Rect rect = new Rect(x, y, width, height);
-            this.FillRoundRectangle(brush, rect, cornerRadius);
+            this.FillRoundRectangle(brush, x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, Point pos, Size size, Unit cornerRadius)
-        {
-            Rect r = new Rect(pos, size);
-            this.FillRoundRectangle(brush, r, cornerRadius);
-        }
-
-        public void FillRoundRectangle(PDFBrush brush, Rect rect, Unit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
 
             if (null != brush.UnderBrush)
-                this.FillRoundRectangle(brush.UnderBrush, rect, cornerRadius);
+                this.FillRoundRectangle(brush.UnderBrush, x, y, width, height, topLeft, topRight, bottomLeft, bottomRight);
 
             this.SaveGraphicsState();
-            //PDFRect bounds = new PDFRect(x, y, width, height);
+            Rect rect = new Rect(x, y, width, height);
             
             brush.SetUpGraphics(this, rect);
-            this.DoOutputRoundRectangle(rect.X, rect.Y, rect.Width, rect.Height, cornerRadius);
+            this.DoOutputRoundRectangle(x, y, width, height, topLeft, topRight, bottomLeft, bottomRight);
             this.RenderFillPathOp();
             brush.ReleaseGraphics(this, rect);
 
             this.RestoreGraphicsState();
+        }
+
+        public void FillRoundRectangle(PDFBrush brush, Point pos, Size size, Unit cornerRadius)
+        {
+            this.FillRoundRectangle(brush, pos.X, pos.Y, size.Width, size.Height, cornerRadius);
+        }
+
+        public void FillRoundRectangle(PDFBrush brush, Rect rect, Unit cornerRadius)
+        {
+            this.FillRoundRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height, cornerRadius);
         }
 
         public void FillRoundRectangle(PDFBrush brush, Rect rect, Sides sides, Unit cornerRadius)
@@ -261,23 +273,23 @@ namespace Scryber.PDF.Graphics
             this.FillRoundRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height, sides, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, Point pos, Size size, Sides sides, Unit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit cornerRadius)
         {
-            this.FillRoundRectangle(brush, pos.X, pos.Y, size.Width, size.Height, sides, cornerRadius);
+            this.FillRoundRectangle(brush, x, y, width, height, sides, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
         }
 
-        public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit cornerRadius)
+        public void FillRoundRectangle(PDFBrush brush, Unit x, Unit y, Unit width, Unit height, Sides sides, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
         {
             if (brush == null)
                 throw new ArgumentNullException("brush");
 
             if (null != brush.UnderBrush)
-                this.FillRoundRectangle(brush.UnderBrush, x, y, width, height, sides, cornerRadius);
+                this.FillRoundRectangle(brush.UnderBrush, x, y, width, height, sides, topLeft, topRight, bottomLeft, bottomRight);
 
             Rect bounds = new Rect(x, y, width, height);
             this.SaveGraphicsState();
             brush.SetUpGraphics(this, bounds);
-            this.DoOutputRoundRectangleWithSidesFill(x, y, width, height, cornerRadius, sides);
+            this.DoOutputRoundRectangleWithSidesFill(x, y, width, height, sides, topLeft, topRight, bottomLeft, bottomRight);
             this.RenderFillPathOp();
             brush.ReleaseGraphics(this, bounds);
             this.RestoreGraphicsState();
@@ -285,37 +297,87 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
+        /// <summary>
+        /// Reduces the corner radii, as css does, so that the adjacent radii on any side are never longer than that side.
+        /// </summary>
+        private static void LimitCornerRadii(Unit width, Unit height, ref Unit topLeft, ref Unit topRight, ref Unit bottomLeft, ref Unit bottomRight)
+        {
+            double w = Math.Abs(width.PointsValue);
+            double h = Math.Abs(height.PointsValue);
+            double factor = 1.0;
+
+            double tl = topLeft.PointsValue, tr = topRight.PointsValue, bl = bottomLeft.PointsValue, br = bottomRight.PointsValue;
+
+            if (tl + tr > w && tl + tr > 0) factor = Math.Min(factor, w / (tl + tr));
+            if (bl + br > w && bl + br > 0) factor = Math.Min(factor, w / (bl + br));
+            if (tl + bl > h && tl + bl > 0) factor = Math.Min(factor, h / (tl + bl));
+            if (tr + br > h && tr + br > 0) factor = Math.Min(factor, h / (tr + br));
+
+            if (factor < 1.0)
+            {
+                topLeft = new Unit(tl * factor, PageUnits.Points);
+                topRight = new Unit(tr * factor, PageUnits.Points);
+                bottomLeft = new Unit(bl * factor, PageUnits.Points);
+                bottomRight = new Unit(br * factor, PageUnits.Points);
+            }
+        }
+
         private void DoOutputRoundRectangle(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
-            Unit handleoffset = (Unit)(cornerRadius.PointsValue * CircularityFactor);
-            this.RenderMoveTo(x, y + height - cornerRadius);
+            this.DoOutputRoundRectangle(x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
+        }
+
+        private void DoOutputRoundRectangle(Unit x, Unit y, Unit width, Unit height, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
+        {
+            LimitCornerRadii(width, height, ref topLeft, ref topRight, ref bottomLeft, ref bottomRight);
+            this.RenderMoveTo(x, y + height - bottomLeft);
             //left vertical
-            this.RenderLineTo(x, y + cornerRadius);
+            this.RenderLineTo(x, y + topLeft);
             //topleft arc
-            this.RenderBezierCurveTo(x + cornerRadius, y, x, y + cornerRadius - handleoffset, x + cornerRadius - handleoffset, y);
+            if (topLeft != Unit.Zero)
+            {
+                Unit tlOffset = (Unit)(topLeft.PointsValue * CircularityFactor);
+                this.RenderBezierCurveTo(x + topLeft, y, x, y + topLeft - tlOffset, x + topLeft - tlOffset, y);
+            }
             //top horizontal
-            this.RenderLineTo(x + width - cornerRadius, y);
+            this.RenderLineTo(x + width - topRight, y);
             //topright arc
-            this.RenderBezierCurveTo(x + width, y + cornerRadius, x + width - cornerRadius + handleoffset, y, x + width, y + cornerRadius - handleoffset);
+            if (topRight != Unit.Zero)
+            {
+                Unit trOffset = (Unit)(topRight.PointsValue * CircularityFactor);
+                this.RenderBezierCurveTo(x + width, y + topRight, x + width - topRight + trOffset, y, x + width, y + topRight - trOffset);
+            }
             //right vertical
-            this.RenderLineTo(x + width, y + height - cornerRadius);
+            this.RenderLineTo(x + width, y + height - bottomRight);
             //bottomright arc
-            this.RenderBezierCurveTo(x + width - cornerRadius, y + height, x + width, y + height - cornerRadius + handleoffset, x + width - cornerRadius + handleoffset, y + height);
+            if (bottomRight != Unit.Zero)
+            {
+                Unit brOffset = (Unit)(bottomRight.PointsValue * CircularityFactor);
+                this.RenderBezierCurveTo(x + width - bottomRight, y + height, x + width, y + height - bottomRight + brOffset, x + width - bottomRight + brOffset, y + height);
+            }
             //bottom line
-            this.RenderLineTo(x + cornerRadius, y + height);
+            this.RenderLineTo(x + bottomLeft, y + height);
             //bottom left arc
-            this.RenderBezierCurveTo(x, y + height - cornerRadius, x + cornerRadius - handleoffset, y + height, x, y + height - cornerRadius + handleoffset);
+            if (bottomLeft != Unit.Zero)
+            {
+                Unit blOffset = (Unit)(bottomLeft.PointsValue * CircularityFactor);
+                this.RenderBezierCurveTo(x, y + height - bottomLeft, x + bottomLeft - blOffset, y + height, x, y + height - bottomLeft + blOffset);
+            }
         }
 
         private void DoOutputRoundRectangleWithSidesFill(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius, Sides sides)
         {
-            Unit handleoffset = (Unit)(cornerRadius.PointsValue * CircularityFactor);
-            
+            this.DoOutputRoundRectangleWithSidesFill(x, y, width, height, sides, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
+        }
+
+        private void DoOutputRoundRectangleWithSidesFill(Unit x, Unit y, Unit width, Unit height, Sides sides, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
+        {
+            LimitCornerRadii(width, height, ref topLeft, ref topRight, ref bottomLeft, ref bottomRight);
             //position cursor at left bottom
             if ((sides & Sides.Left) > 0 && (sides & Sides.Bottom) > 0)
             {
                 //if we have a bottom edge then we are going to have an arc
-                this.RenderMoveTo(x, y + height - cornerRadius);
+                this.RenderMoveTo(x, y + height - bottomLeft);
             }
             else
                 this.RenderMoveTo(x, y + height);
@@ -324,9 +386,13 @@ namespace Scryber.PDF.Graphics
             if ((sides & Sides.Left) > 0 && (sides & Sides.Top) > 0)
             {
                 //as we have a left and a top then we have an arc
-                this.RenderLineTo(x, y + cornerRadius);
+                this.RenderLineTo(x, y + topLeft);
                 //top left arc
-                this.RenderBezierCurveTo(x + cornerRadius, y, x, y + cornerRadius - handleoffset, x + cornerRadius - handleoffset, y);
+                if (topLeft != Unit.Zero)
+                {
+                    Unit tlOffset = (Unit)(topLeft.PointsValue * CircularityFactor);
+                    this.RenderBezierCurveTo(x + topLeft, y, x, y + topLeft - tlOffset, x + topLeft - tlOffset, y);
+                }
             }
             else   
                 this.RenderLineTo(x, y);
@@ -335,9 +401,13 @@ namespace Scryber.PDF.Graphics
             if ((sides & Sides.Top) > 0 && (sides & Sides.Right) > 0)
             {
                 //as we have a top and a right then we have an arc
-                this.RenderLineTo(x + width - cornerRadius, y);
+                this.RenderLineTo(x + width - topRight, y);
                 //top right arc
-                this.RenderBezierCurveTo(x + width, y + cornerRadius, x + width - cornerRadius + handleoffset, y, x + width, y + cornerRadius - handleoffset);
+                if (topRight != Unit.Zero)
+                {
+                    Unit trOffset = (Unit)(topRight.PointsValue * CircularityFactor);
+                    this.RenderBezierCurveTo(x + width, y + topRight, x + width - topRight + trOffset, y, x + width, y + topRight - trOffset);
+                }
             }
             else
                 this.RenderLineTo(x + width, y);
@@ -347,9 +417,13 @@ namespace Scryber.PDF.Graphics
             if ((sides & Sides.Right) > 0 && (sides & Sides.Bottom) > 0)
             {
                 //right vertical
-                this.RenderLineTo(x + width, y + height - cornerRadius);
+                this.RenderLineTo(x + width, y + height - bottomRight);
                 //bottomright arc
-                this.RenderBezierCurveTo(x + width - cornerRadius, y + height, x + width, y + height - cornerRadius + handleoffset, x + width - cornerRadius + handleoffset, y + height);
+                if (bottomRight != Unit.Zero)
+                {
+                    Unit brOffset = (Unit)(bottomRight.PointsValue * CircularityFactor);
+                    this.RenderBezierCurveTo(x + width - bottomRight, y + height, x + width, y + height - bottomRight + brOffset, x + width - bottomRight + brOffset, y + height);
+                }
             }
             else
                 this.RenderLineTo(x + width, y + height);
@@ -358,9 +432,13 @@ namespace Scryber.PDF.Graphics
             if ((sides & Sides.Bottom) > 0 && (sides & Sides.Left) > 0)
             {
                 //bottom line
-                this.RenderLineTo(x + cornerRadius, y + height);
+                this.RenderLineTo(x + bottomLeft, y + height);
                 //bottom left arc
-                this.RenderBezierCurveTo(x, y + height - cornerRadius, x + cornerRadius - handleoffset, y + height, x, y + height - cornerRadius + handleoffset);
+                if (bottomLeft != Unit.Zero)
+                {
+                    Unit blOffset = (Unit)(bottomLeft.PointsValue * CircularityFactor);
+                    this.RenderBezierCurveTo(x, y + height - bottomLeft, x + bottomLeft - blOffset, y + height, x, y + height - bottomLeft + blOffset);
+                }
             }
             else
                 this.RenderLineTo(x, y + height);
@@ -369,8 +447,12 @@ namespace Scryber.PDF.Graphics
 
         private void DoOutputRoundRectangleWithSidesPath(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius, Sides sides)
         {
-            Unit handleoffset = (Unit)(cornerRadius.PointsValue * CircularityFactor);
-            
+            this.DoOutputRoundRectangleWithSidesPath(x, y, width, height, sides, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
+        }
+
+        private void DoOutputRoundRectangleWithSidesPath(Unit x, Unit y, Unit width, Unit height, Sides sides, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
+        {
+            LimitCornerRadii(width, height, ref topLeft, ref topRight, ref bottomLeft, ref bottomRight);
             bool requiresmove = false;
 
             if ((sides & Sides.Left) > 0)
@@ -378,13 +460,13 @@ namespace Scryber.PDF.Graphics
                 if ((sides & Sides.Bottom) == 0)
                     this.RenderMoveTo(x, y + height);
                 else
-                    this.RenderMoveTo(x, y + height - cornerRadius);
+                    this.RenderMoveTo(x, y + height - bottomLeft);
 
                 //left vertical
                 if ((sides & Sides.Top) == 0) //no top line so extend full height
                     this.RenderLineTo(x,y);
                 else
-                    this.RenderLineTo(x, y + cornerRadius);
+                    this.RenderLineTo(x, y + topLeft);
             }
             else
                 requiresmove = true;
@@ -396,19 +478,23 @@ namespace Scryber.PDF.Graphics
                     if ((sides & Sides.Left) == 0)//no left side
                         RenderMoveTo(x, y);
                     else
-                        RenderMoveTo(x + cornerRadius, y);
+                        RenderMoveTo(x + topLeft, y);
                 }
                 else
                 {
                     //topleft arc
-                    this.RenderBezierCurveTo(x + cornerRadius, y, x, y + cornerRadius - handleoffset, x + cornerRadius - handleoffset, y);
+                    if (topLeft != Unit.Zero)
+                    {
+                        Unit tlOffset = (Unit)(topLeft.PointsValue * CircularityFactor);
+                        this.RenderBezierCurveTo(x + topLeft, y, x, y + topLeft - tlOffset, x + topLeft - tlOffset, y);
+                    }
                 }
 
                 //top horizontal
                 if ((sides & Sides.Right) == 0)
                     this.RenderLineTo(x + width, y);//no right line so extend full width
                 else
-                    this.RenderLineTo(x + width - cornerRadius, y);
+                    this.RenderLineTo(x + width - topRight, y);
                 requiresmove = false;
             }
             else
@@ -421,19 +507,23 @@ namespace Scryber.PDF.Graphics
                     if ((sides & Sides.Top) == 0)//no top side 
                         RenderMoveTo(x + width, y);//go to the top right corner
                     else
-                        RenderMoveTo(x + width, y + cornerRadius);
+                        RenderMoveTo(x + width, y + topRight);
                 }
                 else
                 {
                     //topright arc
-                    this.RenderBezierCurveTo(x + width, y + cornerRadius, x + width - cornerRadius + handleoffset, y, x + width, y + cornerRadius - handleoffset);
+                    if (topRight != Unit.Zero)
+                    {
+                        Unit trOffset = (Unit)(topRight.PointsValue * CircularityFactor);
+                        this.RenderBezierCurveTo(x + width, y + topRight, x + width - topRight + trOffset, y, x + width, y + topRight - trOffset);
+                    }
                 }
                 
                 //right vertical
                 if ((sides & Sides.Bottom) == 0)
                     this.RenderLineTo(x + width, y + height);//no bottom line so extend to full height
                 else
-                    this.RenderLineTo(x + width, y + height - cornerRadius);
+                    this.RenderLineTo(x + width, y + height - bottomRight);
                 requiresmove = false;
             }
             else
@@ -446,31 +536,36 @@ namespace Scryber.PDF.Graphics
                     if ((sides & Sides.Right) == 0)//no right side
                         RenderMoveTo(x + width, y + height);//go to the bottom left corner
                     else
-                        RenderMoveTo(x + width, y + height - cornerRadius);
+                        RenderMoveTo(x + width, y + height - bottomRight);
                 }
                 else
                 {
                     //bottomright arc
-                    this.RenderBezierCurveTo(x + width - cornerRadius, y + height, x + width, y + height - cornerRadius + handleoffset, x + width - cornerRadius + handleoffset, y + height);
+                    if (bottomRight != Unit.Zero)
+                    {
+                        Unit brOffset = (Unit)(bottomRight.PointsValue * CircularityFactor);
+                        this.RenderBezierCurveTo(x + width - bottomRight, y + height, x + width, y + height - bottomRight + brOffset, x + width - bottomRight + brOffset, y + height);
+                    }
                 }
                 //bottom line
                 if ((sides & Sides.Left) == 0)
                     this.RenderLineTo(x, y + height);
                 else
-                    this.RenderLineTo(x + cornerRadius, y + height);
+                    this.RenderLineTo(x + bottomLeft, y + height);
 
                 //if we have the left and bottom sides we need to connect them
                 if ((sides & Sides.Left) > 0)
                 {
                     //bottom left arc
-                    this.RenderBezierCurveTo(x, y + height - cornerRadius, x + cornerRadius - handleoffset, y + height, x, y + height - cornerRadius + handleoffset);
-
+                    if (bottomLeft != Unit.Zero)
+                    {
+                        Unit blOffset = (Unit)(bottomLeft.PointsValue * CircularityFactor);
+                        this.RenderBezierCurveTo(x, y + height - bottomLeft, x + bottomLeft - blOffset, y + height, x, y + height - bottomLeft + blOffset);
+                    }
                 }
             }
             else
                 requiresmove = true;
-
-            
         }
         
     }

@@ -73,10 +73,10 @@ namespace Scryber.Styles
             base.BeginStyleChange();
         }
 
-        internal protected override PDFPositionOptions DoCreatePositionOptions()
+        internal protected override PDFPositionOptions DoCreatePositionOptions(bool isInPositioned)
         {
             if(null == _pos)
-                _pos = base.DoCreatePositionOptions();
+                _pos = base.DoCreatePositionOptions(isInPositioned);
 
             return _pos;
         }

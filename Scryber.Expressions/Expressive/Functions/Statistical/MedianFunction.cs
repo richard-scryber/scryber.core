@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
@@ -12,7 +13,7 @@ namespace Scryber.Expressive.Functions.Statistical
 
         public override string Name { get { return "Median"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
@@ -21,17 +22,29 @@ namespace Scryber.Expressive.Functions.Statistical
             foreach (var p in parameters)
             {
                 var value = p.Evaluate(variables);
-
-                if (value is IEnumerable enumerable)
+                value = Comparison.ExtractAnyJsonValue(value);
+                if (null == value)
+                {
+                    continue;
+                }
+                if (Collections.TryIsCollection(value, out var enumerable))
                 {
                     foreach (var item in enumerable)
                     {
-                        decimalValues.Add(Convert.ToDecimal(item));
+                        var innerValue = Comparison.ExtractAnyJsonValue(item);
+                        if (null == innerValue)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            decimalValues.Add(Convert.ToDecimal(innerValue, context.DecimalCurrentCulture));
+                        }
                     }
                 }
                 else
                 {
-                    decimalValues.Add(Convert.ToDecimal(value));
+                    decimalValues.Add(Convert.ToDecimal(value, context.DecimalCurrentCulture));
                 }
             }
 

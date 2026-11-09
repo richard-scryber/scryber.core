@@ -38,7 +38,10 @@ namespace Scryber.Styles.Parsing
                 return false;
 
             if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
+            {
+                component.Style.IsSettingImportantValue = reader.IsImportantAttribute;
                 return found.SetStyleValue(parser, component, reader);
+            }
             else
             {
                 if (null != parser && parser.IsLogging)
@@ -63,7 +66,11 @@ namespace Scryber.Styles.Parsing
                     var id = reader.CurrentAttribute;
                     if (reader.ReadNextValue(';', ignoreWhiteSpace: true))
                     {
-                        defn.AddVariable(variable, reader.CurrentTextValue);
+                        if (IsExpression(reader.CurrentTextValue))
+                            AttachVariableBindingExpression(style, variable, reader.CurrentTextValue, context);
+                        else
+                            defn.AddVariable(variable, reader.CurrentTextValue);
+                        
                         return true;
                     }
                 }
@@ -73,7 +80,10 @@ namespace Scryber.Styles.Parsing
                 return false;
             }
             else if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
+            {
+                style.IsSettingImportantValue = reader.IsImportantAttribute;
                 return found.SetStyleValue(style, reader, context);
+            }
             else
             {
                 if (null != context && context.TraceLog.ShouldLog(TraceLevel.Verbose))
@@ -89,11 +99,25 @@ namespace Scryber.Styles.Parsing
         private const string CSSVariableIdentifier = "--";
         private const int CSSVariableIdentifierLength = 2;
 
+        protected bool IsExpression(string value)
+        {
+            return CSSStyleValueParser.StartsWithCSSExpression(value);
+        }
+
+        protected void AttachVariableBindingExpression(Style style, string variable, string value, ContextBase context)
+        {
+            StyleVariableExpression expression = new StyleVariableExpression(variable, value);
+            expression.ValidateExpression();
+            style.DataBinding += expression.BindValue;
+            
+            style.AddVariable(expression);
+        }
+
         protected bool IsVariableName(CSSStyleItemReader reader, out string name)
         {
             if (reader.CurrentAttribute.StartsWith(CSSVariableIdentifier))
             {
-                var queue = new Queue<string>();
+                //var queue = new Queue<string>();
 
                 name = reader.CurrentAttribute;
                 return true;
@@ -117,6 +141,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BorderColor, new CSSBorderColorParser());
             all.Add(CSSStyleItems.BorderWidth, new CSSBorderWidthParser());
             all.Add(CSSStyleItems.BorderRadius, new CSSBorderRadiusParser());
+            all.Add(CSSStyleItems.BorderTopLeftRadius, new CSSBorderTopLeftRadiusParser());
+            all.Add(CSSStyleItems.BorderTopRightRadius, new CSSBorderTopRightRadiusParser());
+            all.Add(CSSStyleItems.BorderBottomLeftRadius, new CSSBorderBottomLeftRadiusParser());
+            all.Add(CSSStyleItems.BorderBottomRightRadius, new CSSBorderBottomRightRadiusParser());
             all.Add(CSSStyleItems.BorderLeft, new CSSBorderLeftParser());
             all.Add(CSSStyleItems.BorderRight, new CSSBorderRightParser());
             all.Add(CSSStyleItems.BorderTop, new CSSBorderTopParser());
@@ -137,7 +165,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BorderTopStyle, new CSSBorderTopStyleParser());
             all.Add(CSSStyleItems.BorderBottomStyle, new CSSBorderBottomStyleParser());
 
-            all.Add(CSSStyleItems.FillColor, new CSSFillColourParser());
+            all.Add(CSSStyleItems.FillColor, new CSSFillColorParser());
 
 
             all.Add(CSSStyleItems.Background, new CSSBackgroundParser());
@@ -165,22 +193,56 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.MarginsTop, new CSSMarginsTopParser());
             all.Add(CSSStyleItems.Margins, new CSSMarginsAllParser());
 
+            all.Add(CSSStyleItems.MarginInlineAll, new CSSMarginsInlineBothParser());
+            all.Add(CSSStyleItems.MarginInlineStart, new CSSMarginsInlineStartParser());
+            all.Add(CSSStyleItems.MarginInlineEnd, new CSSMarginsInlineEndParser());
+
             all.Add(CSSStyleItems.PaddingLeft, new CSSPaddingLeftParser());
             all.Add(CSSStyleItems.PaddingRight, new CSSPaddingRightParser());
             all.Add(CSSStyleItems.PaddingBottom, new CSSPaddingBottomParser());
             all.Add(CSSStyleItems.PaddingTop, new CSSPaddingTopParser());
             all.Add(CSSStyleItems.Padding, new CSSPaddingAllParser());
+            
+            all.Add(CSSStyleItems.PaddingInlineAll, new CSSPaddingInlineBothParser());
+            all.Add(CSSStyleItems.PaddingInlineStart, new CSSPaddingInlineStartParser());
+            all.Add(CSSStyleItems.PaddingInlineEnd, new CSSPaddingInlineEndParser());
+
+            all.Add(CSSStyleItems.MarginBlockAll, new CSSUnitSidesParser(CSSStyleItems.MarginBlockAll, false, StyleKeys.MarginsTopKey, StyleKeys.MarginsBottomKey));
+            all.Add(CSSStyleItems.MarginBlockStart, new CSSThicknessKeyParser(CSSStyleItems.MarginBlockStart, StyleKeys.MarginsTopKey));
+            all.Add(CSSStyleItems.MarginBlockEnd, new CSSThicknessKeyParser(CSSStyleItems.MarginBlockEnd, StyleKeys.MarginsBottomKey));
+            all.Add(CSSStyleItems.PaddingBlockAll, new CSSUnitSidesParser(CSSStyleItems.PaddingBlockAll, false, StyleKeys.PaddingTopKey, StyleKeys.PaddingBottomKey));
+            all.Add(CSSStyleItems.PaddingBlockStart, new CSSThicknessKeyParser(CSSStyleItems.PaddingBlockStart, StyleKeys.PaddingTopKey));
+            all.Add(CSSStyleItems.PaddingBlockEnd, new CSSThicknessKeyParser(CSSStyleItems.PaddingBlockEnd, StyleKeys.PaddingBottomKey));
+
+            all.Add(CSSStyleItems.Inset, new CSSUnitSidesParser(CSSStyleItems.Inset, true, StyleKeys.PositionYKey, StyleKeys.PositionRightKey, StyleKeys.PositionBottomKey, StyleKeys.PositionXKey));
+            all.Add(CSSStyleItems.InsetBlock, new CSSUnitSidesParser(CSSStyleItems.InsetBlock, true, StyleKeys.PositionYKey, StyleKeys.PositionBottomKey));
+            all.Add(CSSStyleItems.InsetBlockStart, new CSSUnitStyleParser(CSSStyleItems.InsetBlockStart, StyleKeys.PositionYKey));
+            all.Add(CSSStyleItems.InsetBlockEnd, new CSSUnitStyleParser(CSSStyleItems.InsetBlockEnd, StyleKeys.PositionBottomKey));
+            all.Add(CSSStyleItems.InsetInline, new CSSUnitSidesParser(CSSStyleItems.InsetInline, true, StyleKeys.PositionXKey, StyleKeys.PositionRightKey));
+            all.Add(CSSStyleItems.InsetInlineStart, new CSSUnitStyleParser(CSSStyleItems.InsetInlineStart, StyleKeys.PositionXKey));
+            all.Add(CSSStyleItems.InsetInlineEnd, new CSSUnitStyleParser(CSSStyleItems.InsetInlineEnd, StyleKeys.PositionRightKey));
+
+            foreach (var ignored in new[] { CSSStyleItems.Cursor, CSSStyleItems.PointerEvents, CSSStyleItems.WillChange, CSSStyleItems.ScrollBehavior, CSSStyleItems.UserSelect, CSSStyleItems.Transition, CSSStyleItems.Animation })
+                all.Add(ignored, new CSSIgnoredValueParser(ignored));
 
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
 
+            all.Add(CSSStyleItems.Columns, new CSSColumnsParser());
             all.Add(CSSStyleItems.ColumnCount, new CSSColumnCountParser());
             all.Add(CSSStyleItems.ColumnWidths, new CSSColumnWidthParser());
             all.Add(CSSStyleItems.ColumnGap, new CSSColumnGapParser());
             all.Add(CSSStyleItems.ColumnSpan, new CSSColumnSpanParser());
-
+            all.Add(CSSStyleItems.ColumnFill, new CSSColumnFillParser());
+            all.Add(CSSStyleItems.ColumnRule, new CSSColumnRuleParser());
+            all.Add(CSSStyleItems.ColumnRuleColor, new CSSColumnRuleColorParser());
+            all.Add(CSSStyleItems.ColumnRuleWidth, new CSSColumnRuleWidthParser());
+            all.Add(CSSStyleItems.ColumnRuleStyle, new CSSColumnRuleLineStyleParser());
+            
             all.Add(CSSStyleItems.Left, new CSSLeftParser());
             all.Add(CSSStyleItems.Top, new CSSTopParser());
             all.Add(CSSStyleItems.Float, new CSSPositionFloatParser());
+            all.Add(CSSStyleItems.Bottom, new CSSBottomParser());
+            all.Add(CSSStyleItems.Right, new CSSRightParser());
 
             all.Add(CSSStyleItems.Width, new CSSWidthParser());
             all.Add(CSSStyleItems.Height, new CSSHeightParser());
@@ -188,18 +250,47 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.MinimumWidth, new CSSMinWidthParser());
             all.Add(CSSStyleItems.MaximumHeight, new CSSMaxHeightParser());
             all.Add(CSSStyleItems.MaximumWidth, new CSSMaxWidthParser());
+            all.Add(CSSStyleItems.AspectRatio, new Typed.CSSAspectRatioParser());
 
             all.Add(CSSStyleItems.TextAlign, new CSSTextAlignParser());
             all.Add(CSSStyleItems.VerticalAlign, new CSSVerticalAlignParser());
 
             all.Add(CSSStyleItems.TextDecoration, new CSSTextDecorationParser());
             all.Add(CSSStyleItems.TextDecorationLine, new CSSTextDecorationParser());
+            all.Add(CSSStyleItems.TextDecorationColor, new CSSTextDecorationColorParser());
+            all.Add(CSSStyleItems.TextDecorationStyle, new CSSTextDecorationStyleParser());
+            all.Add(CSSStyleItems.TextDecorationThickness, new CSSTextDecorationThicknessParser());
             all.Add(CSSStyleItems.LetterSpacing, new CSSLetterSpacingParser());
             all.Add(CSSStyleItems.WordSpacing, new CSSWordSpacingParser());
             all.Add(CSSStyleItems.Hyphenation, new CSSHyphensParser());
+            all.Add(CSSStyleItems.TextTransform, new CSSTextTransformParser());
+            all.Add(CSSStyleItems.TextIndent, new CSSTextIndentParser());
+            all.Add(CSSStyleItems.BoxSizing, new CSSBoxSizingParser());
+            all.Add(CSSStyleItems.WordBreak, new CSSWordBreakParser());
+            all.Add(CSSStyleItems.OverflowWrap, new CSSOverflowWrapParser(CSSStyleItems.OverflowWrap));
+            all.Add(CSSStyleItems.BoxDecorationBreak, new CSSBoxDecorationBreakParser(CSSStyleItems.BoxDecorationBreak));
+            all.Add(CSSStyleItems.BoxDecorationBreakWebkit, new CSSBoxDecorationBreakParser(CSSStyleItems.BoxDecorationBreakWebkit));
+            all.Add(CSSStyleItems.WordWrapAlias, new CSSOverflowWrapParser(CSSStyleItems.WordWrapAlias));
+            all.Add(CSSStyleItems.TextOverflow, new CSSTextOverflowParser());
+            all.Add(CSSStyleItems.BoxShadow, new CSSBoxShadowParser());
+            all.Add(CSSStyleItems.TextShadow, new CSSTextShadowParser());
+            all.Add(CSSStyleItems.Outline, new CSSOutlineParser());
+            all.Add(CSSStyleItems.OutlineColor, new CSSOutlineColorParser());
+            all.Add(CSSStyleItems.OutlineStyle, new CSSOutlineStyleParser());
+            all.Add(CSSStyleItems.OutlineWidth, new CSSOutlineWidthParser());
+            all.Add(CSSStyleItems.OutlineOffset, new CSSOutlineOffsetParser());
+            all.Add(CSSStyleItems.Visibility, new CSSVisibilityParser());
+            all.Add(CSSStyleItems.ObjectFit, new CSSObjectFitParser());
+            all.Add(CSSStyleItems.ObjectPosition, new CSSObjectPositionParser());
+            all.Add(CSSStyleItems.BorderCollapse, new CSSBorderCollapseParser());
+            all.Add(CSSStyleItems.BorderSpacing, new CSSBorderSpacingParser());
+            all.Add(CSSStyleItems.HyphenateLimitChars, new CSSHyphenateLimitsParser());
+            all.Add(CSSStyleItems.HyphenateLimitLength, new CSSHyphenateMinLengthParser());
             all.Add(CSSStyleItems.HyphenationMinBefore, new CSSHyphensMinBeforeParser());
             all.Add(CSSStyleItems.HyphenationMinAfter, new CSSHyphensMinAfterParser());
             all.Add(CSSStyleItems.HyphenationCharAppend, new CSSHyphensCharAppendParser());
+            all.Add(CSSStyleItems.TextAnchorType, new CSSTextAnchorParser());
+            all.Add(CSSStyleItems.DominantBaselineType, new CSSDominantBaselineParser());
 
             all.Add(CSSStyleItems.WhiteSpace, new CSSWhiteSpaceParser());
             all.Add(CSSStyleItems.OverflowX, new CSSOverflowXParser());
@@ -230,11 +321,13 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BreakBefore, new CSSColumnBreakBeforeParser());
 
             all.Add(CSSStyleItems.PositionModeType, new CSSPositionModeParser());
+            all.Add(CSSStyleItems.ZIndex, new Typed.CSSZIndexParser());
 
             all.Add(CSSStyleItems.StrokeColor, new CSSStrokeColorParser());
             all.Add(CSSStyleItems.StrokeOpacity, new CSSStrokeOpacityParser());
             all.Add(CSSStyleItems.StrokeWidth, new CSSStrokeWidthParser());
             all.Add(CSSStyleItems.StrokeDash, new CSSStrokeDashParser());
+            all.Add(CSSStyleItems.StrokeDashOffset, new CSSStrokeDashOffsetParser());
             all.Add(CSSStyleItems.StrokeLineCap, new CSSStrokeLineCapParser());
             all.Add(CSSStyleItems.StrokeLineJoin, new CSSStrokeLineJoinParser());
 
@@ -242,10 +335,53 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.Fill, new CSSFillParser());
 
             all.Add(CSSStyleItems.Transform, new CSSTransformParser());
+            all.Add(CSSStyleItems.TransformOrigin, new CSSTransformOriginParser());
             all.Add(CSSStyleItems.Content, new CSSContentParser());
 
             all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());
             all.Add(CSSStyleItems.CounterIncrement, new CSSCounterIncrementParser());
+            
+            all.Add(CSSStyleItems.PaintOrder, new CSSPaintOrderParser());
+            
+            //TODO: Add all the SVG attributes
+            
+            all.Add(CSSStyleItems.GradientStopColor, new CSSSVGGradientStopColor());
+            all.Add(CSSStyleItems.GradientStopOpacity, new CSSSVGGradientStopOpacity());
+            
+            all.Add(CSSStyleItems.X1Position, new CSSSVGx1Position());
+            all.Add(CSSStyleItems.X2Position, new CSSSVGx2Position());
+            all.Add(CSSStyleItems.Y1Position, new CSSSVGy1Position());
+            all.Add(CSSStyleItems.Y2Position, new CSSSVGy2Position());
+            all.Add(CSSStyleItems.GradientSpreadMode, new CSSSVGLinearGradientSpreadMode());
+
+            all.Add(CSSStyleItems.FlexDirection, new Typed.CSSFlexDirectionParser());
+            all.Add(CSSStyleItems.FlexWrap, new Typed.CSSFlexWrapParser());
+            all.Add(CSSStyleItems.JustifyContent, new Typed.CSSJustifyContentParser());
+            all.Add(CSSStyleItems.AlignItems, new Typed.CSSAlignItemsParser());
+            all.Add(CSSStyleItems.AlignContent, new Typed.CSSAlignContentParser());
+            all.Add(CSSStyleItems.AlignSelf, new Typed.CSSAlignSelfParser());
+            all.Add(CSSStyleItems.Gap, new Typed.CSSGapParser());
+            all.Add(CSSStyleItems.RowGap, new Typed.CSSRowGapParser());
+            all.Add(CSSStyleItems.Flex, new Typed.CSSFlexShorthandParser());
+            all.Add(CSSStyleItems.FlexGrow, new Typed.CSSFlexGrowParser());
+            all.Add(CSSStyleItems.FlexShrink, new Typed.CSSFlexShrinkParser());
+            all.Add(CSSStyleItems.FlexBasis, new Typed.CSSFlexBasisParser());
+            all.Add(CSSStyleItems.Order, new Typed.CSSFlexOrderParser());
+
+            all.Add(CSSStyleItems.GridArea,            new Typed.CSSGridAreaParser());
+            all.Add(CSSStyleItems.GridTemplateColumns, new Typed.CSSGridTemplateColumnsParser());
+            all.Add(CSSStyleItems.GridTemplateRows,    new Typed.CSSGridTemplateRowsParser());
+            all.Add(CSSStyleItems.GridTemplateAreas,   new Typed.CSSGridTemplateAreasParser());
+            all.Add(CSSStyleItems.GridAutoFlow,        new Typed.CSSGridAutoFlowParser());
+            all.Add(CSSStyleItems.GridAutoColumns,     new Typed.CSSGridAutoColumnsParser());
+            all.Add(CSSStyleItems.GridAutoRows,        new Typed.CSSGridAutoRowsParser());
+            all.Add(CSSStyleItems.GridColumn,          new Typed.CSSGridColumnParser());
+            all.Add(CSSStyleItems.GridColumnStart,     new Typed.CSSGridColumnStartParser());
+            all.Add(CSSStyleItems.GridColumnEnd,       new Typed.CSSGridColumnEndParser());
+            all.Add(CSSStyleItems.GridRow,             new Typed.CSSGridRowParser());
+            all.Add(CSSStyleItems.GridRowStart,        new Typed.CSSGridRowStartParser());
+            all.Add(CSSStyleItems.GridRowEnd,          new Typed.CSSGridRowEndParser());
+            all.Add(CSSStyleItems.GridGap,             new Typed.CSSGapParser());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

@@ -26,7 +26,7 @@ namespace Scryber.Styles
     /// To group styles by application with inner styles for components
     /// </summary>
     [PDFParsableComponent("StyleGroup")]
-    public class StyleGroup : StyleBase, IEnumerable<StyleBase>, INamingContainer
+    public class StyleGroup : StyleBase, IEnumerable<StyleBase>, INamingContainer, IBindableComponent
     {
         //
         // properties
@@ -72,6 +72,13 @@ namespace Scryber.Styles
                 this.InnerItems.Owner = value;
             }
         }
+
+        /// <summary>
+        /// If true (default) then the styles in the group will be included in building styles, otherwise they will be ignored;
+        /// </summary>
+        
+        public bool Enabled { get; set; }
+        
 
         #region protected PDFStyleCollection InnerItems
 
@@ -132,10 +139,12 @@ namespace Scryber.Styles
         protected StyleGroup(ObjectType type)
             : base(type)
         {
+            this.Enabled = true;
         }
 
         #endregion
 
+        
         //
         // methods
         //
@@ -199,27 +208,50 @@ namespace Scryber.Styles
         /// <param name="state"></param>
         public override void MergeInto(Style style, IComponent Component)
         {
-            foreach (StyleBase def in this.InnerItems)
-            {
-                def.MergeInto(style, Component);
-            }
+            if (this.Enabled)
+                this.InnerItems.MergeInto(style, Component);
         }
 
         #endregion
 
-        //#region public override PDFStyle MatchClass(string classname)
+        //
+        // databinding
+        //
+        
+        #region public event PDFDataBindEventHandler DataBinding + OnDataBinding(args)
 
-        ///// <summary>
-        ///// Overrides the base implementation to call MatchClass on the inner items of this group
-        ///// </summary>
-        ///// <param name="classname"></param>
-        ///// <returns></returns>
-        //public override PDFStyle MatchClass(string classname)
-        //{
-        //    return this.InnerItems.MatchClass(classname);
-        //}
+        [PDFAttribute("on-databinding")]
+        public event DataBindEventHandler DataBinding;
 
-        //#endregion
+        protected virtual void OnDataBinding(DataContext context)
+        {
+            if (this.DataBinding != null)
+                this.DataBinding(this, new DataBindEventArgs(context));
+        }
+
+        #endregion
+
+        #region public event PDFDataBindEventHandler DataBound + OnDataBound(args)
+
+        [PDFAttribute("on-databound")]
+        public event DataBindEventHandler DataBound;
+
+        protected virtual void OnDataBound(DataContext context)
+        {
+            if (this.DataBound != null)
+                this.DataBound(this, new DataBindEventArgs(context));
+        }
+
+        #endregion
+        
+        
+        public void DataBind(DataContext context)
+        {
+            this.OnDataBinding(context);
+            this.DoDataBind(context, true);
+            this.OnDataBound(context);
+        }
+        
 
         #region protected override void DoDataBind(PDFDataContext context, bool includechildren)
 
@@ -233,11 +265,7 @@ namespace Scryber.Styles
             base.DoDataBind(context, includechildren);
             if (includechildren && this.InnerItems != null && this.InnerItems.Count > 0)
             {
-                foreach (StyleBase sb in this.InnerItems)
-                {
-                    if (sb is IBindableComponent)
-                        ((IBindableComponent)sb).DataBind(context);
-                }
+                this.InnerItems.DataBind(context);
             }
         }
 

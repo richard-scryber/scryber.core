@@ -70,7 +70,7 @@ namespace Scryber
         public const string UniqueIDSeparator = "_";
         
 
-        public static readonly string ScryberProducer = "Scryber PDF Generator " + Utilities.FrameworkHelper.CurrentVersion;
+        public static readonly string ScryberProducer = "Scryber PDF Generator";
         public const string PDFMimeType = "application/pdf";
 
         public const int StreamEncoding = 1252;
@@ -99,6 +99,8 @@ namespace Scryber
         public const string ScryberProcessingInstructions = "scryber";
 
         public const string RootPseudoClass = ":root";
+        
+        public const string ResourcePathTransport = "rsrc://";
 
         //
         // namespace constants

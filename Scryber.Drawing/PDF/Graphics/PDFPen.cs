@@ -144,6 +144,9 @@ namespace Scryber.PDF.Graphics
 
         public static PDFPen Create(PDFBrush brush, Unit width)
         {
+            if(null == brush)
+                throw new ArgumentNullException("brush");
+            
             if (brush.FillStyle == FillType.Solid)
             {
                 PDFSolidBrush solid = (PDFSolidBrush)brush;

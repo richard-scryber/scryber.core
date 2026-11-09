@@ -8,7 +8,7 @@ namespace Scryber.Html
 {
     public static class AllEscapeChars
     {
-        public static string AllKnown = 
+        public static string AllKnown =
 @"™ &#8482;   
 €   &euro;
 ! &#33;   
@@ -106,6 +106,7 @@ z &#122;
 } &#125;   
 ~ &#126;   
 ¡ &#161; &iexcl; 
+• &#8226; &bull; 
 ¢ &#162; &cent; 
 £ &#163; &pound; 
 ¤ &#164; &curren; 
@@ -371,6 +372,6 @@ z &#122;
 Ž &#381;   
 ž &#382;   
 ſ &#383;   
-";
+≤ &#8804; &le;";
     }
 }

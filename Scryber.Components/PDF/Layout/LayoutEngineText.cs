@@ -24,6 +24,7 @@ using Scryber.Styles;
 using Scryber.Text;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
 using Scryber.Components;
 
 namespace Scryber.PDF.Layout
@@ -217,7 +218,6 @@ namespace Scryber.PDF.Layout
         //
         // ctor
         //
-        public static int TextLayoutEngineCount = 0;
 
         #region public PDFTextLayoutEngine(IPDFTextComponent component, IPDFLayoutEngine parent)
 
@@ -227,8 +227,6 @@ namespace Scryber.PDF.Layout
                 throw new ArgumentNullException("component");
             this._txt = component;
             this._par = parent;
-
-            TextLayoutEngineCount++;
         }
 
         #endregion
@@ -256,28 +254,41 @@ namespace Scryber.PDF.Layout
             this._ctx = context;
             this._fullstyle = fullstyle;
 
-            
-            this._posopts = fullstyle.CreatePostionOptions();
+            this._reader = this.TextComponent.CreateReader(context, fullstyle);
+
+            if(null == this._reader)
+            {
+                if (context.ShouldLogDebug)
+                {
+                    if (this.TextComponent is Whitespace)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the whitespace " + this.TextComponent.ID + " as it's reader is null - not preformatted text");
+                    else
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the text component " + this.TextComponent.ID + " as it's reader is null");
+                }
+                //nothing to layout, so return 
+                return;
+            }
+
+
+            this._posopts = fullstyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             this._textopts = fullstyle.CreateTextOptions();
 
-            if (this._posopts.PositionMode == PositionMode.Invisible)
+            if (this._posopts.DisplayMode == DisplayMode.Invisible)
             {
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the text component " + this.TextComponent.ID + " as it is invisible");
                 return;
             }
 
-            this._frsrc = ((Document)this.TextComponent.Document).GetFontResource(this.TextRenderOptions.Font, true);
+            this._frsrc = ((Document)context.Document).GetFontResource(this.TextRenderOptions.Font, true);
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Layout);
 
-            this._reader = this.TextComponent.CreateReader(context, fullstyle);
+            
 
-            if (null != this._reader)
-            {
-                this.ContinueLayout = true;
-                this.DoLayoutText();
-            }
+            this.ContinueLayout = true;
+            this.DoLayoutText();
+            
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Layout);
 
@@ -298,6 +309,7 @@ namespace Scryber.PDF.Layout
 
             Unit lastwidth = Unit.Zero;
             int index = 0;
+            this._atWordStart = this.IsAtWordStartOnCurrentLine();
             while (this.Reader.Read())
             {
                 switch (this.Reader.OpType)
@@ -308,13 +320,16 @@ namespace Scryber.PDF.Layout
 
                     case PDFTextOpType.LineBreak:
                         this.AddHardReturn(lastwidth);
+                        lastwidth = Unit.Zero;
                         break;
 
                     case PDFTextOpType.TextContent:
                         string chars = (this.Reader.Value as PDFTextDrawOp).Characters;
+                        chars = this.ApplyTextTransform(chars);
                         if (index == 0)
                             chars = OptionallyRemoveWhiteSpaceInLayout(chars);
-                        lastwidth = this.AddCharacters(chars);
+                        if (!string.IsNullOrEmpty(chars))
+                            lastwidth = this.AddCharacters(chars);
                         break;
 
                     case PDFTextOpType.Proxy:
@@ -363,15 +378,19 @@ namespace Scryber.PDF.Layout
             var metrics = this.Context.Graphics.GetCurrentFontMetrics();
 
             Unit inset = Unit.Zero;
-            if (line.IsEmpty == false)
+            if (line.HasInlineContent)
                 inset = line.Width;
-            else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.PositionMode != PositionMode.Inline || started))
+            else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.DisplayMode != DisplayMode.Inline || started))
             {
-                inset += this.TextRenderOptions.FirstLineInset.Value;
+                //A negative (hanging) indent is only for the first line, so text that starts after a line break begins at the edge
+                bool afterLineBreak = started && line.Region.Contents.Count > 1;
+                if (this.TextRenderOptions.FirstLineInset.Value > Unit.Zero || !afterLineBreak)
+                    inset += this.TextRenderOptions.FirstLineInset.Value;
 
-                if (inset > 0)
+                //A negative inset also needs the spacer, so the following lines are offset back to the edge of the content
+                if (inset != Unit.Zero)
                 {
-                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null);
+                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null, null);
                     line.AddRun(spacer);
                 }
             }
@@ -391,6 +410,31 @@ namespace Scryber.PDF.Layout
             else if (this.Context.ShouldLogVerbose)
                 this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Laid out text component " + this.TextComponent.ID);
 
+            if ((this.TextRenderOptions.InlinePadding.HasValue &&
+                 this.TextRenderOptions.InlinePadding.Value.Left > Unit.Zero))
+            {
+                var index = this.CurrentLine.Runs.IndexOf(begin);
+                index--;
+                if (index >= 0 && this.CurrentLine.Runs[index] is PDFLayoutInlineBegin)
+                {
+                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.InlinePadding.Value.Left, 0,
+                        this.CurrentLine, this.TextComponent, null);
+                    this.CurrentLine.AddRun(spacer);
+                    //this.CurrentLineInset += spacer.Width;
+                    this.BeginningRun.LineInset += spacer.Width;
+                }
+            }
+            
+            //Check for inline padding on the left and if so add a spacer
+            if(this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Left > Unit.Zero)
+            {
+                var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Left, 0, this.CurrentLine, this.TextComponent, null);
+                this.CurrentLine.AddRun(spacer);
+                //this.CurrentLineInset += spacer.Width;
+                this.BeginningRun.LineInset += spacer.Width;
+            }
+
+            
             return true;
         }
 
@@ -445,9 +489,9 @@ namespace Scryber.PDF.Layout
         /// <param name="w"></param>
         /// <param name="h"></param>
         /// <param name="line"></param>
-        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line)
+        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line, PDFTextRunNewLine newLine)
         {
-            PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent);
+            PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent, newLine);
             line.AddRun(spacer);
             return spacer;
         }
@@ -473,7 +517,7 @@ namespace Scryber.PDF.Layout
             this.AssertCurrentLine();
             PDFLayoutLine line = this.CurrentLine;
             
-            PDFTextRunNewLine br = new PDFTextRunNewLine(false, line, this.TextRenderOptions, this.TextComponent);
+            PDFTextRunNewLine br = new PDFTextRunNewLine(hardReturn, line, this.TextRenderOptions, this.TextComponent);
 
 
             
@@ -485,12 +529,12 @@ namespace Scryber.PDF.Layout
             
             Unit back = line.Width - lineright;
 
-            //Previous - 27 Feb 2015
-            //br.Offset = new PDFSize(back, line.Height);
 
-            //Updated
-            if (line.Height == Unit.Zero) //Empty line
-                line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
+            if (line.Height == Unit.Zero && line.Runs.Count > 0) //Empty line
+            {
+                line.Runs.Insert(line.Runs.Count - 1, new PDFTextRunSpacer(0, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent,
+                    null));
+            }
 
             if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
                 br.NewLineOffset = new Size(back, this.TextRenderOptions.Leading.Value);
@@ -509,16 +553,20 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutRegion reg = line.Region;
             reg.CloseCurrentItem();
-            line = reg.BeginNewLine();
+            line = reg.BeginNewLine(this.TextRenderOptions.Leading.HasValue ? this.TextRenderOptions.Leading.Value.PointsValue : this.TextRenderOptions.Font.Size.PointsValue * 1.2);
             this.BeginningRun.Lines.Add(line);
 
             Unit inset;
             if (hardReturn)
+            {
                 inset = this.TextRenderOptions.GetFirstLineInset();
+                if (inset < Unit.Zero) //a negative (hanging) indent is only for the first line, so the line after a return starts at the edge
+                    inset = Unit.Zero;
+            }
             else
                 inset = Unit.Zero;
 
-            PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line);
+            PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line, br);
             br.NextLineSpacer = spacer;
             this.CurrentLine = line;
             this.CurrentLineInset = inset;
@@ -613,14 +661,83 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public static char[] WhiteSpaceChars = new char[] { ' ', '\r', '\n', '\t', '\x00a0', '\x0085' };
+
+        //Tracks if the previous character was whitespace across text operations, for capitalizing words.
+        private bool _atWordStart = true;
+
+        /// <summary>
+        /// Applies the text-transform of the text options to the characters. 
+        /// </summary>
+        private string ApplyTextTransform(string chars)
+        {
+            if (string.IsNullOrEmpty(chars))
+                return chars;
+
+            switch (this.TextRenderOptions.TextTransform)
+            {
+                case Scryber.Text.TextTransform.Uppercase:
+                    return chars.ToUpperInvariant();
+
+                case Scryber.Text.TextTransform.Lowercase:
+                    return chars.ToLowerInvariant();
+
+                case Scryber.Text.TextTransform.Capitalize:
+                    var builder = new System.Text.StringBuilder(chars.Length);
+                    foreach (var c in chars)
+                    {
+                        if (char.IsWhiteSpace(c))
+                        {
+                            this._atWordStart = true;
+                            builder.Append(c);
+                        }
+                        else if (this._atWordStart)
+                        {
+                            builder.Append(char.ToUpperInvariant(c));
+                            this._atWordStart = false;
+                        }
+                        else
+                            builder.Append(c);
+                    }
+                    return builder.ToString();
+
+                default:
+                    return chars;
+            }
+        }
+
+        /// <summary>
+        /// Checks the previous text on the current line, so a word continues across inline elements (e.g. for capitalize)
+        /// </summary>
+        private bool IsAtWordStartOnCurrentLine()
+        {
+            if (this.TextRenderOptions.TextTransform != Scryber.Text.TextTransform.Capitalize || null == this.CurrentLine)
+                return true;
+
+            for (var i = this.CurrentLine.Runs.Count - 1; i >= 0; i--)
+            {
+                if (this.CurrentLine.Runs[i] is PDFTextRunCharacter chars && !string.IsNullOrEmpty(chars.Characters))
+                    return char.IsWhiteSpace(chars.Characters[chars.Characters.Length - 1]);
+            }
+            return true;
+        }
+
         private string OptionallyRemoveWhiteSpaceInLayout(string chars)
         {
-            if (this.CurrentLine != null &&
-                (this.CurrentLine.IsEmpty || this.CurrentLine.IsClosed || this.CurrentLine.Runs.Count < 2)) //no runs or just a begin text
+            if (this.CurrentLine != null)
             {
-                if (char.IsWhiteSpace(chars, 0))
-                    chars = chars.TrimStart(PDFXMLFragmentParser.WhiteSpace);
+                if (this.CurrentLine.Runs.Count < 2) //no runs or just a begin text
+                {
+                    if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
+                        chars = chars.TrimStart(WhiteSpaceChars);
+                }
+                else if (this.CurrentLine.Runs.Count == 2 && this.CurrentLine.Runs[0] is PDFLayoutInlineBegin && this.CurrentLine.Runs[1] is PDFTextRunBegin)
+                {
+                    if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
+                        chars = chars.TrimStart(WhiteSpaceChars);
+                }
             }
+
             return chars;
         }
 
@@ -648,6 +765,115 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region text-overflow
+
+        //The width used when measuring text that does not wrap (as in the graphics measuring)
+        private const double UnboundedLineWidth = 500000;
+
+        /// <summary>
+        /// Returns true if the text does not wrap and needs to be cut to fit the line. That is if there is overflow text (e.g. an ellipsis)
+        /// and the block hides its overflow (overflow: hidden or clip), or the block truncates its overflow (overflow: hidden),
+        /// where the text is cut back to the last word that fits, as lines that overflow vertically are removed.
+        /// </summary>
+        private bool ShouldReplaceOverflowedText()
+        {
+            if (this.TextRenderOptions.WrapText != WordWrap.NoWrap)
+                return false;
+
+            var block = this.CurrentLine.Region.GetParentBlock();
+            if (null == block)
+                return false;
+
+            var action = block.Position.OverflowAction;
+            if (string.IsNullOrEmpty(this.TextRenderOptions.OverflowText))
+                return action == OverflowAction.Truncate;
+            else
+                return action == OverflowAction.Clip || action == OverflowAction.Truncate;
+        }
+
+        /// <summary>
+        /// If the characters are wider than the space available on the line, then they are shortened and the overflow text added instead.
+        /// Returns false if they fit (or there is not a known width), so should be laid out as normal.
+        /// </summary>
+        private bool TryAddCharactersWithOverflowText(string chars, out Unit width)
+        {
+            width = Unit.Zero;
+
+            PDFLayoutLine line = this.CurrentLine;
+            Unit availW = line.AvailableWidth;
+            Unit availH = line.Region.AvailableHeight;
+            Unit lineheight = this.TextRenderOptions.GetLineHeight();
+
+            if (availH < lineheight)
+                availH = lineheight;
+
+            //an unbounded line (e.g. an inline block without a width) cannot overflow
+            if (availW.PointsValue <= 0 || availW.PointsValue >= UnboundedLineWidth / 2)
+                return false;
+
+            var measured = this.MeasureString(availH, availW, chars, 0, out int allFitted, out char? appendChar);
+            if (measured.Width <= availW)
+                return false;
+
+            var overflow = this.TextRenderOptions.OverflowText;
+
+            if (string.IsNullOrEmpty(overflow))
+                return this.AddCharactersToLastFittingWord(chars, availW, availH, lineheight, out width);
+
+            var overflowWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), overflow, 0, out int overflowFitted, out char? overflowAppend).Width;
+
+            string final;
+            if (overflowWidth > availW)
+            {
+                //not even the overflow text will fit
+                return true; //nothing is added
+            }
+
+            //measure how many characters fit in the space less the overflow text, allowing a split at any character
+            var options = this.TextRenderOptions.Clone();
+            options.WrapText = WordWrap.Character;
+            options.HyphenationStrategy = new PDFHyphenationStrategy(null, null, 1, 1, 1);
+
+            var target = availW - overflowWidth;
+            int fitted = 0;
+            if (target > Unit.Zero)
+                this.Context.Graphics.MeasureString(chars, 0, new Size(target, availH), options, out fitted, out char? ignored);
+
+            final = fitted > 0 ? chars.Substring(0, fitted).TrimEnd() + overflow : overflow;
+
+            var finalWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), final, 0, out int finalFitted, out char? finalAppend).Width;
+            this.AddCharactersToCurrentLine(new Size(finalWidth, lineheight), final);
+            width = finalWidth;
+            return true;
+        }
+
+        /// <summary>
+        /// Adds the characters up to the last word that fits on the line, dropping the rest (as for overflow: hidden).
+        /// If the first word is wider than the line, it is cut at the last character that fits, as a wrapping line would be.
+        /// </summary>
+        private bool AddCharactersToLastFittingWord(string chars, Unit availW, Unit availH, Unit lineheight, out Unit width)
+        {
+            var options = this.TextRenderOptions.Clone();
+            options.WrapText = WordWrap.Word;
+            options.HyphenationStrategy = null;
+
+            int fitted = 0;
+            this.Context.Graphics.MeasureString(chars, 0, new Size(availW, availH), options, out fitted, out char? ignored);
+
+            var final = fitted > 0 ? chars.Substring(0, fitted).TrimEnd() : string.Empty;
+            width = Unit.Zero;
+
+            if (final.Length > 0)
+            {
+                var finalWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), final, 0, out int finalFitted, out char? finalAppend).Width;
+                this.AddCharactersToCurrentLine(new Size(finalWidth, lineheight), final);
+                width = finalWidth;
+            }
+            return true;
+        }
+
+        #endregion
+
         #region protected virtual PDFUnit AddCharacters(string chars)
 
         /// <summary>
@@ -656,7 +882,10 @@ namespace Scryber.PDF.Layout
         protected virtual Unit AddCharacters(string chars)
         {
             this.AssertCurrentLine();
-           
+
+            //Text that does not wrap, in a block that clips, can have the end replaced with an ellipsis (text-overflow)
+            if (this.ShouldReplaceOverflowedText() && this.TryAddCharactersWithOverflowText(chars, out Unit overflowWidth))
+                return overflowWidth;
 
             Unit lineheight = this.TextRenderOptions.GetLineHeight();
             int offset = 0;
@@ -688,6 +917,9 @@ namespace Scryber.PDF.Layout
                             reg = line.Region;
                             availW = line.AvailableWidth;
                             availH = reg.AvailableHeight;
+
+                            if (availH < Unit.Zero)
+                                availH = lineheight;
                         }
                     }
                     else
@@ -733,6 +965,30 @@ namespace Scryber.PDF.Layout
                     this.AddSoftReturn(0);
                     if (!zeros.AssertIncrement(this.Context))
                         return Unit.Zero;
+                    
+                    if(char.IsWhiteSpace(chars, 0))
+                        chars = chars.TrimStart();
+                }
+                else if (ShouldKeepWordWhole(chars, offset, fitted, appendChar)) //a word longer than the line overflows it
+                {
+                    zeros.Reset();
+
+                    int end = offset + fitted;
+                    while (end < chars.Length && !char.IsWhiteSpace(chars, end))
+                        end++;
+
+                    string word = chars.Substring(offset, end - offset);
+                    measured = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), word, 0, out int wordFitted, out char? wordAppend);
+                    required = new Size(measured.Width, lineheight);
+
+                    this.AddCharactersToCurrentLine(required, word);
+                    offset = end;
+
+                    while (offset < chars.Length && char.IsWhiteSpace(chars, offset))
+                        offset++;
+
+                    if (offset < chars.Length)
+                        this.AddSoftReturn(measured.Width);
                 }
                 else //partial fit
                 {
@@ -744,13 +1000,17 @@ namespace Scryber.PDF.Layout
 
                     this.AddCharactersToCurrentLine(required, partial);
                     //this.AddCharactersToCurrentLine(required, chars, offset, fitted);
-                    this.AddSoftReturn(measured.Width);
+                    
                     offset += fitted;
 
                     //Consume any white space as we are now on a new line.
                     //We should never get here for NoWrap as it will alywys fit all characters one one line.
                     while (offset < chars.Length && char.IsWhiteSpace(chars, offset))
                         offset++;
+
+                    if (offset < chars.Length)
+                        this.AddSoftReturn(measured.Width);
+
                 }
             }
             return required.Width;
@@ -764,17 +1024,30 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool IsInClippedRegion()
         {
+            if (_cachedIsInClipped.HasValue)
+                return _cachedIsInClipped.Value;
+            
+            var isInClipped = false;
+            
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
-                if (block.Position.OverflowAction == OverflowAction.Clip
+                if ((block.Position.OverflowAction == OverflowAction.Clip || block.Position.OverflowAction == OverflowAction.Visible)
                     && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
-                    return true;
+                {
+                    isInClipped = true;
+                    break;
+                }
 
                 block = block.GetParentBlock();
             }
-            return false;
+
+            _cachedIsInClipped = isInClipped;
+            return isInClipped;
         }
+
+        private bool? _cachedIsPositioned;
+        private bool? _cachedIsInClipped;
 
         /// <summary>
         /// Returns true if we are laying out text in the last column of an absolute or relatively positioned block. This means we do not overflow
@@ -782,16 +1055,31 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool IsInAbsoluteOrRelativeRegion()
         {
+            if (_cachedIsPositioned.HasValue)
+                return _cachedIsPositioned.Value;
+            
+            var ispositioned = false;
+            
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
-                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Relative)
-                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
-                    return true;
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed))
+                    //&& block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    ispositioned = true;
+                    break;
+                }
+                else if (block.Position.DisplayMode == DisplayMode.InlineBlock)
+                {
+                    ispositioned = true;
+                    break;
+                }
 
                 block = block.GetParentBlock();
             }
-            return false;
+
+            _cachedIsPositioned = ispositioned;
+            return ispositioned;
         }
 
         #region private bool CanSplitOnWordsOnly()
@@ -814,10 +1102,32 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        /// <summary>
+        /// Returns true if the fitted characters would break the first word on an empty line, and the word should
+        /// instead be kept whole and overflow the line - as overflow-wrap is normal and the text does not break on characters or hyphenate.
+        /// </summary>
+        private bool ShouldKeepWordWhole(string chars, int start, int count, char? appendChar)
+        {
+            if (appendChar.HasValue || count <= 0 || start + count >= chars.Length)
+                return false;
+
+            var wrap = this.TextRenderOptions.OverflowWrap;
+            if (wrap.HasValue && wrap.Value != OverflowWrap.Normal)
+                return false;
+
+            if (!CanSplitOnWordsOnly())
+                return false;
+
+            if (char.IsWhiteSpace(chars, start + count) || char.IsWhiteSpace(chars, start + count - 1) || chars[start + count - 1] == '-')
+                return false;
+
+            return IsEmptyLine();
+        }
+
         #region private bool IsBrokenInWord(string chars, int start, int count)
 
         /// <summary>
-        /// Checks to see if the fitted string is a split inside a word, rather than at a word boundary.
+        /// Checks to see if the fitted string is a split inside a word, rather than at a word boundary (or hyphen).
         /// </summary>
         /// <param name="chars"></param>
         /// <param name="start"></param>
@@ -829,7 +1139,9 @@ namespace Scryber.PDF.Layout
                 return false;
             else if (char.IsWhiteSpace(chars, start + count - 1))
                 return false;
-            else if (this.CurrentLine.IsEmpty == false)
+            else if (chars[start + count - 1] == '-') //broken just after a hyphen is allowed
+                return false;
+            else if (this.CurrentLine.HasInlineContent)
                 return true;
             else
                 return false;
@@ -846,7 +1158,7 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private bool IsEmptyLine()
         {
-            if (this.CurrentLine.IsEmpty)
+            if (this.CurrentLine.HasInlineContent == false)
                 return true;
             else
             {
@@ -951,6 +1263,27 @@ namespace Scryber.PDF.Layout
             {
                 this.AssertCurrentLine();
 
+                if ((this.TextRenderOptions.InlinePadding.HasValue &&
+                     this.TextRenderOptions.InlinePadding.Value.Right > Unit.Zero))
+                {
+                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.InlinePadding.Value.Right, 0,
+                            this.CurrentLine, this.TextComponent, null);
+                    this.CurrentLine.AddRun(spacer);
+                    
+                    //this.CurrentLineInset += spacer.Width;
+                    //this.BeginningRun.LineInset += spacer.Width;
+                }
+                
+                if (this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Right > Unit.Zero)
+                {
+                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Right, 0, this.CurrentLine, this.TextComponent, null);
+                    this.CurrentLine.AddRun(spacer);
+                    //this.CurrentLineInset += spacer.Width;
+                    //this.BeginningRun.LineInset += spacer.Width;
+                }
+                
+               
+
                 PDFTextRunEnd end = new PDFTextRunEnd(this.BeginningRun, this.CurrentLine, this.TextComponent);
                 this.CurrentLine.AddRun(end);
             }
@@ -984,7 +1317,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutLine lastline = this.CurrentLine;
 
-            this.EndText(); //Always end this block of text
+            
 
             bool newPage;
             PDFLayoutRegion origRegion = lastline.Region;
@@ -997,13 +1330,19 @@ namespace Scryber.PDF.Layout
 
             else if (IsInAbsoluteOrRelativeRegion())
             {
-                if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
-                    this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full inside a relative or absolute region - they do not overflow.");
+                //if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
+                //    this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full inside a relative or absolute region - they do not overflow.");
 
-                this.ContinueLayout = false;
+                this.ContinueLayout = true;
+                return;
             }
-            else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
+            
+            this.EndText(); //Always end this block of text
+            
+            if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
+                
+                
                 if (!this.StartText())
                     return;
             }
@@ -1042,7 +1381,7 @@ namespace Scryber.PDF.Layout
         {
             var currblock = this.Context.DocumentLayout.CurrentPage.CurrentBlock.LastOpenBlock();
 
-            if (currblock.Position.PositionMode == PositionMode.Relative)
+            if (currblock.Position.PositionMode == PositionMode.Absolute || currblock.Position.PositionMode == PositionMode.Fixed)
                 return false;
 
             if (null != currblock && null != currblock.CurrentRegion && region == currblock.CurrentRegion)
@@ -1056,7 +1395,7 @@ namespace Scryber.PDF.Layout
             if (null == line) //It's a block not a line
                 return false;
 
-            else if (line.IsEmpty) //empty so true
+            else if (line.HasInlineContent == false) //empty so true
                 return true;
 
             if (line.Runs.Count != 2)

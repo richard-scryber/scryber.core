@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Functions.Conversion
 
         public override string Name => "Double";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 1, 1);
 
@@ -18,8 +18,11 @@ namespace Scryber.Expressive.Functions.Conversion
 
             // No point converting if there is nothing to convert.
             if (objectToConvert is null) { return null; }
+            
+            else if (objectToConvert is DateTime dt)
+                return (double)dt.Ticks / TimeSpan.TicksPerMillisecond; 
 
-            return Convert.ToDouble(objectToConvert, context.CurrentCulture);
+            return Convert.ToDouble(objectToConvert, context.DecimalCurrentCulture);
         }
 
         #endregion

@@ -37,7 +37,19 @@ namespace Scryber.Binding
                     }
                     else if (value is IConvertible)
                     {
-                        value = (value as IConvertible).ToType(toProperty.PropertyType, null);
+                        if (toProperty.PropertyType.IsEnum)
+                        {
+                            var enumType = toProperty.PropertyType;
+                            
+                            if (value is string strValue)
+                            {
+                                value = Enum.Parse(toProperty.PropertyType, strValue, true);
+                            }
+                            else 
+                                value = (value as IConvertible).ToType(toProperty.PropertyType, null);
+                        }
+                        else
+                            value = (value as IConvertible).ToType(toProperty.PropertyType, null);
                     }
 
                     toProperty.SetValue(owner, value, null);

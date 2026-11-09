@@ -24,6 +24,7 @@ using Scryber.Logging;
 
 namespace Scryber.Text
 {
+    [Obsolete("No longer used for parsiing", true)]
     public class PDFXMLFragmentReader : Scryber.Text.PDFTextReader
     {
 

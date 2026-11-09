@@ -14,28 +14,43 @@ namespace Scryber.PDF.Layout
         public FloatMode Mode { get; private set; }
 
         public Unit FloatWidth, FloatHeight, FloatInset, YOffset;
-        public PDFFloatAddition Prev;
+        
+        public PDFFloatAddition Next { get; set; }
+        
+        public PDFLayoutPositionedRegion AssociatedRegion { get; set; }
 
 
         public int Count
         {
             get
             {
-                if (null != Prev)
-                    return 1 + Prev.Count;
+                if (null != Next)
+                    return 1 + Next.Count;
                 else
                     return 1;
             }
         }
 
-        public PDFFloatAddition(FloatMode mode, Unit floatWidth, Unit floatheight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
+        public PDFFloatAddition(FloatMode mode, Unit floatWidth, Unit floatheight, Unit floatInset, Unit yoffset, PDFLayoutPositionedRegion associatedRegion)
         {
             this.Mode = mode;
             this.FloatWidth = floatWidth;
             this.FloatHeight = floatheight;
             this.FloatInset = floatInset;
             this.YOffset = yoffset;
-            this.Prev = prev;
+            this.AssociatedRegion = associatedRegion;
+        }
+
+        public void AppendFloat(PDFFloatAddition floating)
+        {
+            if (null == this.Next)
+            {
+                this.Next = floating;
+            }
+            else
+            {
+                this.Next.AppendFloat(floating);
+            }
         }
 
         /// <summary>
@@ -46,11 +61,11 @@ namespace Scryber.PDF.Layout
         /// <param name="yoffset"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public Unit ApplyWidthInset(Unit available, Unit yoffset, Unit height)
+        public Unit ApplyWidthInset(Unit available, Unit yoffset, Unit height, out Unit leftOffset)
         {
             Unit inset = Unit.Zero;
 
-            var leftOffset = this.GetLeftOffset(0, yoffset, height);
+            leftOffset = this.GetLeftOffset(0, yoffset, height);
             var rightInset = this.GetRightInset(0, yoffset, height);
 
             available -= (leftOffset + rightInset);
@@ -68,9 +83,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         public virtual Unit GetLeftOffset(Unit xoffset, Unit yoffset, Unit height)
         {
-            if (null != this.Prev)
+            if (null != this.Next)
             {
-                xoffset = this.Prev.GetLeftOffset(xoffset, yoffset, height);
+                xoffset = this.Next.GetLeftOffset(xoffset, yoffset, height);
             }
 
             return xoffset;
@@ -78,9 +93,9 @@ namespace Scryber.PDF.Layout
 
         public virtual Unit GetRightInset(Unit xoffset, Unit yoffset, Unit height)
         {
-            if (null != this.Prev)
+            if (null != this.Next)
             {
-                xoffset = this.Prev.GetRightInset(xoffset, yoffset, height);
+                xoffset = this.Next.GetRightInset(xoffset, yoffset, height);
             }
 
             return xoffset;
@@ -97,8 +112,8 @@ namespace Scryber.PDF.Layout
 
     public class PDFFloatLeftAddition : PDFFloatAddition
     {
-        public PDFFloatLeftAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
-            : base(FloatMode.Left, floatWidth, floatHeight, floatInset, yoffset, prev)
+        public PDFFloatLeftAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFLayoutPositionedRegion associatedRegion)
+            : base(FloatMode.Left, floatWidth, floatHeight, floatInset, yoffset, associatedRegion)
         {
         }
 
@@ -115,8 +130,8 @@ namespace Scryber.PDF.Layout
 
     public class PDFFloatRightAddition : PDFFloatAddition
     {
-        public PDFFloatRightAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFFloatAddition prev)
-            : base(FloatMode.Right, floatWidth, floatHeight, floatInset, yoffset, prev)
+        public PDFFloatRightAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFLayoutPositionedRegion associatedRegion)
+            : base(FloatMode.Right, floatWidth, floatHeight, floatInset, yoffset, associatedRegion)
         {
         }
 

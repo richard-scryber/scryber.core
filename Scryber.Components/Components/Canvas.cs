@@ -55,6 +55,7 @@ namespace Scryber.Components
         {
             Style style = base.GetBaseStyle();
             style.Overflow.Action = Drawing.OverflowAction.Clip;
+            style.Position.PositionMode = PositionMode.Relative;
             return style;
         }
 

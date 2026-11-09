@@ -18,15 +18,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber.Html.Components;
 
 namespace Scryber.PDF.Layout
 {
-    public class LayoutEngineTable : LayoutEngineBase
+    public partial class LayoutEngineTable : LayoutEngineBase
     {
         private const string TableEngineLogCategory = "Table Layout Engine 3";
 
@@ -34,10 +36,23 @@ namespace Scryber.PDF.Layout
         private CellDimension[] _widths;
         private CellDimension[] _heights;
         private Style[] _rowfullstyles, _rowappliedstyles;
-        private Style[,] _cellfullstyles, _cellappliedstyles;
+
+        /// <summary>
+        /// A grid of cell references that maps to the table structure, including content cells and empty cells that are occupied by rowspans and colspans. This is used to track the layout of cells and ensure proper handling of spanned cells.
+        /// </summary>
+        private CellContentReference[,] _cellContents;
         private TableReference _tblRef;
         private PDFLayoutBlock _rowblock;
         private int _rowIndex = -1;
+
+        /// <summary>
+        /// The colgroup/col definitions found as direct children of the table, in document order, each
+        /// with its ColumnOffset already assigned. Lazily built once per table layout by
+        /// GetColumnDefinitions(). Null-checked via a separate "built" flag because an empty list is a
+        /// valid (and common) result for a table with no colgroup/col content.
+        /// </summary>
+        private List<HTMLColBase> _columnDefinitions;
+        private bool _columnDefinitionsBuilt;
 
         Unit _rowOffset = Unit.Zero;
 
@@ -47,10 +62,12 @@ namespace Scryber.PDF.Layout
         }
 
 
-        private TableReference AllCells
+        protected TableReference AllCells
         {
             get { return _tblRef; }
         }
+        
+        protected bool IsInNotSplittingBlock { get; set; }
 
         public LayoutEngineTable(TableGrid table, IPDFLayoutEngine parent)
             : base(table, parent)
@@ -71,21 +88,65 @@ namespace Scryber.PDF.Layout
                 if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                     this.CurrentBlock.CurrentRegion.CloseCurrentItem();
 
-                PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions();
+                this.IsInNotSplittingBlock = !this.CanOverflowFromCurrentRegion(this.CurrentBlock.CurrentRegion);
+
+                PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
                 //fix for width - if we have an explicit width, then we should fill it.
                 if (tablepos.Width.HasValue)
                     tablepos.FillWidth = true;
 
+                if (this.IsInNotSplittingBlock == false && (tablepos.Height.HasValue || tablepos.MinimumHeight.HasValue))
+                {
+                    var required = Unit.Zero;
+                    if (tablepos.MinimumHeight.HasValue)
+                        required = tablepos.MinimumHeight.Value;
+                    if(tablepos.Height.HasValue && tablepos.Height.Value > required)
+                        required = tablepos.Height.Value;
+                    
+                    //Let's look at this.
+                    var availableH = this.CurrentBlock.CurrentRegion.AvailableHeight;
+
+                    if (availableH < required)
+                    {
+                        var newRegion = this.CurrentBlock.CurrentRegion;
+                        var newBlock = this.CurrentBlock;
+                        var newPage = false;
+                        var moved = this.MoveToNextRegion(required, ref  newRegion, ref newBlock, out newPage);
+
+                        // KNOWN BUG (not fixed here, deliberately deferred): MoveToNextRegion can
+                        // return true while the block it hands back via the ref param is already
+                        // closed - confirmed by reproduction (a single-column Page, explicit
+                        // height table with a spacer pushing it near the bottom) that crashed with
+                        // "Cannot alter the layout of a block that has been closed" inside
+                        // BeginNewContainerBlock -> LastOpenBlock(), immediately after a call here
+                        // that reported moved=true. The real fix belongs inside MoveToNextRegion
+                        // itself (it should never report success with a closed block) - this
+                        // IsClosed guard is a defensive workaround at the call site, not a fix.
+                        if (moved && newBlock != null && !newBlock.IsClosed)
+                        {
+                            this.CurrentBlock = newBlock;
+                        }
+                        else
+                        {
+                            //cannot continue
+                            return;
+                        }
+                    }
+                    
+                }
+                
+
                 int rowcount, columncount;
                 this.BuildStyles(out rowcount, out columncount);
+                this.ApplyTableBorderModel(rowcount, columncount);
 
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Styles Built with " + rowcount + " rows, and " + columncount + " columns");
 
                 this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Table_Build_Process);
 
-                PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.PositionMode);
+                PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.DisplayMode);
 
                 Rect available = this.CalculateTableSpace(tableBlock, tablepos);
 
@@ -112,6 +173,11 @@ namespace Scryber.PDF.Layout
                 this.DoLayoutTableRows();
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Laid out the rows");
+
+                // Adjust rowspan cells to their full height
+                this.AdjustRowspanCellHeights();
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Adjusted rowspan cell heights");
 
                 //TODO: Reassess the required widths of columns in the entire table.
 
@@ -155,6 +221,7 @@ namespace Scryber.PDF.Layout
             {
                 if (row.Visible == false)
                     continue;
+                
 
                 _rowIndex = index;
                 this.DoLayoutTableRow(row, index, false);
@@ -168,6 +235,10 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+
+
+        private HashSet<TableRow> _countedRows;
 
         #region private PDFUnit DoLayoutTableRow(PDFTableRow row, int index)
 
@@ -197,7 +268,7 @@ namespace Scryber.PDF.Layout
             this.Context.StyleStack.Push(rowRef.AppliedStyle);
 
 
-            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
                 return Unit.Zero;
 
             if (repeating) //for repeating rows we hold it in the grid
@@ -205,21 +276,30 @@ namespace Scryber.PDF.Layout
                 rowRef = rowRef.Clone();
                 this.AllCells.CurrentGrid.HeaderRows.Add(rowRef);
             }
+            else
+            {
+                //Counters on the row (counter-increment and counter-reset) are only updated once for the row, even if it is laid out again
+                if (null == _countedRows)
+                    _countedRows = new HashSet<TableRow>();
+
+                if (!this.Context.IsMeasuring && _countedRows.Add(row))
+                    this.EnsureCounterUpdatesForStyle(rowStyle);
+            }
                            
 
             
 
 
             PDFArtefactRegistrationSet artefacts = null;
-            if (!repeating)
+            if (!repeating && !this.Context.IsMeasuring)
                 artefacts = row.RegisterLayoutArtefacts(this.Context, rowStyle);
 
 
             //create the row block and region and hold a reference in the ivar _rowblock
 
-            PDFPositionOptions rowpos = rowStyle.CreatePostionOptions();
+            PDFPositionOptions rowpos = rowStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
-            this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.PositionMode);
+            this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.DisplayMode);
 
             rowRef.Block = this._rowblock;
 
@@ -260,7 +340,7 @@ namespace Scryber.PDF.Layout
                 PDFLayoutBlock origRow = this._rowblock;
 
                 //If we are the first row, or as a table we should never be split
-                if (this.AllCells.CurrentGrid.Position.OverflowSplit == OverflowSplit.Never)
+                if (!this.CanSplitTable())
                 {
                     if (this.MoveFullTableToNextRegion())
                     {
@@ -280,12 +360,35 @@ namespace Scryber.PDF.Layout
                 }
                 else if (this.StartNewTableInAnotherRegion(origRow, index))
                 {
-                    origregion.AddToSize(origtable);
+                    //origregion.AddToSize(origtable);
                     Style origRowStlye = this.StyleStack.Pop();
                     _rowOffset = 0;
                     Unit repeath = this.DoLayoutRepeatingRows(index);
+
+                    if(IsRowSpannedFromPreviousRow(index))
+                    {
+                        // Handle rowspan groups when rows overflow
+                        // If a row with rowspan > 1 overflows, ensure all affected rows move together
+                        var oldRegion = origtable.CurrentRegion;
+                        var newRegion = AllCells.CurrentGrid.TableBlock.CurrentRegion;
+                        int startRowspanGroup = GetRowspanGroupStart(index - 1); // Get the starting row index of the rowspan group that includes the previous row
+                        Unit movedHeight = this.MovePreviousRows(startRowspanGroup, index, oldRegion, newRegion, repeath);
+                        _rowOffset += movedHeight; // Adjust the offset for the moved rows
+                        repeath += movedHeight; // Add the moved height to the repeating rows offset, so the last row that was moved to the new region is in the correct place.
+                    
+                        //If after moving the previous rows we find that we have only rows that are part of the repeating header, 
+                        //then we can hide the original rows above to avoid duplicate content.
+                        if(startRowspanGroup > 0 && IsOnlyRepeatingHeadersAbove(startRowspanGroup))
+                        {
+                            HideRowsAbove(startRowspanGroup);
+                        }
+                    }
+
                     _rowOffset += origRow.Height;
                     origRow.Offset(0, repeath);
+
+                    
+                    
                     this.StyleStack.Push(origRowStlye);
                 }
                 else
@@ -324,8 +427,235 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        private bool IsOnlyRepeatingHeadersAbove(int startRowIndex)
+        {
+            if(null == this.AllCells.RepeatRows || this.AllCells.RepeatRows.Count == 0)
+                return false; // No repeating rows at all, so we know rows above are only repeating headers
+
+            for (int i = 0; i < startRowIndex; i++)
+            {
+                if (!this.AllCells.RepeatRows.Any(r => r.RowIndex == i))
+                    return false; // Found a row above that is not a repeating header
+            }
+            return true; // All rows above are repeating headers
+        }
+
+        private void HideRowsAbove(int startRowIndex)
+        {
+            for (int i = 0; i < startRowIndex; i++)
+            {
+                RowReference rowRef = this.AllCells.AllRows[i];
+                if (rowRef.Block != null)
+                {
+                    rowRef.Block.ExcludeFromOutput = true; // Hide the original rows above to avoid duplicate content
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines if the specified row is part of a rowspan that was initiated
+        /// in a previous row. For example, if row 0 has a cell with rowspan=3,
+        /// then rows 1 and 2 return true for this method.
+        /// </summary>
+        /// <param name="rowindex">The row index to check</param>
+        /// <returns>True if this row is spanned by cells from previous rows</returns>
+        private bool IsRowSpannedFromPreviousRow(int rowindex)
+        {
+            if (rowindex <= 0)
+                return false;
+
+            // Check if any column in this row is occupied by a rowspan from a previous row
+            for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+            {
+                CellReference currentCell = this.AllCells.AllCells[rowindex, colIndex];
+                if (currentCell != null && currentCell.Type == CellContentType.SpannedRow)
+                {
+                    // This cell is part of a rowspan
+                    return true;
+                    
+                }
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Gets the starting row index of the rowspan group that includes the specified row.
+        /// If the row is part of a rowspan initiated in a previous row, returns that previous row's index.
+        /// Otherwise returns the current row index.
+        /// </summary>
+        /// <param name="rowindex">The row index to check</param>
+        /// <returns>The starting row index of the rowspan group</returns>
+        private int GetRowspanGroupStart(int rowindex)
+        {
+            int groupStart = rowindex;
+            
+            // Look backwards to find if this row is part of a rowspan from a previous row
+            for (int prevRowIndex = rowindex; prevRowIndex >= 0; prevRowIndex--)
+            {
+                bool hasRowspanFromThisRow = false;
+                RowReference prevRow = this.AllCells.AllRows[prevRowIndex];
+                
+                for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+                {
+                    CellReference cell = prevRow[colIndex];
+                    if(cell.Type == CellContentType.SpannedRow)
+                    {
+                        hasRowspanFromThisRow = true;
+                        int rowStartFromAbove = GetStartingRowForRowSpanFromAbove(prevRowIndex, colIndex);
+                        if(rowStartFromAbove < groupStart)
+                            groupStart = rowStartFromAbove;  
+
+                        //TODO: Check if this row has a row span on it.
+                        // If so, we need to check if that row span is from a previous row as well, 
+                        // and if so we need to move the group start back to the start of that rowspan as well.
+                        // repeat the process until we have found the original starting row of the rowspan group that is affecting our target row. 
+                        // This will ensure that when we move a row that is part of a rowspan group, we move the entire group together, and not just the individual row.
+                        // If it is zero then we have to move the entire grid, 
+                        // but if it's greater than zero then we just need to move the rows from that starting row down to our target row.
+                    }
+                    
+                }
+                
+                if (!hasRowspanFromThisRow)
+                    break; // No rowspan from this previous row affects our target row
+            }
+
+            if(groupStart < rowindex && this.IsRowSpannedFromPreviousRow(groupStart))
+                groupStart = GetRowspanGroupStart(groupStart); // Check if the found group start is itself part of a previous rowspan group
+            
+            return groupStart;
+        }
+
+        private int GetStartingRowForRowSpanFromAbove(int prevRowIndex, int colIndex)
+        {
+            while(prevRowIndex >= 0)
+            {
+                var cellAbove = this.AllCells.AllCells[prevRowIndex, colIndex];
+                if (cellAbove != null && cellAbove.Type == CellContentType.Content && cellAbove.RowSpan > 1)
+                {
+                    return prevRowIndex;
+                }
+                prevRowIndex--; // Move up to check for row spans that might be causing this empty cell
+            }
+            return -1; // No spanning cell found above
+        }
+
+        /// <summary>
+        /// Gets the ending row index of the rowspan group that includes the specified row.
+        /// If the row contains cells with rowspan > 1, returns the end of that span.
+        /// </summary>
+        /// <param name="rowindex">The row index to check</param>
+        /// <returns>The ending row index of the rowspan group (inclusive)</returns>
+        private int GetRowspanGroupEnd(int rowindex)
+        {
+            int groupEnd = rowindex;
+            RowReference currentRow = this.AllCells.AllRows[rowindex];
+            
+            // Check all cells in this row to find how far their rowspans extend
+            for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+            {
+                CellReference cell = currentRow[colIndex];
+                if (cell != null && cell.Type == CellContentType.Content && cell.RowSpan > 1)
+                {
+                    int spanEnd = cell.RowIndex + cell.RowSpan - 1;
+                    if (spanEnd > groupEnd)
+                        groupEnd = spanEnd;
+                }
+            }
+            
+            return groupEnd;
+        }
+
+        private Unit MovePreviousRows(int startRowIndex, int endRowIndex, PDFLayoutRegion oldRegion, PDFLayoutRegion newParent, Unit headOffset)
+        {
+            //TODO: This needs to ExcludeFromOutput the rows from the old region, and layout the rows in the new region, 
+            // and then return the total height of the rows that were moved 
+            // so that we can adjust the offsets of the rows in the new region accordingly.
+            // To take account of varying column widths.
+
+
+            Unit offset = 0;
+            for (int i = startRowIndex; i < endRowIndex; i++)
+            {
+                RowReference rowRef = this.AllCells.AllRows[i];
+                if (rowRef.Block != null)
+                {
+                    // Move this row to the new region
+                    oldRegion.RemoveItem(rowRef.Block, updateSize: true);
+                    newParent.AddExistingItem(rowRef.Block);
+
+                    rowRef.Block.Offset(0, headOffset);
+                    offset += rowRef.Block.Height;
+                    //rowRef.OwnerGrid = this.AllCells.CurrentGrid; // Update the owner grid reference for the row
+                }
+            }
+            
+            return offset;
+        }
+
+        /// <summary>
+        /// When a row with rowspan cells overflows to a new region,
+        /// this method ensures all rows affected by that rowspan move together.
+        /// For example, if row 0 has a cell with rowspan=3, and row 0 overflows,
+        /// then rows 1 and 2 are also moved to maintain the rowspan group.
+        /// </summary>
+        /// <param name="rowindex">The index of the row that overflowed</param>
+        /// <param name="pageHeaderHeight">Height of repeating header rows on the new page</param>
+        private void LayoutAdditionalSpannedRows(int rowindex, Unit pageHeaderHeight)
+        {
+            // Find the maximum rowspan extent from the cells in this row
+            RowReference currentRow = this._tblRef.AllRows[rowindex];
+            int maxSpanEnd = rowindex; // At minimum, the current row
+            
+            // Check all cells in this row to find how far their rowspans extend
+            for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+            {
+                CellReference cref = currentRow[colIndex];
+                if (cref != null && cref.Type == CellContentType.Content && cref.RowSpan > 1)
+                {
+                    // This cell spans down, so check where it ends
+                    int spanEnd = cref.RowIndex + cref.RowSpan - 1;
+                    if (spanEnd > maxSpanEnd)
+                        maxSpanEnd = spanEnd;
+                }
+            }
+            
+            // If there are additional rows affected by the rowspan, layout them too
+            if (maxSpanEnd > rowindex)
+            {
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, 
+                        $"Row {rowindex} has rowspan cells extending to row {maxSpanEnd}. Laying out additional spanned rows.");
+                
+                // Layout each additional row affected by the rowspan
+                Unit additionalOffset = Unit.Zero;
+                for (int spanRowIndex = rowindex + 1; spanRowIndex <= maxSpanEnd && spanRowIndex < this.Table.Rows.Count; spanRowIndex++)
+                {
+                    if (this.ContinueLayout)
+                    {
+                        TableRow spanRow = this.Table.Rows[spanRowIndex];
+                        if (spanRow != null && spanRow.Visible)
+                        {
+                            Unit spanRowHeight = this.DoLayoutTableRow(spanRow, spanRowIndex, false);
+                            additionalOffset += spanRowHeight;
+                        }
+                    }
+                }
+                
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory,
+                        $"Completed layout of {maxSpanEnd - rowindex} additional spanned rows with total height {additionalOffset}");
+            }
+        }
+
         #region private PDFUnit DoLayoutRepeatingRows(ref int rowindex)
 
+        /// <summary>
+        /// Lays out the known repeating rows at the top of a new table grid
+        /// </summary>
+        /// <param name="rowindex">The index of the row where the repeating rows should be laid out</param>
+        /// <returns>The total height of the repeating rows</returns>
         private Unit DoLayoutRepeatingRows(int rowindex)
         {
             Unit height = 0;
@@ -379,11 +709,11 @@ namespace Scryber.PDF.Layout
                 cellRegion.TotalBounds = total;
                 this._rowblock.CurrentRegion.SetMaxWidth(_widths[cellindex].Size);
 
-                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) != PositionMode.Invisible)
+                if (cref.Type == CellContentType.Content && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) != DisplayMode.Invisible)
                 {
                     this.DoLayoutARowCell(cref, cref.Cell, cellindex, rowindex, repeating);
                 }
-                if (_lastRowWasMovedToANewTable)
+                if (_lastRowWasMovedToANewTable) //to remove as not using.
                 {
                     GridReference gref = AllCells.CurrentGrid;
                     RowReference currrow = gref[0];
@@ -433,7 +763,7 @@ namespace Scryber.PDF.Layout
 
             Scryber.Styles.Style full = cref.FullStyle;
 
-            PDFArtefactRegistrationSet artefacts = cell.RegisterLayoutArtefacts(this.Context, full);
+            PDFArtefactRegistrationSet artefacts = this.Context.IsMeasuring ? null : cell.RegisterLayoutArtefacts(this.Context, full);
 
             //Call the base implementation to actually layout the cell.
             this.DoLayoutACell(cref, cell, full, colindex, rowindex, repeating);
@@ -517,27 +847,28 @@ namespace Scryber.PDF.Layout
         #endregion
 
         //
-        // table calculations
+        // grid calculation and style building
         //
 
         #region private void BuildStyles(out int rowcount, out int columncount)
 
         /// <summary>
         /// Builds complete arrays of all the row and cell full styles in the grid, taking account of any spanned cells.
-        /// Setsthe instance variables for the style arrays and returns the row and coulmn count as out (reference) parameters
+        /// Sets the instance variables _rowfullstyles, _rowappliedstyles and _cellrefs for the style arrays and returns the final row and coulmn count as out (reference) parameters
         /// </summary>
-        /// <param name="rowcount"></param>
-        /// <param name="columncount"></param>
+        /// <param name="rowcount">Set to the final row count</param>
+        /// <param name="columncount">Set to the final column count</param>
         private void BuildStyles(out int rowcount, out int columncount)
         {
             List<Style> rowfulls = new List<Style>();
-            List<List<Style>> cellfulls = new List<List<Style>>();
+            List<List<CellContentReference>> cellrefs = new List<List<CellContentReference>>();
 
             List<Style> rowapplieds = new List<Style>();
-            List<List<Style>> cellapplieds = new List<List<Style>>();
+            
             int maxcolcount = 0;
+            List<int> rowspanRemaining = new List<int>();
 
-            var tablePos = this.FullStyle.CreatePostionOptions();
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             var tableFont = this.FullStyle.CreateTextOptions();
 
             foreach (TableRow row in this.Table.Rows)
@@ -571,8 +902,16 @@ namespace Scryber.PDF.Layout
 
                 //If we are set to invisible then ingnore eveything
 
-                StyleValue<PositionMode> found;
-                if(rowfull.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+                StyleValue<DisplayMode> found;
+                if(rowfull.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
+                {
+                    this.StyleStack.Pop();
+                    row.Visible = false;
+                    continue;
+                }
+
+                //A collapsed row is removed from the table (and its space), as with display none.
+                if (rowfull.GetValue(StyleKeys.TextVisibilityKey, Visibility.Visible) == Visibility.Collapse)
                 {
                     this.StyleStack.Pop();
                     row.Visible = false;
@@ -582,24 +921,36 @@ namespace Scryber.PDF.Layout
                 rowapplieds.Add(rowapplied);
                 rowfulls.Add(rowfull);
 
-                var rowPos = rowfull.CreatePostionOptions();
+                var rowPos = rowfull.CreatePostionOptions(this.Context.PositionDepth > 0);
                 var rowFont = rowfull.CreateTextOptions();
 
                 //For each of the cells in the row
-                List<Style> rowcellstyles = new List<Style>();
-                cellfulls.Add(rowcellstyles);
 
-                List<Style> rowcellapplieds = new List<Style>();
-                cellapplieds.Add(rowcellapplieds);
+                List<CellContentReference> rowcellcontents = new List<CellContentReference>();
+                cellrefs.Add(rowcellcontents);
 
+                int columnIndex = 0;
                 foreach (TableCell cell in row.Cells)
                 {
                     if (cell.Visible == false)
                         continue;
 
+                    // Skip columns occupied by a rowspan from previous rows
+                    while (columnIndex < rowspanRemaining.Count && rowspanRemaining[columnIndex] > 0)
+                    {
+                        rowcellcontents.Add(new CellContentReference(null, null, CellContentType.SpannedRow));
+                        rowspanRemaining[columnIndex]--;
+                        columnIndex++;
+                    }
+
                     Style cellfull = null;
                     Style cellapplied = null;
 
+                    // NOTE: if a DataStyleIdentifier is shared by cells in different columns, the cached
+                    // style below (from whichever cell populated it first) is reused as-is, bypassing the
+                    // column style lookup for this specific column. This mirrors an existing limitation of
+                    // the DataStyleIdentifier cache (it does not vary the cached style by column), not
+                    // something newly introduced by column style support.
                     if (!string.IsNullOrEmpty(cell.DataStyleIdentifier) && Context.DocumentLayout.TryGetStyleWithIdentifier(cell.DataStyleIdentifier, out cellapplied, out cellfull))
                     {
                         this.StyleStack.Push(cellapplied);
@@ -608,7 +959,48 @@ namespace Scryber.PDF.Layout
                     {
                         this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Style_Build);
 
+                        // Find any colgroup/col definition covering this cell's starting column, before
+                        // resolving the cell's applied style, so a matched class name can influence
+                        // document-level (class-selector) style matching for this cell too.
+                        var colStyle = this.GetMatchingColumnStyle(columnIndex);
+                        if (colStyle != null && !string.IsNullOrEmpty(colStyle.StyleClass))
+                        {
+                            var ownClass = cell.OwnStyleClass;
+                            cell.StyleClass = string.IsNullOrEmpty(ownClass)
+                                ? colStyle.StyleClass
+                                : colStyle.StyleClass + " " + ownClass;
+                        }
+
                         cellapplied = cell.GetAppliedStyle();
+
+                        // Mix in the column's own directly-set style values (e.g. bgcolor/width/align set
+                        // right on the <col>/<colgroup> element) underneath the cell's already-resolved
+                        // applied style: merge the column's style into a blank style first, then merge the
+                        // cell's own applied style into the same blank style second, so the cell's own
+                        // values (including anything just matched via the class above) always win when
+                        // both define the same style value.
+                        if (colStyle != null && colStyle.HasStyle)
+                        {
+                            var blank = new Style();
+                            colStyle.Style.MergeInto(blank);
+
+                            // GetMatchingColumnStyle only ever resolves the cell's STARTING column - for a
+                            // colspan > 1 cell, that one column's width is not the cell's own rendered
+                            // width (the sum of every column it spans, computed separately in
+                            // DoLayoutRowCells/_widths and applied directly to the cell's layout region).
+                            // Merging it in anyway would narrow the cell's full style to a single column's
+                            // share; DoLayoutACell then takes that bogus "explicit width" at face value and
+                            // forces the cell's own CONTENT layout to it, even though the cell's outer box
+                            // is correctly sized to the full span - the box looks right, but any wrapped
+                            // text/nested content inside is squeezed into one column's width. Drop it here
+                            // so only a genuine author-set width on the cell/td itself can win.
+                            if (cell.CellColumnSpan > 1)
+                                blank.RemoveValue(StyleKeys.SizeWidthKey);
+
+                            cellapplied.MergeInto(blank);
+                            cellapplied = blank;
+                        }
+
                         this.StyleStack.Push(cellapplied);
 
                         cellfull = this.BuildCellFullStyle(cell, row, rowfull, tablePos, rowPos, rowFont);
@@ -621,16 +1013,15 @@ namespace Scryber.PDF.Layout
 
                     //If we are set to invisible then ingnore eveything
 
-                    if (cellfull.TryGetValue(StyleKeys.PositionModeKey, out found)
-                        && found.Value(cellfull) == PositionMode.Invisible)
+                    if (cellfull.TryGetValue(StyleKeys.PositionDisplayKey, out found)
+                        && found.Value(cellfull) == DisplayMode.Invisible)
                     {
                         this.StyleStack.Pop();
                         cell.Visible = false;
                         continue;
                     }
 
-                    rowcellapplieds.Add(cellapplied);
-                    rowcellstyles.Add(cellfull);
+                    rowcellcontents.Add(new CellContentReference(cellfull, cellapplied, CellContentType.Content));
 
                     //If this cell spans more than 1 column then add null to the row cell styles for each spanned column
 
@@ -644,22 +1035,55 @@ namespace Scryber.PDF.Layout
 
                     if (span == 0)
                         throw new ArgumentOutOfRangeException("span","Cell column count cannot be less than 1. ");
-                    
-                    else
+
+                    // Get the rowspan for this cell (default 1)
+                    StyleValue<int> rowspanVal;
+                    int rowspan = 1;
+                    if (cellfull.TryGetValue(StyleKeys.TableCellRowSpanKey, out rowspanVal))
+                        rowspan = rowspanVal.Value(cellfull);
+
+                    if (rowspan < 1)
+                        rowspan = 1;
+
+                    // Ensure rowspan tracking list has enough columns
+                    for (int i = rowspanRemaining.Count; i < columnIndex + span; i++)
+                        rowspanRemaining.Add(0);
+
+                    // Track rowspan occupancy for subsequent rows
+                    if (rowspan > 1)
                     {
-                        while (span > 1)
+                        for (int i = 0; i < span; i++)
                         {
-                            rowcellstyles.Add(null);
-                            rowcellapplieds.Add(null);
-                            span--;
+                            int idx = columnIndex + i;
+                            rowspanRemaining[idx] = Math.Max(rowspanRemaining[idx], rowspan - 1);
                         }
                     }
+
+                    int remainingSpan = span;
+                    while (remainingSpan > 1)
+                    {
+                        rowcellcontents.Add(new CellContentReference(null, null, CellContentType.SpannedColumn));
+                        remainingSpan--;
+                    }
+
+                    columnIndex += span;
 
                     this.StyleStack.Pop();
                 }
 
-                if (rowcellstyles.Count > maxcolcount)
-                    maxcolcount = rowcellstyles.Count;
+                // Fill remaining rowspan-occupied columns at end of row
+                while (columnIndex < rowspanRemaining.Count)
+                {
+                    if (rowspanRemaining[columnIndex] > 0)
+                    {
+                        rowcellcontents.Add(new CellContentReference(null, null, CellContentType.SpannedRow));
+                        rowspanRemaining[columnIndex]--;
+                    }
+                    columnIndex++;
+                }
+
+                if (rowcellcontents.Count > maxcolcount)
+                    maxcolcount = rowcellcontents.Count;
 
                 this.StyleStack.Pop();
             }
@@ -670,20 +1094,17 @@ namespace Scryber.PDF.Layout
             this._rowfullstyles = rowfulls.ToArray();
             this._rowappliedstyles = rowapplieds.ToArray();
 
-            this._cellfullstyles = new Style[rowfulls.Count, maxcolcount];
-            this._cellappliedstyles = new Style[rowfulls.Count, maxcolcount];
+            this._cellContents = new CellContentReference[rowfulls.Count, maxcolcount];
 
             for (int r = 0; r < rowcount; r++)
             {
-                List<Style> rsf = cellfulls[r];
-                List<Style> rsa = cellapplieds[r];
+                List<CellContentReference> rsf = cellrefs[r];
 
                 for (int c = 0; c < maxcolcount; c++)
                 {
                     if (c < rsf.Count)
                     {
-                        this._cellfullstyles[r, c] = rsf[c];
-                        this._cellappliedstyles[r, c] = rsa[c];
+                        this._cellContents[r, c] = rsf[c];
                     }
                 }
             }
@@ -694,46 +1115,242 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        protected Size GetSize(Unit? width, Unit containerWidth, Unit? height, Unit containerHeight)
+        #region private List<HTMLColBase> GetColumnDefinitions() + private TableCell GetMatchingColumnStyle(int)
+
+        /// <summary>
+        /// Scans the table's own direct content (not just its Rows) for colgroup/col definitions, in
+        /// document order, assigning each one - and, for a colgroup delegating to child &lt;col&gt;
+        /// elements, each of those children too - a ColumnOffset based on a running column counter that
+        /// advances by each definition's EffectiveSpan. Built once (lazily) per table layout.
+        /// </summary>
+        private List<HTMLColBase> GetColumnDefinitions()
         {
-            var w = width.HasValue ? width.Value : containerWidth;
-            var h = height.HasValue ? height.Value : containerHeight;
-            return new Size(w, h);
+            if (!_columnDefinitionsBuilt)
+            {
+                _columnDefinitions = new List<HTMLColBase>();
+                int offset = 0;
+
+                foreach (var child in ((IContainerComponent)this.Table).Content)
+                {
+                    if (child is HTMLColBase colbase)
+                    {
+                        colbase.ColumnOffset = offset;
+
+                        if (colbase is HTMLColGroup group && group.Span < 0 && group.HasColumns)
+                        {
+                            int childOffset = offset;
+                            foreach (var col in group.Columns)
+                            {
+                                col.ColumnOffset = childOffset;
+                                childOffset += col.EffectiveSpan;
+                            }
+                        }
+
+                        offset += colbase.EffectiveSpan;
+                        _columnDefinitions.Add(colbase);
+                    }
+                }
+
+                _columnDefinitionsBuilt = true;
+            }
+
+            return _columnDefinitions;
         }
 
+        /// <summary>
+        /// Finds the first colgroup/col definition that covers the given column index and returns a
+        /// throwaway TableCell holding whatever Style/StyleClass it would apply - reusing
+        /// HTMLColBase.ApplyStyleToColumnCell's existing matching and merge logic without mutating the
+        /// real cell. Returns null if no definition covers this column.
+        /// </summary>
+        private TableCell GetMatchingColumnStyle(int columnIndex)
+        {
+            var defs = this.GetColumnDefinitions();
+            if (defs.Count == 0)
+                return null;
+
+            foreach (var def in defs)
+            {
+                var scratch = new TableCell();
+                if (def.ApplyStyleToColumnCell(columnIndex, scratch))
+                    return scratch;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the real, still document-attached col/colgroup component covering the given column
+        /// index - unlike GetMatchingColumnStyle, which only returns a throwaway scratch copy of its
+        /// style values. Needed wherever the column's width (or any other property) must go through the
+        /// real style-resolution pipeline (GetAppliedStyle/BuildColumnFullStyle) for correct CSS cascade,
+        /// inheritance and variable (calc()/var()) scope, rather than just the flat values
+        /// ApplyStyleToColumnCell copies across.
+        /// </summary>
+        private HTMLColBase GetMatchingColumnComponent(int columnIndex)
+        {
+            var defs = this.GetColumnDefinitions();
+            foreach (var def in defs)
+            {
+                var found = def.GetMatchingColumnComponent(columnIndex);
+                if (found != null)
+                    return found;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region private void AdjustRowspanCellHeights()
+
+        /// <summary>
+        /// After all rows have been laid out, adjusts the height of cells with rowspan > 1
+        /// to span the full height of all rows they cover.
+        /// </summary>
+        private void AdjustRowspanCellHeights()
+        {
+            int rowcount = this._tblRef.AllRows.Length;
+            int colcount = this._tblRef.TotalColumnCount;
+
+            // Snapshot natural row heights before adjusting any spanning cell.
+            // Without this, an earlier spanning cell (e.g. B rowspan=2) would have its
+            // block height raised to 98pt before a later spanning cell (E rowspan=3)
+            // computes GetMaxCellHeightForRow(row0), which would then see 98pt for B
+            // instead of the natural 44pt — inflating E's combined height incorrectly.
+            Unit[] rowHeights = new Unit[rowcount];
+            for (int r = 0; r < rowcount; r++)
+                rowHeights[r] = this._tblRef.GetMaxCellHeightForRow(r);
+
+            for (int r = 0; r < rowcount; r++)
+            {
+                for (int c = 0; c < colcount; c++)
+                {
+                    CellReference cref = this._tblRef.AllCells[r, c];
+
+                    if (cref == null || cref.Block == null || cref.Type != CellContentType.Content || cref.RowSpan <= 1)
+                        continue;
+
+                    int rowspan = cref.RowSpan;
+                    int lastSpanRow = Math.Min(r + rowspan - 1, rowcount - 1);
+
+                    Unit combinedHeight = Unit.Zero;
+                    for (int spanRow = r; spanRow <= lastSpanRow; spanRow++)
+                        combinedHeight += rowHeights[spanRow];
+
+                    Rect bounds = cref.Block.TotalBounds;
+                    bounds.Height = combinedHeight;
+                    cref.Block.TotalBounds = bounds;
+                }
+            }
+        }
+
+        #endregion
+
+        #region protected virtual Style BuildRowFullStyle(TableRow row, PDFPositionOptions tablePosition, PDFTextRenderOptions tablefont)
+
+
+        /// <summary>
+        /// Builds the full style for a row, taking into account the table position and font options and the parent component sizer for percentage calculations.
+        /// NOTE: The row applied style should be on the style stack before this method is called, so that it can be inherited from when building the full style.
+        /// </summary> 
+        /// <param name="row">The row to build the style for</param>
+        /// <param name="tablePosition">The position options for the table, used for percentage calculations</param>
+        /// <param name="tablefont">The font options for the table, used for percentage calculations</param>
         protected virtual Style BuildRowFullStyle(TableRow row, PDFPositionOptions tablePosition, PDFTextRenderOptions tablefont)
         {
             var page = this.DocumentLayout.CurrentPage;
-            var block = this.CurrentBlock;
-
-            Size pageSize = page.Size;
-
-            Size tableSize = GetSize(tablePosition.Width, block.AvailableBounds.Width,
-                                     tablePosition.Height, block.AvailableBounds.Height);
+            
+            Size pageSize = page.Size.Size;
 
             Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
 
             Unit root = Font.DefaultFontSize;
 
-            return this.Context.StyleStack.GetFullStyle(row, pageSize, tableSize, fontSize, root);
+            return this.Context.StyleStack.GetFullStyle(row, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
         }
 
+        #endregion
+
+        #region protected virtual Style BuildCellFullStyle(TableCell cell, TableRow inrow, Style rowStyle, PDFPositionOptions tablePosition, PDFPositionOptions rowPosition, PDFTextRenderOptions rowfont)
+
+        /// <summary>
+        /// Builds the full style for a cell, taking into account the row and table styles and options for percentage calculations. 
+        /// NOTE: The cell applied style should be on the style stack before this method is called, so that it can be inherited from when building the full style.
+        /// </summary> 
+        /// <param name="cell">The cell to build the style for</param>
+        /// <param name="inrow">The row the cell is in, used to inherit styles from</param>
+        /// <param name="rowStyle">The style of the row, used to inherit styles from</param>
+        /// <param name="tablePosition">The position options for the table, used for percentage calculations</param>
+        /// <param name="rowPosition">The position options for the row, used for percentage calculations</param>
+        /// <param name="rowfont">The font options for the row, used for percentage calculations</param>
         protected virtual Style BuildCellFullStyle(TableCell cell, TableRow inrow, Style rowStyle, PDFPositionOptions tablePosition, PDFPositionOptions rowPosition, PDFTextRenderOptions rowfont)
         {
             var page = this.DocumentLayout.CurrentPage;
-            var block = this.CurrentBlock;
 
-            Size pageSize = page.Size;
-
-            Size tableSize = GetSize(rowPosition.Width, tablePosition.Width.HasValue ? tablePosition.Width.Value : block.AvailableBounds.Width,
-                                     rowPosition.Height, tablePosition.Height.HasValue ? tablePosition.Height.Value : block.AvailableBounds.Height);
+            Size pageSize = page.Size.Size;
 
             Size fontSize = new Size(rowfont.GetZeroCharWidth(), rowfont.GetSize());
 
             Unit root = Font.DefaultFontSize;
 
-            return this.Context.StyleStack.GetFullStyle(cell, pageSize, tableSize, fontSize, root);
+            return this.Context.StyleStack.GetFullStyle(cell, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
         }
+
+        #endregion
+
+        #region protected virtual Style BuildColumnFullStyle(HTMLColBase col, PDFTextRenderOptions tablefont)
+
+        /// <summary>
+        /// Builds the full (flattened) style for a &lt;col&gt;/&lt;colgroup&gt; column definition, using
+        /// exactly the same resolution path as BuildRowFullStyle/BuildCellFullStyle - so percentage, em,
+        /// rem, viewport units, calc() and var() all resolve the same way they would for any other styled
+        /// component, rather than hand-rolling a second, partial implementation of relative-unit handling
+        /// for just this one case.
+        /// NOTE: The column's own applied style should be on the style stack before this method is
+        /// called (see BuildCellFullStyle's identical note), so that it can be inherited from.
+        /// </summary>
+        /// <param name="col">The real, still document-attached col/colgroup component - not a scratch
+        /// copy of its style - so CSS cascade, inheritance and variable scope resolve correctly.</param>
+        /// <param name="tablefont">The font options used for em/rem/ex percentage calculations.</param>
+        protected virtual Style BuildColumnFullStyle(HTMLColBase col, PDFTextRenderOptions tablefont)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+
+            Size pageSize = page.Size.Size;
+
+            Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
+
+            Unit root = Font.DefaultFontSize;
+
+            return this.Context.StyleStack.GetFullStyle(col, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
+        }
+
+        #endregion
+
+        #region protected virtual Size GetTableContainerSize(IComponent forComponent, Style withStyle, PositionMode inMode)
+
+        /// <summary> Gets the size of the container for the table, which is used for percentage calculations when building the full styles for the rows and cells. 
+        /// By default this returns the available bounds of the current block, but can be overridden to provide a different size if needed (for example if the table is inside a cell and should use the cell size as the container size for percentage calculations).</summary>
+        /// <param name="forComponent">The component we are getting the container size for (either a row or a cell)</param>
+        /// <param name="withStyle">The full style of the component we are getting the container size for, which can be used to determine the size if needed</param>
+        /// <param name="inMode">The position mode we are calculating the size for (for example, if we are calculating the size for a cell, the mode will be PositionMode.Cell, and if we are calculating the size for a row, the mode will be PositionMode.Row)</param>
+        protected virtual Size GetTableContainerSize(IComponent forComponent, Style withStyle, PositionMode inMode)
+        {
+            var block = this.CurrentBlock;
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+
+            var width = tablePos.Width;
+            var height = tablePos.Height;
+
+            
+            var w = width.HasValue ? width.Value : block.AvailableBounds.Width;
+            var h = height.HasValue ? height.Value : block.AvailableBounds.Height;
+
+            return new Size(w, h);
+        }
+
+        #endregion
 
         #region private void CalculateTableSpace()
 
@@ -988,7 +1605,6 @@ namespace Scryber.PDF.Layout
         /// </summary>
         private void BuildReferenceGrid(int rowcount, int columncount, PDFPositionOptions tablepos, Rect availableSpace, PDFLayoutBlock tableblock)
         {
-            
             TableReference tbl = new TableReference(rowcount, columncount, this.FullStyle, tablepos);
             GridReference grid = tbl.CurrentGrid;
 
@@ -1009,6 +1625,7 @@ namespace Scryber.PDF.Layout
                 RowReference rref = tbl.AddRowReference(row, grid, applied, full, rowIndex);
 
                 this.BuildReferenceCells(tbl, rref, rowIndex, columncount);
+                
                 rowIndex++;
             }
 
@@ -1024,11 +1641,11 @@ namespace Scryber.PDF.Layout
 
             for (int column = 0; column < columncount; column++)
             {
-                Style applied = _cellappliedstyles[rowIndex, column];
-                Style full = _cellfullstyles[rowIndex, column];
+                CellContentReference cref = _cellContents[rowIndex, column];
+   
 
                 //Check that we are not an empty or spanned cell
-                if (null != full)
+                if (cref.Type == CellContentType.Content)
                 {
                     if (cellindex >= rref.Row.Cells.Count)
                         throw new ArgumentNullException("No cell exists at column " + column.ToString() + " in row " + rowIndex);
@@ -1041,26 +1658,26 @@ namespace Scryber.PDF.Layout
                     //watching the immutable options
                     if (tbl.CurrentGrid.Position.FillWidth)
                     {
-                        bool appliedImmutable = applied.Immutable;
-                        bool fullImmutable = full.Immutable;
+                        bool appliedImmutable = cref.Applied.Immutable;
+                        bool fullImmutable = cref.Full.Immutable;
 
-                        applied.Immutable = false;
-                        full.Immutable = false;
+                        cref.Applied.Immutable = false;
+                        cref.Full.Immutable = false;
 
-                        applied.Size.FullWidth = true;
-                        full.Size.FullWidth = true;
+                        cref.Applied.Size.FullWidth = true;
+                        cref.Full.Size.FullWidth = true;
 
-                        applied.Immutable = appliedImmutable;
-                        full.Immutable = fullImmutable;
+                        cref.Applied.Immutable = appliedImmutable;
+                        cref.Full.Immutable = fullImmutable;
                     }
 
-                    tbl.AddCellReference(cell, rref, applied, full, column);
+                    tbl.AddCellContentReference(cell, rref, cref.Applied, cref.Full, column);
 
                     cellindex++;
                 }
                 else
                 {
-                    tbl.AddEmptyCellReference(rref, column);
+                    tbl.AddEmptyCellReference(rref, column, cref.Type);
                 }
             }
         }
@@ -1100,7 +1717,7 @@ namespace Scryber.PDF.Layout
                 for (int h = 0; h < columncount; h++)
                 {
                     CellReference cref = _tblRef.AllCells[v, h];
-                    if (null != cref && cref.IsEmpty == false)
+                    if (null != cref && cref.Type == CellContentType.Content)
                     {
                         if (cref.ColumnSpan > 1)
                         {
@@ -1140,6 +1757,49 @@ namespace Scryber.PDF.Layout
                     {
                         CellReference cref = _tblRef.AllCells[v, h];
                         cref.TotalHeight = maxh;
+                    }
+                }
+            }
+
+            // A column that is never covered by a standalone (ColumnSpan == 1) content cell - e.g. because
+            // every row's cell crossing it is part of a colspan - never has its width captured by the loop
+            // above, even when a <col>/<colgroup> explicitly defines one: GetMaxCellWidthForColumn (used
+            // later by PushConsistentCellWidths as the non-explicit fallback) only measures actual
+            // single-column content cells too, so such a column collapses to zero width, and every colspan
+            // cell crossing it silently loses that column's contribution. Fall back to the matching column
+            // definition's own width for any column still unresolved at this point.
+            //
+            // Resolved via the real style-resolution pipeline (GetAppliedStyle + BuildColumnFullStyle,
+            // exactly as BuildRowFullStyle/BuildCellFullStyle do for a row/cell) rather than hand-rolling
+            // relative-unit handling here - this gets percent/em/rem/viewport units, calc() and var() all
+            // resolved the same way they would be for any other styled component, for free. It reads the
+            // real, still document-attached <col> component (GetMatchingColumnComponent), not the scratch
+            // copy GetMatchingColumnStyle returns - GetFullStyle needs the component on the live style
+            // stack to inherit from, and a disconnected scratch component has no ancestor chain or
+            // variable scope for var() to resolve against.
+            if (columncount > 0)
+            {
+                var tableFontOptions = this.FullStyle.CreateTextOptions();
+
+                for (int h = 0; h < columncount; h++)
+                {
+                    if (widths[h].Explicit)
+                        continue;
+
+                    HTMLColBase colComponent = this.GetMatchingColumnComponent(h);
+                    if (null == colComponent)
+                        continue;
+
+                    Style colApplied = colComponent.GetAppliedStyle();
+                    this.StyleStack.Push(colApplied);
+                    Style colFull = this.BuildColumnFullStyle(colComponent, tableFontOptions);
+                    this.StyleStack.Pop();
+
+                    var colPos = colFull.CreatePostionOptions(this.Context.PositionDepth > 0);
+                    if (colPos.Width.HasValue && colPos.Width.Value > Unit.Zero)
+                    {
+                        widths[h].Size = colPos.Width.Value;
+                        widths[h].Explicit = true;
                     }
                 }
             }
@@ -1189,6 +1849,11 @@ namespace Scryber.PDF.Layout
                                 resolved++;
                         }
                         spanned.RemoveAt(spanIndex);
+
+                        // The removal shifts everything after spanIndex down by one, so if
+                        // spanIndex was pointing at the last item, it is now one past the end.
+                        if (spanIndex >= spanned.Count)
+                            spanIndex = 0;
                     }
                     else
                     {
@@ -1363,6 +2028,20 @@ namespace Scryber.PDF.Layout
         // overflow methods
         //
 
+        #region protected virtual bool CanSplitTable()
+
+        protected virtual bool CanSplitTable()
+        {
+            if (this.AllCells.CurrentGrid.Position.OverflowSplit == OverflowSplit.Never)
+                return false;
+            else if (this.IsInNotSplittingBlock)
+                return false;
+            else
+                return true;
+        }
+
+        #endregion
+
         #region protected virtual void CloseTableAndReleaseRowsFrom(int rowindex)
 
         /// <summary>
@@ -1443,7 +2122,7 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutRegion origTblRegion = origTblblock.CurrentRegion;
             PDFLayoutRegion tblparent = (origTblblock.Parent as PDFLayoutBlock).CurrentRegion;
-            tblparent.AddToSize(origTblblock);
+            //tblparent.AddToSize(origTblblock);
             this._rowIndex = rowindex;
             PDFLayoutRegion region = row.CurrentRegion;
             bool newpage;
@@ -1453,7 +2132,7 @@ namespace Scryber.PDF.Layout
             {
                 if (this.Context.ShouldLogVerbose)
                     this.Context.TraceLog.Add(TraceLevel.Verbose, TableEngineLogCategory, "Started table '" + this.Table.ID + "' in a new " + (newpage ? "Page" : "Region") + " and table row block is now '" + row.ToString() + "'");
-
+                
                 PDFLayoutBlock newTableBlock = this.AllCells.CurrentGrid.TableBlock;
                 PDFLayoutRegion newTableRegion = newTableBlock.CurrentRegion;
                 newTableRegion.UsedSize = Size.Empty;
@@ -1532,1300 +2211,47 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        // -----------------------------------------------------------------------
+        // Shared by LayoutEngineCSSTable and LayoutEngineFlexGrid - both wrap loose
+        // content into a TableCell-derived container (AnonymousCell / GridCell
+        // respectively) as that content's sole contents. A display:inline-block child
+        // - authored instead of the correct display:table-cell for a CSS table, or
+        // simply as an ordinary grid item's own display value - currently renders with
+        // its content missing once placed as the sole content of a TableCell-derived
+        // container. Being the ONLY content there, inline vs block makes no visual
+        // difference, so rather than leave it silently blank we're lenient and flip it
+        // to block, which those containers render correctly.
         //
-        // inner classes
+        // GetAppliedStyle() lazily computes and caches its result (Component.
+        // _appliedStyle) - setting the component's own local .Style property after
+        // that cache is already populated (as it will be by the time either engine's
+        // synthetic-structure building runs, well after the earlier Style Resolution
+        // pipeline stage) has no effect on what later reads of GetAppliedStyle()
+        // return. So instead of setting comp.Style, this overrides the display value
+        // directly on the SAME cached Style instance the caller already retrieved via
+        // GetAppliedStyle().
         //
-
-        #region private class CellReference
-
-        /// <summary>
-        /// A reference to a single table cell and it's associated data in this table
-        /// </summary>
-        private class CellReference
+        // StyleBase.SetValue(key, value) itself does NOT invalidate StyleFull's own
+        // secondary caches (_pos/_text/_pgsize/_borders, populated the first time
+        // something calls DoCreatePositionOptions/DoCreateTextOptions/etc. on this
+        // exact instance) - it only mutates/adds the raw StyleValue entry. If position
+        // options for this component had already been requested by anything earlier in
+        // the pipeline (a width/measurement pre-pass, for instance), a stale
+        // PDFPositionOptions with the old InlineBlock-derived DisplayMode would
+        // otherwise survive this override untouched. StyleFull.ClearFullRefs() is the
+        // public reset for exactly those caches, so it's called unconditionally after
+        // the raw value is set - a no-op if nothing had cached yet (confirmed the
+        // common case: Component.GetAppliedStyle() normally returns a plain,
+        // uncached Style, not a StyleFull - StyleFull is built later, by the
+        // StyleStack, during actual layout), but correctness-critical if something had.
+        protected static void NormalizeLooseInlineBlockDisplay(Style appliedStyle, DisplayMode display)
         {
-            #region ivars
-
-            private TableCell _cell;
-            private Style _fullStyle;
-            private Style _appliedStyle;
-            private int _rowindex;
-            private int _colindex;
-            private PDFLayoutBlock _block;
-            private Unit _totalWidth;
-            private Unit _totalHeight;
-            private Thickness _margins;
-            private RowReference _row;
-            private bool _empty = false;
-
-            #endregion
-
-            #region public PDFTableCell Cell {get;}
-
-            /// <summary>
-            /// Gets the table cell associated with this reference
-            /// </summary>
-            public TableCell Cell
+            if (display == DisplayMode.InlineBlock)
             {
-                get { return _cell; }
-            }
-
-            #endregion
-
-            #region public PDFStyle FullStyle {get;}
-
-            /// <summary>
-            /// Gets the full style of the cell
-            /// </summary>
-            public Style FullStyle
-            {
-                get { return _fullStyle; }
-            }
-
-            #endregion
-
-            #region public PDFStyle AppliedStyle {get;}
-
-            /// <summary>
-            /// Gets the style that is Applied to the table cell
-            /// </summary>
-            public Style AppliedStyle
-            {
-                get { return _appliedStyle; }
-            }
-
-            #endregion
-
-            #region public int RowIndex {get;}
-
-            /// <summary>
-            /// Gets the (global) row index of this cell
-            /// </summary>
-            public int RowIndex
-            {
-                get { return _rowindex; }
-            }
-
-            #endregion
-
-            #region public int ColumnIndex {get;}
-
-            /// <summary>
-            /// Gets the column index of this cell
-            /// </summary>
-            public int ColumnIndex
-            {
-                get { return _colindex; }
-            }
-
-            #endregion
-
-            #region public int ColumnSpan {get;set;}
-
-            private int _colspan;
-
-            /// <summary>
-            /// Gets or sets the column span associated with this cell
-            /// </summary>
-            public int ColumnSpan
-            {
-                get { return _colspan; }
-                set { _colspan = value; }
-            }
-
-            #endregion
-
-            #region public PDFThickness Margins {get;}
-
-            /// <summary>
-            /// Gets any margins associated with this cell's style
-            /// </summary>
-            public Thickness Margins
-            {
-                get { return _margins; }
-            }
-
-            #endregion
-
-            #region public bool IsEmpty {get;}
-
-            /// <summary>
-            /// Returns true if this is an empty or spanned cell
-            /// </summary>
-            public bool IsEmpty
-            {
-                get { return _empty; }
-                set { _empty = value; }
-            }
-
-            #endregion
-
-            #region public PDFUnit TotalWidth {get} + public bool HasExplicitWidth {get;}
-
-            /// <summary>
-            /// Gets the total explicit width specified for the cell
-            /// </summary>
-            public Unit TotalWidth
-            {
-                get { return _totalWidth; }
-            }
-
-            /// <summary>
-            /// Returns true if there is an explicit width to this cell
-            /// </summary>
-            public bool HasExplicitWidth
-            {
-                get
-                {
-                    return _totalWidth != Unit.Zero;
-                }
-            }
-
-            #endregion
-
-            #region public PDFUnit TotalHeight {get;} + public bool HasExplicitHeight
-
-            /// <summary>
-            /// Gets the total explicit height specified for the cell
-            /// </summary>
-            public Unit TotalHeight
-            {
-                get { return _totalHeight; }
-                set { _totalHeight = value; }
-            }
-
-            public bool HasExplicitHeight
-            {
-                get { return _totalHeight != Unit.Zero; }
-            }
-
-            #endregion
-
-            #region public PDFLayoutBlock Block {get;set;}
-
-            /// <summary>
-            /// Gets or sets the associated block for this reference
-            /// </summary>
-            public PDFLayoutBlock Block
-            {
-                get { return _block; }
-                set { _block = value; }
-            }
-
-            #endregion
-
-            // .ctor
-
-            #region public CellReference(PDFTableCell cell, RowReference row,  PDFStyle applied, PDFStyle fullstyle, int rowindex, int colindex)
-
-            /// <summary>
-            /// Creates a new cell reference
-            /// </summary>
-            /// <param name="cell"></param>
-            /// <param name="row"></param>
-            /// <param name="applied"></param>
-            /// <param name="fullstyle"></param>
-            /// <param name="rowindex"></param>
-            /// <param name="colindex"></param>
-            public CellReference(TableCell cell, RowReference row, Style applied, Style fullstyle, int rowindex, int colindex)
-            {
-                this._cell = cell;
-                this._appliedStyle = applied;
-                this._fullStyle = fullstyle;
-                this._rowindex = rowindex;
-                this._colindex = colindex;
-                this._block = null;
-                this._row = row;
-
-                if(null != fullstyle)
-                    PopulateStyleValues(fullstyle);
-            }
-
-            #endregion
-
-            #region private void PopulateStyleValues(PDFStyle fullstyle)
-
-            /// <summary>
-            /// Populates all the style related
-            /// ivars of this instance with the values from the full style
-            /// </summary>
-            /// <param name="fullstyle"></param>
-            private void PopulateStyleValues(Style fullstyle)
-            {
-                PDFPositionOptions opts = fullstyle.CreatePostionOptions(); //Full Styles cache this so should be quick anyway
-                _margins = opts.Margins;
-                if (opts.Width.HasValue)
-                    _totalWidth = opts.Width.Value + _margins.Left + _margins.Right;
-                else
-                    _totalWidth = Unit.Zero;
-
-                if (opts.Height.HasValue)
-                    _totalHeight = opts.Height.Value + _margins.Top + _margins.Right;
-                else
-                    _totalHeight = Unit.Zero;
-
-                StyleValue<int> cellspan;
-                if (fullstyle.TryGetValue(StyleKeys.TableCellColumnSpanKey, out cellspan))
-                    _colspan = cellspan.Value(fullstyle);
-                else
-                    _colspan = 1;
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        #region private class RowReference
-
-        /// <summary>
-        /// A reference to a single row in a table
-        /// </summary>
-        private class RowReference
-        {
-            #region ivars
-
-            private TableRow _row;
-            private Style _fullStyle;
-            private Style _appliedStyle;
-            private int _rowindex;
-            private PDFLayoutBlock _block;
-            private Unit _explicitHeight;
-            private Thickness _margins;
-            private GridReference _grid;
-
-            #endregion
-
-            // properties
-
-            #region public PDFTableRow Row {get;}
-
-            /// <summary>
-            /// Gets the table row associated with this reference
-            /// </summary>
-            public TableRow Row
-            {
-                get { return _row; }
-            }
-
-            #endregion
-
-            #region public PDFStyle FullStyle {get;}
-
-            /// <summary>
-            /// Gets the full style associated with the row
-            /// </summary>
-            public Style FullStyle
-            {
-                get { return _fullStyle; }
-            }
-
-            #endregion
-
-            #region public int RowIndex {get;}
-
-            /// <summary>
-            /// Gets the absolute row index of this row in the whole table
-            /// </summary>
-            public int RowIndex
-            {
-                get { return _rowindex; }
-            }
-
-            #endregion
-
-            #region public TableRowRepeat Repeat { get; set; }
-
-            /// <summary>
-            /// Gets or sets the type of repeat to indicate how this row should be repeated in each new region.
-            /// </summary>
-            public TableRowRepeat Repeat { get; set; }
-
-            #endregion
-
-            #region public PDFStyle AppliedStyle {get;}
-
-            /// <summary>
-            /// Gets the applied style for the row (rather than the full style)
-            /// </summary>
-            public Style AppliedStyle
-            {
-                get { return _appliedStyle; }
-            }
-
-            #endregion
-
-            #region public PDFThickness Margins {get;}
-
-            /// <summary>
-            /// Gets the margins for this Row
-            /// </summary>
-            public Thickness Margins
-            {
-                get { return this._margins; }
-            }
-
-            #endregion
-
-            #region public PDFUnit ExplicitHeight {get} + public bool HasExplicitHeight {get;}
-
-            /// <summary>
-            /// Gets the total explicit height specified for the cell
-            /// </summary>
-            public Unit ExplicitHeight
-            {
-                get { return _explicitHeight; }
-                set { _explicitHeight = value; }
-            }
-
-            /// <summary>
-            /// Returns true if this row has an explicit height
-            /// </summary>
-            public bool HasExplicitHeight
-            {
-                get { return _explicitHeight != Unit.Zero; }
-            }
-
-            #endregion
-
-            #region public PDFLayoutBlock Block {get; set;}
-
-            /// <summary>
-            /// Gets or sets the associated block for this reference
-            /// </summary>
-            public PDFLayoutBlock Block
-            {
-                get { return _block; }
-                set { _block = value; }
-            }
-
-            #endregion
-
-            #region public GridReference OwnerGrid {get;}
-
-            /// <summary>
-            /// Gets the grid that contains this row reference
-            /// </summary>
-            public GridReference OwnerGrid
-            {
-                get { return _grid; }
-            }
-
-            #endregion
-
-
-            #region public CellReference this[int columnIndex] {get;}
-
-            /// <summary>
-            /// Gets this rows cell reference at the specified column index
-            /// </summary>
-            /// <param name="columnIndex"></param>
-            /// <returns></returns>
-            public CellReference this[int columnIndex]
-            {
-                get { return this.OwnerGrid.OwnerTable.AllCells[this.RowIndex, columnIndex]; }
-            }
-
-            #endregion
-
-            // .ctor
-
-            #region public RowReference(PDFTableRow row, PDFStyle applied, PDFStyle fullstyle,  int rowindex)
-
-            /// <summary>
-            /// Creates a new instance of a reference to a table row
-            /// </summary>
-            /// <param name="row"></param>
-            /// <param name="applied"></param>
-            /// <param name="fullstyle"></param>
-            /// <param name="posOpts"></param>
-            /// <param name="rowindex"></param>
-            public RowReference(TableRow row, GridReference grid, Style applied, Style fullstyle, int rowindex)
-            {
-                this._row = row;
-                this._rowindex = rowindex;
-                this._fullStyle = fullstyle;
-                this._appliedStyle = applied;
-                this._grid = grid;
-                this.PopulateStyleValues(fullstyle);
-            }
-
-            #endregion
-
-            // methods
-
-            #region private void PopulateStyleValues(PDFStyle fullstyle)
-
-            /// <summary>
-            /// Fills the values of this row reference based on the required style values
-            /// </summary>
-            /// <param name="fullstyle"></param>
-            private void PopulateStyleValues(Style fullstyle)
-            {
-                PDFPositionOptions opts = fullstyle.CreatePostionOptions();
-                _margins = opts.Margins;
-
-                if (opts.Height.HasValue)
-                    _explicitHeight = opts.Height.Value + _margins.Top + _margins.Bottom;
-
-                StyleValue<TableRowRepeat> repeat;
-                if (fullstyle.TryGetValue(StyleKeys.TableRowRepeatKey,out repeat))
-                    this.Repeat = repeat.Value(fullstyle);
-                else
-                    this.Repeat = TableRowRepeat.None;
-            }
-
-            #endregion
-
-            #region public RowReference Clone()
-
-            /// <summary>
-            /// Creates a shallow clone of this row reference
-            /// </summary>
-            /// <returns></returns>
-            public RowReference Clone()
-            {
-                return this.MemberwiseClone() as RowReference;
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        #region private class GridReference
-
-        /// <summary>
-        /// A reference to a single continuous table grid in one region.
-        /// </summary>
-        private class GridReference
-        {
-
-            #region ivars
-
-            private int _startRowIndex;
-            private int _endRowIndex;
-            private PDFLayoutBlock _tableBlock;
-            private Style _tableStyle;
-            private PDFPositionOptions _posOpts;
-            private TableReference _ownerTable;
-            private Rect _availspace;
-
-            #endregion
-
-            // properties
-
-            #region public int StartRowIndex {get;set;}
-
-            /// <summary>
-            /// Gets or sets the starting index of rows in this table
-            /// </summary>
-            public int StartRowIndex
-            {
-                get { return _startRowIndex; }
-                set { this._startRowIndex = value; }
-            }
-
-            #endregion
-
-            #region  public int EndRowIndex { get; set;}
-
-            /// <summary>
-            /// Gets or sets the last index of rows in this table
-            /// </summary>
-            public int EndRowIndex
-            {
-                get { return _endRowIndex; }
-                set { this._endRowIndex = value; }
-            }
-
-            #endregion
-
-            #region public PDFLayoutBlock TableBlock {get;}
-
-            /// <summary>
-            /// Gets or sets the layout block for this table
-            /// </summary>
-            public PDFLayoutBlock TableBlock
-            {
-                get { return _tableBlock; }
-                set { _tableBlock = value; }
-            }
-
-            #endregion
-
-            #region public PDFStyle TableStyle {get;}
-
-            /// <summary>
-            /// Gets the style associated with the table
-            /// </summary>
-            public Style TableStyle
-            {
-                get { return _tableStyle; }
-            }
-
-            #endregion
-
-            #region public PDFPositionOptions Position {get;}
-
-            /// <summary>
-            /// Gets the position options for the table
-            /// </summary>
-            public PDFPositionOptions Position
-            {
-                get { return _posOpts; }
-            }
-
-            #endregion
-
-            #region public TableReference OwnerTable {get;}
-
-            /// <summary>
-            /// Gets the owner of this grid
-            /// </summary>
-            public TableReference OwnerTable
-            {
-                get { return _ownerTable; }
-            }
-
-            #endregion
-
-            #region public RowReference this[int index] {get;}
-
-            /// <summary>
-            /// Gets the Row reference for this grid
-            /// (offset from the whole table by this grids starting row index)
-            /// </summary>
-            /// <param name="index"></param>
-            /// <returns></returns>
-            public RowReference this[int index]
-            {
-                get
-                {
-                    return this.OwnerTable.AllRows[index];
-                }
-            }
-
-            #endregion
-
-            #region public PDFRect AvailableSpace {get;set;}
-
-            /// <summary>
-            /// Gets or sets the available space with in the outer table block for this grid
-            /// </summary>
-            public Rect AvailableSpace
-            {
-                get { return _availspace; }
-                set { _availspace = value; }
-            }
-
-            #endregion
-
-            #region public List<RowReference> HeaderRows {get;} + bool HasHeaderRows {get;}
-
-            private List<RowReference> _headerrows = null;
-
-            /// <summary>
-            /// Gets a list of all the repeated header rows (as layout blocks) in this grid
-            /// </summary>
-            public List<RowReference> HeaderRows
-            {
-                get
-                {
-                    if (null == _headerrows)
-                        _headerrows = new List<RowReference>();
-                    return _headerrows;
-                }
-            }
-
-            /// <summary>
-            /// Returns true if this grid has repeader header rows
-            /// </summary>
-            public bool HasHeaderRows
-            {
-                get { return null != _headerrows && _headerrows.Count > 0; }
-            }
-
-            #endregion
-
-            // ctor
-
-            #region public GridReference(TableReference owner, PDFStyle style, PDFPositionOptions opts, int startRow, int endRow)
-
-            /// <summary>
-            /// Creates a new instance of a GridReference
-            /// </summary>
-            /// <param name="owner"></param>
-            /// <param name="style"></param>
-            /// <param name="opts"></param>
-            /// <param name="startRow"></param>
-            /// <param name="endRow"></param>
-            public GridReference(TableReference owner, Style style, PDFPositionOptions opts, int startRow, int endRow)
-            {
-                this._ownerTable = owner;
-                this._tableStyle = style;
-                this._posOpts = opts;
-                this._startRowIndex = startRow;
-                this._endRowIndex = endRow;
-            }
-
-            #endregion
-
-            #region internal PDFSize CalculateContentSize()
-
-            internal Size CalculateContentSize()
-            {
-                Unit h = Unit.Zero;
-                Unit w = Unit.Zero;
-                for (int i = this.StartRowIndex; i <= this.EndRowIndex; i++)
-                {
-                    RowReference row = this[i];
-                    if (null != row.Block)
-                    {
-                        h += row.Block.Height;
-                        w = Unit.Max(w, row.Block.Width);
-                    }
-                }
-
-                return new Size(w, h);
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        #region private class TableReference
-
-        /// <summary>
-        /// A table of references to the grids, rows and cells in this table
-        /// </summary>
-        private class TableReference
-        {
-
-            #region ivars
-
-            private RowReference[] _rows;
-            private CellReference[,] _cells;
-            private List<GridReference> _grids;
-            private int _columncount;
-            private int _rowcount;
-
-            #endregion
-
-            // properties
-
-            #region public RowReference[] AllRows
-
-            /// <summary>
-            /// Gets all the row references in all the grids
-            /// </summary>
-            public RowReference[] AllRows
-            {
-                get { return _rows; }
-            }
-
-            #endregion
-
-            #region public List<RowReference> RepeatRows { get;} + bool HasRepeats {get;}
-
-            private List<RowReference> _repeats;
-
-            /// <summary>
-            /// Gets the list of Repeat Rows (can be null)
-            /// </summary>
-            public List<RowReference> RepeatRows
-            {
-                get { return _repeats; }
-            }
-
-            /// <summary>
-            /// Returns true if any of the rows are marked as repeating across regions / pages
-            /// </summary>
-            public bool HasRepeats
-            {
-                get { return null != _repeats && _repeats.Count > 0; }
-            }
-
-            #endregion
-
-            #region public CellReference[,] AllCells
-
-            /// <summary>
-            /// Gets the 2 dimensional array of all the cells in all grids (row, column)
-            /// </summary>
-            public CellReference[,] AllCells
-            {
-                get { return _cells; }
-            }
-
-            #endregion
-
-            #region public ICollection<GridReference> AllGrids
-
-            /// <summary>
-            /// Gets the collection of contiguous grids in this table
-            /// </summary>
-            public ICollection<GridReference> AllGrids
-            {
-                get { return _grids; }
-            }
-
-            #endregion
-
-            #region public GridReference CurrentGrid {get;}
-
-            /// <summary>
-            /// Gets the current grid in this table
-            /// </summary>
-            public GridReference CurrentGrid
-            {
-                get
-                {
-                    int last = _grids.Count - 1;
-                    if (last < 0)
-                        return null;
-                    else
-                        return _grids[last];
-                }
-            }
-
-            #endregion
-
-            #region public int TotalRowCount {get;}
-
-            /// <summary>
-            /// Gets the total count of all rows in this referenced table
-            /// </summary>
-            public int TotalRowCount
-            {
-                get { return _rowcount; }
-            }
-
-            #endregion
-
-            #region public int TotalColumnCount {get;}
-
-            /// <summary>
-            /// Gets the total count of all columns in this referenced table
-            /// </summary>
-            public int TotalColumnCount
-            {
-                get { return _columncount; }
-            }
-
-            #endregion
-
-            // .ctors
-
-            #region public TableReference(int rowcount, int columncount, PDFStyle tableStyle, PDFPositionOptions posOpts)
-
-            /// <summary>
-            /// Create a new Table reference, initializing the Rows, Cells and one Grid based on the row and column counts
-            /// </summary>
-            /// <param name="rowcount"></param>
-            /// <param name="columncount"></param>
-            /// <param name="tableStyle"></param>
-            /// <param name="posOpts"></param>
-            public TableReference(int rowcount, int columncount, Style tableStyle, PDFPositionOptions posOpts)
-            {
-                _rows = new RowReference[rowcount];
-                _cells = new CellReference[rowcount, columncount];
-                _columncount = columncount;
-                _rowcount = rowcount;
-                _grids = new List<GridReference>();
-
-
-                this.BeginNewGrid(tableStyle, posOpts, 0);
-            }
-
-            #endregion
-
-            // methods
-
-            #region public GridReference BeginNewGrid(PDFStyle fulltableStyle, PDFPositionOptions posOpts, int startRow)
-
-            /// <summary>
-            /// Begins a new contiguous grid for the table closing off any previous grid at theprevious row
-            /// </summary>
-            /// <param name="fulltableStyle"></param>
-            /// <param name="posOpts"></param>
-            /// <param name="startRow"></param>
-            /// <returns></returns>
-            public GridReference BeginNewGrid(Style fulltableStyle, PDFPositionOptions posOpts, int startRow)
-            {
-                if (null != this.CurrentGrid)
-                {
-                    //Truncate the pre
-                    this.CurrentGrid.EndRowIndex = startRow - 1;
-                }
-
-                GridReference grid = new GridReference(this, fulltableStyle, posOpts, startRow, this._rowcount - 1); //one less for the end row index
-                _grids.Add(grid);
-                return grid;
-
-            }
-
-            #endregion
-
-
-            #region public RowReference AddRowReference(PDFTableRow row, GridReference grid, PDFStyle applied, PDFStyle fullstyle, int rowIndex) + 1 overload
-
-            /// <summary>
-            /// Adds a new row reference at the specified index and returns the instance
-            /// </summary>
-            /// <param name="row">The associated table row for the reference</param>
-            /// <param name="grid">The grid this row is a part of</param>
-            /// <param name="applied">The applied style of the row</param>
-            /// <param name="fullstyle">The full style of the row</param>
-            /// <param name="rowIndex">The index of the row to insert. There cannot be an existing row reference at this index</param>
-            public RowReference AddRowReference(TableRow row, GridReference grid, Style applied, Style fullstyle, int rowIndex)
-            {
-                RowReference rref = new RowReference(row, grid, applied, fullstyle, rowIndex);
-                this.AddRowReference(rref);
-                return rref;
-            }
-
-
-            /// <summary>
-            /// Adds the row reference to the grid at the index specified in the reference's RowIndex. 
-            /// NOTE: There cannot be an existing row reference at this index
-            /// </summary>
-            /// <param name="rref"></param>
-            public void AddRowReference(RowReference rref)
-            {
-                if (null != _rows[rref.RowIndex])
-                    throw new ArgumentException("Row reference has already been set");
-                this._rows[rref.RowIndex] = rref;
-                if (rref.Repeat == TableRowRepeat.RepeatAtTop)
-                {
-                    if (null == this._repeats)
-                        _repeats = new List<RowReference>();
-                    _repeats.Add(rref);
-                }
-            }
-
-            #endregion
-
-            #region public void AddCellReference(PDFTableCell cell, RowReference rowRef, PDFStyle applied, PDFStyle fullstyle, int column) + 1 overload
-
-            /// <summary>
-            /// Adds a new cell reference at the specified index and returns the instance
-            /// </summary>
-            /// <param name="cell">The associated table cell</param>
-            /// <param name="rowRef">The row reference for this cell</param>
-            /// <param name="applied">The applied style of the cell</param>
-            /// <param name="fullstyle">The full style of the cell</param>
-            /// <param name="column">The column index of the cell. NOTE: There cannot be an existing cell reference in the rows column</param>
-            public CellReference AddCellReference(TableCell cell, RowReference rowRef, Style applied, Style fullstyle, int column)
-            {
-                CellReference cref = new CellReference(cell, rowRef, applied, fullstyle, rowRef.RowIndex, column);
-                this.AddCellReference(cref);
-                return cref;
-            }
-
-
-
-            /// <summary>
-            /// Adds a cell reference to the grid at the row and column index in the reference
-            /// NOTE: There cannot be an existing cell reference in the rows column
-            /// </summary>
-            /// <param name="reference"></param>
-            public void AddCellReference(CellReference reference)
-            {
-                if (null != this._cells[reference.RowIndex, reference.ColumnIndex])
-                    throw new ArgumentException("Cell reference has already been set");
-
-                this._cells[reference.RowIndex, reference.ColumnIndex] = reference;
-            }
-
-
-            
-            /// <summary>
-            /// Adds a new empty cell reference to this table 
-            /// </summary>
-            /// <param name="rowRef"></param>
-            /// <param name="colindex"></param>
-            /// <returns></returns>
-            public CellReference AddEmptyCellReference(RowReference rowRef, int colindex)
-            {
-                CellReference cref = new CellReference(null, rowRef, null, null, rowRef.RowIndex, colindex);
-                cref.IsEmpty = true;
-                this._cells[rowRef.RowIndex, cref.ColumnIndex] = cref;
-
-                return cref;
-            }
-            
-            
-            #endregion
-
-            #region public void SetRowCount(int count, bool clear)
-
-            /// <summary>
-            /// Alters the total row count in this table, 
-            /// and optionally removes / clears any references to rows beyond this.
-            /// </summary>
-            /// <param name="count">The new row count</param>
-            /// <param name="clear">Option to clear rows that have been created but are no longer required.</param>
-            public void SetRowCount(int count, bool clear)
-            {
-                int orig = _rowcount;
-                this._rowcount = count;
-
-                if (orig < count)
-                {
-                    RowReference[] newRows = _rows;
-                    Array.Resize<RowReference>(ref newRows, count);
-                    _rows = newRows;
-                    CellReference[,] newcells = _cells;
-                    Resize2DArray<CellReference>(ref newcells, count, _columncount);
-                    _cells = newcells;
-                }
-                else if (clear)
-                    this.ClearAllRowReferencesFrom(count);
-
-            }
-
-            #endregion
-
-            #region public void ClearAllRowReferencesFrom(int rowindex)
-
-            /// <summary>
-            /// Removes all the cell and row references for all rows after and including the row at the specified index.
-            /// And also sets any associated layout blocks for the rows and cells to invisible
-            /// </summary>
-            /// <param name="rowindex"></param>
-            public void ClearAllRowReferencesFrom(int rowindex)
-            {
-                for (int index = _rowcount - 1; index >= rowindex; index--)
-                {
-                    this.ClearRowReference(index);
-                }
-            }
-
-            #endregion
-
-            #region public void ClearRowReference(int rowindex)
-
-            /// <summary>
-            /// Clears the row and cell references for the specified index, and also sets any associated layout block to invisible.
-            /// </summary>
-            /// <param name="rowindex"></param>
-            public void ClearRowReference(int rowindex)
-            {
-                PDFLayoutBlock block = _rows[rowindex].Block;
-                if (null != block)
-                    block.Position.Visibility = Visibility.None;
-                for (int col = 0; col < _columncount; col++)
-                {
-                    block = this._cells[rowindex, col].Block;
-                    if (null != block)
-                        block.Position.Visibility = Visibility.None;
-                    this._cells[rowindex, col] = null;
-                }
-                this._rows[rowindex] = null;
-
-            }
-
-            #endregion
-
-            #region public PDFUnit GetMaxCellHeightForRow(int rowindex)
-
-            /// <summary>
-            /// Gets the maximum required height of all cells in a particular row
-            /// </summary>
-            /// <param name="rowindex"></param>
-            /// <returns></returns>
-            public Unit GetMaxCellHeightForRow(int rowindex)
-            {
-                Unit maxH = Unit.Zero;
-                for (int col = 0; col < _columncount; col++)
-                {
-                    CellReference cref = this._cells[rowindex, col];
-                    if (null != cref && null != cref.Block)
-                    {
-                        Unit h = cref.Block.TotalBounds.Height;
-                        maxH = Unit.Max(h, maxH);
-                    }
-                }
-                return maxH;
-            }
-
-            #endregion
-
-            #region public PDFUnit GetMaxCellWidthForColumn(int colIndex)
-
-            /// <summary>
-            /// Gets the maximum required width of all cells in a particular column
-            /// </summary>
-            /// <param name="colIndex"></param>
-            /// <returns></returns>
-            public Unit GetMaxCellWidthForColumn(int colIndex)
-            {
-                Unit maxW = Unit.Zero;
-                for (int row = 0; row < _rowcount; row++)
-                {
-                    CellReference cref = this._cells[row, colIndex];
-                    if (null != cref && null != cref.Block && cref.IsEmpty == false && cref.ColumnSpan == 1)
-                    {
-                        Unit w = cref.Block.TotalBounds.Width;
-                        maxW = Unit.Max(w, maxW);
-                    }
-                }
-                return maxW;
-            }
-
-            #endregion
-
-
-            public void EnsureSufficientWidthForSpannedCells(int colIndex, Unit[] widths)
-            {
-                for (int row = 0; row < _rowcount; row++)
-                {
-                    CellReference cref = this._cells[row, colIndex];
-                    if (cref.IsEmpty)
-                    {
-                        //We have a spanned cell, so we need to look back for the actual cell
-                        //based on this - if the last column it spanns is this colIndex
-                        // we can calculate the current width in previous columns and ensure that 
-                        //this last column can contain the remainder fro the required block size 
-
-                        int cellCol = colIndex;
-                        CellReference act = null;
-                        while (cellCol >= 0)
-                        {
-                            act = this._cells[row, cellCol];
-                            if (!act.IsEmpty)
-                                break; //this is the actual cell that spans the column
-                            cellCol--;
-                        }
-
-                        if (null != act && null != act.Block && ((act.ColumnSpan-1) + cellCol == colIndex)) //we have a cell and this is the last
-                        {
-                            Unit widthUpToLast = Unit.Zero;
-                            for (int i = 0; i < act.ColumnSpan-1; i++)
-                            {
-                                widthUpToLast += widths[cellCol + i];
-                            }
-                            Unit required = act.Block.TotalBounds.Width;
-                            required -= widthUpToLast;
-                            if (required > widths[colIndex])
-                                widths[colIndex] = required;
-                        }
-                    }
-                }
-            }
-
-            #region public void SetCellHeightForRow(int rowIndex, PDFUnit h)
-
-            /// <summary>
-            /// Sets the height of all cells in a row to the specified value. 
-            /// Also sets the height of any block associcated with the cell
-            /// </summary>
-            /// <param name="rowIndex"></param>
-            /// <param name="h"></param>
-            public void SetCellHeightForRow(int rowIndex, Unit h)
-            {
-                RowReference rref = this._rows[rowIndex];
-                for (int col = 0; col < _columncount; col++)
-                {
-                    CellReference cref = rref[col];
-                    if (null != cref && null != cref.Block)
-                    {
-                        Rect total = cref.Block.TotalBounds;
-                        total.Height = h; //- cref.Margins.Top - cref.Margins.Bottom;
-                        cref.Block.TotalBounds = total;
-                    }
-                }
-                rref.ExplicitHeight = h;
-                
-            }
-
-            #endregion
-
-            
-
-            #region public void SetCellWidthForColumn(int colIndex, PDFUnit w)
-
-            /// <summary>
-            /// Sets the width of all the cell in a column to the specified value. 
-            /// Also sets the width of any block associated with the cell
-            /// </summary>
-            /// <param name="colIndex"></param>
-            /// <param name="w"></param>
-            public void SetCellWidthForColumn(int colIndex, Unit[] widths)
-            {
-                try
-                {
-                    for (int row = 0; row < _rowcount; row++)
-                    {
-                        CellReference cref = this._cells[row, colIndex];
-                        if (null != cref && null != cref.Block && cref.IsEmpty == false)
-                        {
-                            Unit w = Unit.Zero;
-                            for (int i = 0; i < cref.ColumnSpan; i++)
-                            {
-                                w += widths[colIndex + i];
-                            }
-                            Rect total = cref.Block.TotalBounds;
-                            total.Width = w; //- cref.Margins.Left - cref.Margins.Right;
-                            cref.Block.TotalBounds = total;
-                        }
-                    }
-
-                    foreach (GridReference grid in this._grids)
-                    {
-                        if (grid.HasHeaderRows)
-                        {
-                            foreach (RowReference row in grid.HeaderRows)
-                            {
-                                CellReference cref = this._cells[row.RowIndex, colIndex];
-                                int colspan = cref.ColumnSpan;
-
-                                Unit w = Unit.Zero;
-                                for (int i = 0; i < cref.ColumnSpan; i++)
-                                {
-                                    w += widths[colIndex + i];
-                                }
-
-                                PDFLayoutBlock rowblock = row.Block;
-                                PDFLayoutRegion cellregion = rowblock.Columns[colIndex];
-
-                                //check there is content in the column - Fix for luis 06/01/2015
-                                if (cellregion.Contents != null && cellregion.Contents.Count > 0)
-                                {
-                                    PDFLayoutBlock cell = cellregion.Contents[0] as PDFLayoutBlock;
-                                    Rect total = cell.TotalBounds;
-                                    total.Width = w;
-                                    cell.TotalBounds = total;
-                                }
-
-                            }
-                        }
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new PDFLayoutException("Could not push the cell widths for column " + colIndex + " as : " + ex.Message);
-                }
-
-            }
-
-            #endregion
-
-            #region internal void SetRowOffsetAndWidthForColumn(int colIndex, PDFUnit xOffset, PDFUnit maxColWidth)
-
-            /// <summary>
-            /// Sets the offset and width of a column region in each of the rows
-            /// </summary>
-            /// <param name="colIndex">The column region</param>
-            /// <param name="xOffset">The horizontal offset from the start of the row</param>
-            /// <param name="maxColWidth">The width of the column</param>
-            internal void SetRowOffsetAndWidthForColumn(int colIndex, Unit[] widths)
-            {
-                //TODO: This can be done with an outer loop
-
-                Unit xOffset = Unit.Zero;
-                Unit maxColWidth = widths[colIndex];
-                for (int i = 0; i < colIndex; i++)
-                {
-                    xOffset += widths[i];
-                }
-
-                for (int rowindex = 0; rowindex < _rowcount; rowindex++)
-                {
-                    RowReference rowref = _rows[rowindex];
-                    if (null != rowref && null != rowref.Block)
-                    {
-                        PDFLayoutBlock rowblock = rowref.Block;
-                        PDFLayoutRegion column = rowblock.Columns[colIndex];
-                        Rect colbounds = column.TotalBounds;
-                        colbounds.X = xOffset;
-                        colbounds.Width = maxColWidth;
-                        column.TotalBounds = colbounds;
-                    }
-                }
-
-                //Update the row region offsets for all the grids with header rows
-                foreach (GridReference grid in this._grids)
-                {
-                    if (grid.HasHeaderRows)
-                    {
-                        foreach (RowReference rowref in grid.HeaderRows)
-                        {
-                            if (null != rowref.Block)
-                            {
-                                PDFLayoutBlock rowblock = rowref.Block;
-                                PDFLayoutRegion column = rowblock.Columns[colIndex];
-                                Rect colbounds = column.TotalBounds;
-                                colbounds.X = xOffset;
-                                colbounds.Width = maxColWidth;
-                                column.TotalBounds = colbounds;
-                            }
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            #region private static void Resize2DArray<T>(ref T[,] original, int rows, int cols)
-
-            /// <summary>
-            /// Helper method that will resize a 2 dimensional array
-            /// </summary>
-            /// <typeparam name="T"></typeparam>
-            /// <param name="original"></param>
-            /// <param name="rows"></param>
-            /// <param name="cols"></param>
-            private static void Resize2DArray<T>(ref T[,] original, int rows, int cols)
-            {
-                var newArray = new T[rows, cols];
-                int minRows = Math.Min(rows, original.GetLength(0));
-                int minCols = Math.Min(cols, original.GetLength(1));
-                for (int row = 0; row < minRows; row++)
-                    for (int col = 0; col < minCols; col++)
-                        newArray[row, col] = original[row, col];
-                original = newArray;
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-
-        #region private struct CellDimension
-
-        /// <summary>
-        /// Holds a single dimension for a cell
-        /// </summary>
-        private struct CellDimension
-        {
-            private Unit _sz;
-            private bool _explicit;
-
-            public Unit Size { get { return _sz; } set { _sz = value; } }
-            public bool Explicit { get { return _explicit; } set { _explicit = value; } }
-
-            public CellDimension(Unit size)
-                : this(size, true)
-            {
-            }
-
-            public CellDimension(Unit size, bool isExplicit)
-            {
-                _sz = size;
-                _explicit = isExplicit;
-            }
-
-            public override string ToString()
-            {
-                return this.Explicit ? _sz.ToString() + " Explicit" : _sz.ToString();
+                appliedStyle.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                (appliedStyle as StyleFull)?.ClearFullRefs();
             }
         }
-
-        #endregion
 
     }
 }

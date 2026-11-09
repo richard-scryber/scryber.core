@@ -73,10 +73,12 @@ namespace Scryber.Core.UnitTests.Styles
         internal virtual StyleDefn CreatePDFStyleBase()
         {
             StyleDefn style = new StyleDefn();
+#pragma warning disable CS0618 // Type or member is obsolete
             style.AppliedClass = "sea";
             style.AppliedID = "mylabel";
             style.AppliedType = typeof(Components.Label);
-
+#pragma warning restore CS0618 // Type or member is obsolete
+            
             style.Background.Color = Scryber.Drawing.StandardColors.Aqua;
 
             style.Border.Width = 4;

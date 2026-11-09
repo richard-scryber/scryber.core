@@ -46,9 +46,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLListDefinition()
-            : base()
+            : this(HTMLObjectTypes.ListDefinition)
         {
         }
+
+        protected HTMLListDefinition(ObjectType type) : base(type)
+        { }
     }
 
 

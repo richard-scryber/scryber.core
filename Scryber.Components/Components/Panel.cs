@@ -129,7 +129,8 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.PositionMode = Drawing.PositionMode.Static;
+            style.Position.DisplayMode = DisplayMode.Block;
             return style;
         }
         
@@ -143,16 +144,24 @@ namespace Scryber.Components
 
         protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new LayoutEnginePanel(this, parent);
+            var display = style.GetValue(StyleKeys.PositionDisplayKey, Drawing.DisplayMode.Block);
+
+            //inline-flex, inline-grid and inline-table lay out their contents as a flex, grid or table
+            if (display == Drawing.DisplayMode.InlineBlock)
+                display = style.GetValue(StyleKeys.PositionDisplayInsideKey, display);
+
+            return display switch
+            {
+                Drawing.DisplayMode.FlexBox  => new PDF.Layout.LayoutEngineFlexBox(this, parent, style),
+                Drawing.DisplayMode.FlexGrid => new PDF.Layout.LayoutEngineFlexGrid(this, parent, style),
+                Drawing.DisplayMode.Table    => new PDF.Layout.LayoutEngineCSSTable(this, parent, style),
+                _ => new PDF.Layout.LayoutEnginePanel(this, parent),
+            };
         }
 
         #endregion
 
-        protected override void SetArrangement(ComponentArrangement arrange)
-        {
-            base.SetArrangement(arrange);
-        }
-
+        
         
     }
 

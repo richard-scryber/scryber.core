@@ -55,7 +55,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             style.Margins.All = 10;
             style.Font.FontItalic = true;
             return style;

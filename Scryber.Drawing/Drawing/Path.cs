@@ -85,6 +85,19 @@ namespace Scryber.Drawing
             this._data.RemoveAt(this._data.Count - 1);
         }
 
+        public virtual Path Clone()
+        {
+            Path clone = (Path) this.MemberwiseClone();
+            clone._data = new List<PathData>(this.Count);
+            
+            for (int i = 0; i < this.Count; i++)
+            {
+                PathData data = this._data[i];
+                clone._data.Add(data.Clone());
+            }
+            return clone;
+        }
+
         public void FillAllPoints(List<Point> points)
         {
             foreach (PathData data in this._data)

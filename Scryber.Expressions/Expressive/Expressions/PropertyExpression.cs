@@ -5,8 +5,10 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using Scryber.Expressive.Exceptions;
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
 using System.Text.Json;
 
@@ -16,12 +18,12 @@ namespace Scryber.Expressive.Expressions
 {
     public class PropertyExpression : BinaryExpressionBase
     {
-        public PropertyExpression(IExpression left, IExpression right, Context context)
+        public PropertyExpression(IExpression left, IExpression right, ExpressionContext context)
             : base(EnsureLeftExpression(left, context), right, context)
         {
         }
 
-        private static IExpression EnsureLeftExpression(IExpression left, Context context)
+        private static IExpression EnsureLeftExpression(IExpression left, ExpressionContext context)
         {
             if(null == left)
             {
@@ -61,6 +63,15 @@ namespace Scryber.Expressive.Expressions
                 {
                     return null;
                 }
+                else if (null == lhsResult)
+                {
+                    //A null root variable (e.g. 'model' in model.missing.value) is reported.
+                    //A null part way along the path (e.g. 'missing') is not an error - the result is just null.
+                    if (IsRootExpression(this.leftHandSide))
+                        throw new NullRootVariableException(rhs);
+
+                    return null;
+                }
                 else
                 {
                     return DoGetMyValue(lhsResult, rhs, this.Context);
@@ -73,9 +84,48 @@ namespace Scryber.Expressive.Expressions
         }
 
 
-        private object DoGetMyValue(object parent, string name, Context context)
+        private static bool IsRootExpression(IExpression expression)
         {
-            
+            return expression is VariableExpression
+                   || expression is CurrentDataExpression
+                   || expression is ParentDataExpression
+                   || expression is SelfVariableExpression
+                   || expression is ParentVariableExpression;
+        }
+
+        private object DoGetMyValue(object parent, string name, ExpressionContext context)
+        {
+            if (parent is IDictionary dict)
+            {
+                if (dict.Contains(name))
+                    return NormalizeDictionaryValue(dict[name]);
+                //fall back to the default implementation if not found
+            }
+
+            return GetPropertyValue(parent, name, context.IsCaseInsensitiveParsingEnabled);
+        }
+
+        // A plain IDictionary (e.g. Dictionary<string,object> built by a host
+        // application from deserialized JSON) is returned above without going
+        // through GetPropertyValue's JObject/JsonElement handling below - so a
+        // JToken/JsonElement stored as one of its values would otherwise reach
+        // callers (and functions like double()/string()) unwrapped, unlike the
+        // exact same JSON value reached via nested property access. Apply the
+        // same normalization here so a dictionary's own values behave
+        // identically to a JObject/JsonElement's properties.
+        private static object NormalizeDictionaryValue(object value)
+        {
+            if (value is Newtonsoft.Json.Linq.JToken jtoken)
+                return GetJTokenValue(jtoken);
+#if NET6_0_OR_GREATER
+            if (value is JsonElement jelement)
+                return GetJsonElementValue(jelement);
+#endif
+            return value;
+        }
+        
+        public static object GetPropertyValue(object parent, string name, bool caseInSensitive)
+        {
 
             if(null == parent)
             {
@@ -87,20 +137,24 @@ namespace Scryber.Expressive.Expressions
             if (parent is Newtonsoft.Json.Linq.JObject jobject)
             {
                 if (jobject.ContainsKey(name) == false)
+                {
                     return null;
+                }
 
                 var result = jobject.GetValue(name);
                 return GetJTokenValue(result);
             }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
             //New to .net 6
             else if (parent is JsonElement jelement)
             {
                 JsonElement result;
                 if (!jelement.TryGetProperty(name, out result))
+                {
                     return null;
+                }
                 else
                     return GetJsonElementValue(result);
                 
@@ -129,12 +183,12 @@ namespace Scryber.Expressive.Expressions
                 PropertyInfo pi = null;
                 FieldInfo fi = null;
 
-                if (TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
+                if (TryGetProperty(type, name, caseInSensitive, out pi))
                 {
                     return pi.GetValue(parent, null);
                 }
 
-                else if (TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
+                else if (TryGetField(type, name, caseInSensitive, out fi))
                 {
                     return fi.GetValue(parent);
                 }
@@ -142,7 +196,7 @@ namespace Scryber.Expressive.Expressions
                 else if (parent is ICustomTypeDescriptor)
                 {
                     var properties = (parent as ICustomTypeDescriptor).GetProperties();
-                    var prop = properties.Find(name, Context.IsCaseInsensitiveParsingEnabled);
+                    var prop = properties.Find(name, caseInSensitive);
 
                     if (null != prop)
                     {
@@ -164,7 +218,7 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
         public static object GetJsonElementValue(JsonElement result)
         {
@@ -232,7 +286,8 @@ namespace Scryber.Expressive.Expressions
 
         private static bool TryGetProperty(Type fortype, string name, bool ignoreCase, out PropertyInfo found)
         {
-            found = fortype.GetProperty(name);
+            BindingFlags flags = ignoreCase ? (BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) : BindingFlags.Default;
+            found = fortype.GetProperty(name, flags);
 
             if (null == found)
             {
@@ -246,7 +301,8 @@ namespace Scryber.Expressive.Expressions
 
         private static bool TryGetField(Type fortype, string name, bool ignoreCase, out FieldInfo found)
         {
-            found = fortype.GetField(name);
+            BindingFlags flags = ignoreCase ? (BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) : BindingFlags.Default;
+            found = fortype.GetField(name, flags);
             if (null == found)
             {
                 return false;

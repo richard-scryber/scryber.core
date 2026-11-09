@@ -1,0 +1,230 @@
+﻿using System;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
+using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
+using Scryber.PDF.Graphics;
+
+namespace Scryber.Drawing
+{
+    public class GradientSVGRadialDescriptor : GradientRadialDescriptor
+    {
+
+       
+
+
+        
+
+        public GradientSVGRadialDescriptor() : this(new List<GradientColor>())
+        {
+            
+        }
+        
+        public GradientSVGRadialDescriptor(List<GradientColor> colors) : this(colors, RadialShape.Circle, RadialSize.FarthestCorner)
+        { }
+
+        public GradientSVGRadialDescriptor(List<GradientColor> colors, RadialShape shape, RadialSize size) : base(colors, shape, size)
+        {
+        }
+
+        public override double[] GetCoordsForBounds(Point location, Size size, bool flip = true )
+        {
+            
+            double max = Math.Max(Math.Abs(size.Width.PointsValue), Math.Abs(size.Height.PointsValue));
+            double[] coords = new double[6];
+            coords[0] = (location.X + (size.Width * StartCenter.Value.X.PointsValue)).PointsValue;
+            
+            if (flip)
+                coords[1] = (location.Y + (size.Height * StartCenter.Value.Y.PointsValue)).PointsValue;
+            else
+                coords[1] = (location.Y + (size.Height * StartCenter.Value.Y.PointsValue)).PointsValue;
+            
+            coords[2] = max * StartRadius.Value.PointsValue;
+            
+            
+            coords[3] = (location.X + (size.Width * EndCenter.Value.X.PointsValue)).PointsValue; 
+            
+            if(flip)
+                coords[4] = (location.Y + (size.Height * EndCenter.Value.Y.PointsValue)).PointsValue;
+            else
+                coords[4] = (location.Y + (size.Height * EndCenter.Value.Y.PointsValue)).PointsValue;
+            
+            coords[5] = max * EndRadius.Value.PointsValue;
+            
+            return coords;
+        }
+        
+
+        /// <summary>
+        /// Override so that the radial pattern extends beyond the set size to the farthest corner.
+        /// With the repeat at the distances
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public override List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
+        {
+            var items = base.GetRepeatingBoundaries(offset, size);
+            // if (this.Size != RadialSize.None && this.Size != RadialSize.FarthestCorner)
+            // {
+            //     var height = Math.Abs(size.Height.PointsValue);
+            //     var width = size.Width.PointsValue;
+            //
+            //     //calculate the centre and radii for the names side and farthest corner
+            //     var newItems = new List<PDFGradientFunctionBoundary>(items.Count);
+            //     Point centre = PDFRadialShadingPattern.CacluateRadialCentre(this.XCentre, this.YCentre, height, width);
+            //     var radiusActual = Math.Abs(PDFRadialShadingPattern.CalculateRadiusForSize(this.Size, height, width, centre.X.PointsValue, centre.Y.PointsValue));
+            //     var radiusRequired = Math.Abs(PDFRadialShadingPattern.CalculateRadiusForSize(RadialSize.FarthestCorner, height, width, centre.X.PointsValue, centre.Y.PointsValue));
+            //
+            //     //all our boundaries will be adjusted for the factor so we extend out.
+            //     var factor = radiusActual / radiusRequired;
+            //
+            //     var start = 0.0;
+            //     var boundary = 0.0;
+            //     var index = 0;
+            //
+            //     while(boundary < 1)
+            //     {
+            //         var one = items[index];
+            //         boundary = (one.Bounds * factor) + start;
+            //         one = new PDFGradientFunctionBoundary(boundary);
+            //         newItems.Add(one);
+            //
+            //         index++;
+            //
+            //         if(index >= items.Count)
+            //         {
+            //             index = 0;
+            //             start = boundary;
+            //             boundary = 0.0;
+            //         }
+            //     }
+            //
+            //     this.Size = RadialSize.FarthestCorner;
+            //     items = newItems;
+            // }
+
+            return items;
+        }
+
+        public static bool TryParseRadial(string value, out GradientRadialDescriptor radial)
+        {
+            radial = null;
+            return false;
+            
+            // radial = null;
+            // string[] all = _splitter.Split(value);
+            // if (all.Length == 0)
+            //     return false;
+            //
+            // RadialShape shape = RadialShape.Circle;
+            // RadialSize size = RadialSize.FarthestCorner;
+            // Unit? xpos = null;
+            // Unit? ypos = null;
+            //
+            // int colorStopIndex = 0;
+            //
+            //
+            // if (all[0].StartsWith("circle"))
+            // {
+            //     shape = RadialShape.Circle;
+            //     all[0] = all[0].Substring("circle".Length).TrimStart();
+            //     colorStopIndex = 1;
+            // }
+            // else if (all[0].StartsWith("ellipse"))
+            // {
+            //     radial = null;
+            //     return false;
+            //     //shape = RadialShape.Ellipse;
+            //     //all[0] = all[0].Substring("ellipse".Length).TrimStart();
+            //     //colorStopIndex = 1;
+            // }
+            //
+            // if (all[0].StartsWith("closest-side"))
+            // {
+            //     //TODO:Parse at percents
+            //     size = RadialSize.ClosestSide;
+            //     all[0] = all[0].Substring("closest-side".Length).TrimStart();
+            //     colorStopIndex = 1;
+            // }
+            // else if (all[0].StartsWith("closest-corner"))
+            // {
+            //     size = RadialSize.ClosestCorner;
+            //     all[0] = all[0].Substring("closest-corner".Length).TrimStart();
+            //     colorStopIndex = 1;
+            // }
+            // else if (all[0].StartsWith("farthest-side"))
+            // {
+            //     size = RadialSize.FarthestSide;
+            //     all[0] = all[0].Substring("farthest-side".Length).TrimStart();
+            //     colorStopIndex = 1;
+            // }
+            // else if (all[0].StartsWith("farthest-corner"))
+            // {
+            //     size = RadialSize.FarthestCorner;
+            //     all[0] = all[0].Substring("farthest-corner".Length).TrimStart();
+            //     colorStopIndex = 1;
+            // }
+            //
+            // //TODO: Support relative radii positions e.g. 10% 40% at ....
+            //
+            //
+            // if(all[0].StartsWith("at"))
+            // {
+            //     all[0] = all[0].Substring("at".Length).TrimStart().ToLower();
+            //
+            //     var parts = all[0].Split(' ');
+            //     
+            //     foreach (var part in parts)
+            //     {
+            //         if (string.IsNullOrWhiteSpace(part))
+            //             continue;
+            //         var item = part.Trim();
+            //
+            //         switch (item)
+            //         {
+            //             case ("top"):
+            //                 ypos = 0;
+            //                 break;
+            //             case ("left"):
+            //                 xpos = 0;
+            //                 break;
+            //             case ("bottom"):
+            //                 ypos = Double.MaxValue;
+            //                 break;
+            //             case ("right"):
+            //                 xpos = Double.MaxValue;
+            //                 break;
+            //             default:
+            //                 Unit found;
+            //                 if (Unit.TryParse(item, out found))
+            //                 {
+            //                     if (xpos.HasValue)
+            //                         ypos = found;
+            //                     else
+            //                         xpos = found;
+            //                 }
+            //                 break;
+            //         }
+            //     }
+            //     colorStopIndex = 1;
+            // }
+            //
+            // GradientColor[] colors = new GradientColor[all.Length - colorStopIndex];
+            //
+            // for (int i = 0; i < colors.Length; i++)
+            // {
+            //     GradientColor parsed;
+            //     if (GradientColor.TryParse(all[i + colorStopIndex], out parsed))
+            //         colors[i] = parsed;
+            //     else
+            //         return false;
+            // }
+            //
+            // radial = new GradientRadialDescriptor() { Repeating = false, Shape = shape, Size = size, XCentre = xpos, YCentre = ypos, Colors = new List<GradientColor>(colors) };
+            // return true;
+        }
+    }
+}

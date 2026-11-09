@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -25,25 +26,47 @@ namespace Scryber.Imaging
         }
 
         protected ImageFactoryTiff(Regex match, string name, bool shouldCache)
-            : base(match, name, shouldCache)
+            : base(match, MimeType.TiffImage,  name, shouldCache)
         {
+        }
+
+
+        protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+        {
+            var span = new ReadOnlySpan<byte>(rawData);
+            var img = Image.Load(span);
+            
+            ImageData data = null;
+            var meta = img.Metadata.GetFormatMetadata(TiffFormat.Instance);
+
+            if (meta != null)
+            {
+                var name = document.GetIncrementID(ObjectTypes.ImageData) + ".tiff";
+                const ColorSpace colorSpace = ColorSpace.RGB;
+                int bitDepth = img.PixelType.BitsPerPixel; 
+                bool hasAlpha = img.PixelType.AlphaRepresentation.HasValue 
+                                && img.PixelType.AlphaRepresentation != PixelAlphaRepresentation.None;
+                
+                data = GetImageDataForImage(ImageFormat.Tiff, img, name, bitDepth, hasAlpha, colorSpace);
+            }
+
+
+
+            return data;
         }
 
 
         protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
         {
-            IImageFormat format;
-            SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
-            var img = Image.Load(config, stream, out format);
+            var img = Image.Load(stream);
 
             ImageData data = null;
+            var meta = img.Metadata.GetFormatMetadata(TiffFormat.Instance);
 
-            if (format.Name == "TIFF")
+            if (null != meta)
             {
-                var meta = img.Metadata.GetFormatMetadata(TiffFormat.Instance);
-                
-                const ColorSpace colorSpace = ColorSpace.RGB;
-                const int bitDepth = 8; 
+                ColorSpace colorSpace =  ColorSpace.RGB; 
+                int bitDepth = img.PixelType.BitsPerPixel;
                 bool hasAlpha = img.PixelType.AlphaRepresentation.HasValue 
                                 && img.PixelType.AlphaRepresentation != PixelAlphaRepresentation.None;
                 

@@ -14,7 +14,7 @@ namespace Scryber.Styles.Parsing.Typed
         public CSSThicknessValueParser(string cssName, StyleKey<Unit> pdfAttr)
             : base(cssName, pdfAttr)
         {
-            AutoValue = Unit.Zero;
+            AutoValue = Unit.AutoValue;
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
@@ -49,6 +49,11 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 found = unit;
                 return true;
+            }
+            else if(value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return ParseThicknessValue(str, this.AutoValue, out found);
             }
             else if (ParseThicknessValue(value.ToString(), this.AutoValue, out found))
             {

@@ -190,6 +190,31 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public TextTransform Transform {get;set;} + RemoveTransform()
+
+        public Scryber.Text.TextTransform Transform
+        {
+            get
+            {
+                Scryber.Text.TextTransform t;
+                if (this.TryGetValue(StyleKeys.TextTransformKey, out t))
+                    return t;
+                else
+                    return Scryber.Text.TextTransform.None;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextTransformKey, value);
+            }
+        }
+
+        public void RemoveTransform()
+        {
+            this.RemoveValue(StyleKeys.TextTransformKey);
+        }
+
+        #endregion
+
         #region public WordHyphenation Hyphenation {get;set;} + RemoveHypenation()
 
         public Scryber.Text.WordHyphenation Hyphenation
@@ -214,11 +239,39 @@ namespace Scryber.Styles
         }
 
         #endregion
+        
+        #region public int HyphenationLimitChars {get;set;} + RemoveHyphenationLimitChars()
+
+        /// <summary>
+        /// Gets or sets the minimum number of characters needed before hyphenation will happen on a word.
+        /// </summary>
+        public int HyphenationLimitChars
+        {
+            get
+            {
+                int h;
+                if (this.TryGetValue(StyleKeys.TextHyphenationMinLength, out h))
+                    return h;
+                else
+                    return 0;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TextHyphenationMinLength, value);
+            }
+        }
+
+        public void RemoveHyphenationLimitChars()
+        {
+            this.RemoveValue(StyleKeys.TextHyphenationMinBeforeBreak);
+        }
+
+        #endregion
 
         #region public int HyphenationMinCharsBefore {get;set;} + RemoveHyphenationMinCharsBefore()
 
         /// <summary>
-        /// Gets or sets the minimum number of characters needed before hyphenation will happen on a word.
+        /// Gets or sets the minimum number of characters before a hyphenation mark.
         /// </summary>
         public int HyphenationMinCharsBefore
         {
@@ -243,10 +296,10 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public int HyphenationMinCharsBefore {get;set;} + RemoveHyphenationMinCharsBefore()
+        #region public int HyphenationMinCharsAfter {get;set;} + RemoveHyphenationMinCharsAfter()
 
         /// <summary>
-        /// Gets or sets the minimum number of characters needed before hyphenation will happen on a word.
+        /// Gets or sets the minimum number of characters needed after a hyphenation mark.
         /// </summary>
         public int HyphenationMinCharsAfter
         {

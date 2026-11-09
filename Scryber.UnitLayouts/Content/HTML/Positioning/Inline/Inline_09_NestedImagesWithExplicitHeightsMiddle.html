@@ -1,0 +1,43 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+
+        body{
+            font-size: 12pt;
+            font-family: sans-serif;
+            margin: 30pt;
+            border: solid 1px red;
+        }
+
+        .nest{
+            /*margin: 30pt 20pt;*/
+            /*padding: 20pt 10pt;*/
+            border: solid 1px green;
+        }
+
+        #inline{
+            background-color: silver;
+            font-size: 30pt;
+        }
+        
+        img{
+            border: solid 1pt blue;
+            vertical-align: middle;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <div class="nest">
+        <span style="background-color: silver">Before the inlining images</span>
+        <img src="../../../images/toroid32.png" style="height: 30pt;" />
+        <img src="../../../images/toroid32.png" style="height: 100pt;" />
+        <span id="inline">Inlining with the nest that will overflow onto moreishy than two lines in the contenty.</span>
+    </div>
+</body>
+</html>
+

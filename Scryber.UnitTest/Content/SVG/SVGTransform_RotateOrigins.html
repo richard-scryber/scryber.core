@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        
+        body {
+            font: 100 12pt 'Roboto';
+            padding: 20pt;
+        }
+        
+        svg {
+            background-color: #AAA;
+            width: 100pt;
+            height: 100pt;
+            padding: 0;
+            margin: 0;
+        }
+
+        .box {
+            width: 100pt;
+            display: inline-block;
+            margin-right: 20pt;
+            margin-bottom: 30pt;
+        }
+
+        
+        .caption{
+            background-color: #333;
+            color: #FFF;
+            font-weight: 300;
+        }
+        
+        
+        
+    </style>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
+    
+</head>
+<body title="Rotation Samples" >
+
+<div class="row">
+    <!-- Tops-->
+    
+<div class="box">
+    <svg  version="1.1" id="Canvas11" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+          xmlns:xlink="http://www.w3.org/1999/xlink"    >
+
+        <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                  fill="black" stroke-width="1" />
+        <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                  fill="#F00" stroke-width="1" transform="rotate(15)" transform-origin="left top" />
+        <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                  fill="#F33" stroke-width="1" transform="rotate(30)" transform-origin="top left" />
+        <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                  fill="#F66" stroke-width="1" transform="rotate(45)" transform-origin="left top" />
+    </svg>
+    <div class="caption" >Left Top</div>
+</div>
+
+<div class="box">
+    <svg  version="1.1" id="Canvas12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+          xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                  fill="black" stroke-width="1" />
+        <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                  fill="#F00" stroke-width="1" transform="rotate(15)" transform-origin="center top" />
+        <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                  fill="#F33" stroke-width="1" transform="rotate(30)" transform-origin="top center" />
+        <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                  fill="#F66" stroke-width="1" transform="rotate(45)" transform-origin="center top" />
+    </svg>
+    <div class="caption" >Center Top</div>
+</div>
+
+<div class="box">
+    <svg  version="1.1" id="Canvas13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+          xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                  fill="black" stroke-width="1" />
+        <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                  fill="#F00" stroke-width="1" transform="rotate(-15)" transform-origin="right top" />
+        <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                  fill="#F33" stroke-width="1" transform="rotate(-30)" transform-origin="top right" />
+        <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                  fill="#F66" stroke-width="1" transform="rotate(-45)" transform-origin="right top" />
+    </svg>
+    <div class="caption" >Right Top</div>
+</div>
+</div>
+
+<div  class="row">
+    <!-- Centers-->
+
+    <div class="box">
+        <svg  version="1.1" id="Canvas21" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+            <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                      fill="black" stroke-width="1" />
+            <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                      fill="#F00" stroke-width="1" transform="rotate(15)" transform-origin="left center" />
+            <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                      fill="#F33" stroke-width="1" transform="rotate(30)" transform-origin="center left" />
+            <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                      fill="#F66" stroke-width="1" transform="rotate(45)" transform-origin="left center" />
+        </svg>
+        <div class="caption" >Left Center</div>
+    </div>
+
+    <div class="box">
+        <svg  version="1.1" id="Canvas22" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+            <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                      fill="black" stroke-width="1" />
+            <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                      fill="#F00" stroke-width="1" transform="rotate(15)" transform-origin="center center" />
+            <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                      fill="#F33" stroke-width="1" transform="rotate(30)" transform-origin="center center" />
+            <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                      fill="#F66" stroke-width="1" transform="rotate(45)" transform-origin="center center" />
+        </svg>
+        <div class="caption" >Center Center</div>
+    </div>
+
+    <div class="box">
+        <svg  version="1.1" id="Canvas23" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+            <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                      fill="black" stroke-width="1" />
+            <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                      fill="#F00" stroke-width="1" transform="rotate(-15)" transform-origin="right center" />
+            <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                      fill="#F33" stroke-width="1" transform="rotate(-30)" transform-origin="center right" />
+            <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                      fill="#F66" stroke-width="1" transform="rotate(-45)" transform-origin="right center" />
+        </svg>
+        <div class="caption" >Right Center</div>
+    </div>
+</div>
+
+<div  class="row">
+    <!-- Tops-->
+
+    <div class="box">
+        <svg  version="1.1" id="Canvas31" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+            <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                      fill="black" stroke-width="1" />
+            <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                      fill="#F00" stroke-width="1" transform="rotate(15)" transform-origin="left bottom" />
+            <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                      fill="#F33" stroke-width="1" transform="rotate(30)" transform-origin="bottom left" />
+            <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                      fill="#F66" stroke-width="1" transform="rotate(45)" transform-origin="left bottom" />
+        </svg>
+        <div class="caption" >Left Bottom</div>
+    </div>
+
+    <div class="box">
+        <svg  version="1.1" id="Canvas32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+            <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                      fill="black" stroke-width="1" />
+            <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                      fill="#F00" stroke-width="1" transform="rotate(15)" transform-origin="center bottom" />
+            <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                      fill="#F33" stroke-width="1" transform="rotate(30)" transform-origin="center bottom" />
+            <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                      fill="#F66" stroke-width="1" transform="rotate(45)" transform-origin="center bottom" />
+        </svg>
+        <div class="caption" >Center Bottom</div>
+    </div>
+
+    <div class="box">
+        <svg  version="1.1" id="Canvas33" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+
+            <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                      fill="black" stroke-width="1" />
+            <polyline id="Poly1" points="100,100 150,25 150,75 200,0"
+                      fill="#F00" stroke-width="1" transform="rotate(-15)" transform-origin="right bottom" />
+            <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
+                      fill="#F33" stroke-width="1" transform="rotate(-30)" transform-origin="right bottom" />
+            <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
+                      fill="#F66" stroke-width="1" transform="rotate(-45)" transform-origin="right bottom" />
+        </svg>
+        <div class="caption" >Right Bottom</div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -13,7 +13,7 @@ namespace Scryber.Expressive.Operators.Additive
 
         public override IEnumerable<string> Tags => new[] { "+" };
 
-        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             if (IsUnary(previousToken))
             {

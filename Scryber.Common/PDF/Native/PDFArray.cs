@@ -48,6 +48,12 @@ namespace Scryber.PDF.Native
                 this.InnerList.AddRange(items);
         }
 
+        public PDFArray(params IPDFFileObject[] items)
+        {
+            if(null != items)
+                this.InnerList.AddRange(items);
+        }
+
         private List<IPDFFileObject> _items = new List<IPDFFileObject>();
 
         /// <summary>

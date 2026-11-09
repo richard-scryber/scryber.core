@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>SVG Image (own width/height, no viewBox) min/max width/height - ratio should be preserved</title>
+        <style>
+            @page{
+                size: 500pt 400pt;
+                margin : 10pt;
+            }
+            body{ margin: 0; padding: 0; background-color: #ffffff; }
+            img { border: solid 1px #000; }
+            .narrow { width: 80pt; border: dashed 1pt #f00; }
+        </style>
+    </head>
+    <body>
+    <!-- Sample_NoViewbox_HasWidth_HasHeight.svg declares its own width="150" height="100"
+         (1.5:1 ratio) but has no viewBox. Confirmed against real browser rendering:
+         min/max-width/height alone (no explicit width/height/aspect-ratio) derive the
+         unconstrained axis from the SVG's own declared ratio, unless both axes end up
+         independently constrained by their own min/max, in which case the ratio can break -
+         same rule already confirmed for SVGImageDataEmptySizer (CSS aspect-ratio) and
+         SVGImageDataViewBoxSizer (viewBox ratio).
+
+         Without something else set, an unconstrained SVG fills its available container, so
+         min-width/min-height alone need a narrower container to actually be the binding
+         constraint - the dashed border marks that container so it's clear the image legitimately
+         grows past it. A width-only narrow container is used throughout - narrowing width also
+         naturally shrinks the fill-derived height (since fill preserves the SVG's own ratio),
+         which is enough to make min-height bind too. -->
+
+    <!-- 0: min-width:300pt in an 80pt-wide container -> fill(80,53.3), w=300, h=300/1.5=200 -->
+    <div class="narrow">
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="min-width: 300pt;" />
+    </div>
+
+    <!-- 1: max-width:50pt, natural fill (wider than 50pt) -> w=50, h=50/1.5=33.3. No narrow
+         container needed - max always caps the fill value regardless of container size. -->
+    <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="max-width: 50pt; page-break-before: always;" />
+
+    <!-- 2: min-height:200pt in the same 80pt-wide container -> fill height (53.3) is already
+         shorter than 200pt, so min-height binds -> h=200, w=200*1.5=300 -->
+    <div class="narrow" style="page-break-before: always;">
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="min-height: 200pt;" />
+    </div>
+
+    <!-- 3: max-height:20pt, natural fill (taller than 20pt) -> h=20, w=20*1.5=30 -->
+    <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="max-height: 20pt; page-break-before: always;" />
+
+    <!-- 4: min-width:200pt and min-height:150pt together in the 80pt-wide container - both axes
+         independently constrained, so the ratio is allowed to break: w=200, h=150. -->
+    <div class="narrow" style="page-break-before: always;">
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="min-width: 200pt; min-height: 150pt;" />
+    </div>
+    </body>
+</html>

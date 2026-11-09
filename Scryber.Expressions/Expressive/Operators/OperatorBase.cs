@@ -14,7 +14,7 @@ namespace Scryber.Expressive.Operators
         public abstract IEnumerable<string> Tags { get; }
 
         /// <inheritdoc />
-        public abstract IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context);
+        public abstract IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context);
 
         /// <inheritdoc />
         public virtual bool CanGetCaptiveTokens(Token previousToken, Token token, Queue<Token> remainingTokens)

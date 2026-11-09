@@ -1,0 +1,38 @@
+﻿using Scryber.Expressive.Expressions;
+using System;
+using System.Collections.Generic;
+
+namespace Scryber.Expressive.Functions.Logical
+{
+    public class IfErrorFunction : FunctionBase
+    {
+        #region FunctionBase Members
+
+        public override string Name { get { return "IfError"; } }
+
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
+        {
+            this.ValidateParameterCount(parameters, 2, 2);
+            object result;
+            
+            try
+            {
+                result = parameters[0].Evaluate(variables);
+                
+                if(null == result)
+                    result = parameters[1].Evaluate(variables);
+                
+                else if(result is double d && (double.IsNaN(d)  || double.IsInfinity(d)))
+                    result = parameters[1].Evaluate(variables);
+            }
+            catch (Exception)
+            {
+                result = parameters[1].Evaluate(variables);
+            }
+
+            return result;
+        }
+
+        #endregion
+    }
+}

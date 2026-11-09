@@ -46,8 +46,13 @@ namespace Scryber.Html.Components
         }
 
         public HTMLItalicSpan()
-            : base()
+            : this(HTMLObjectTypes.Italic)
         {
+        }
+
+        protected HTMLItalicSpan(ObjectType type): base(type)
+        {
+
         }
     }
 
@@ -55,5 +60,11 @@ namespace Scryber.Html.Components
     public class HTMLEmphasis : HTMLItalicSpan
     {
 
+        public HTMLEmphasis(): this(HTMLObjectTypes.Emphasis)
+        { }
+
+        protected HTMLEmphasis(ObjectType type): base(type)
+        {
+        }
     }
 }

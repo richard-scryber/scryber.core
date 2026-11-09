@@ -1,0 +1,312 @@
+/* WWF Tigers Alive Annual Report - Styles */
+/* Page Setup */
+@page {
+    size: A4;
+    margin: 0mm;
+}
+
+body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10pt;
+    color: #2d2d2d;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Color Palette */
+:root {
+    --wwf-orange: #ff6600;
+    --wwf-black: #000000;
+    --dark-gray: #2d2d2d;
+    --light-gray: #f5f5f5;
+    --border-gray: #e0e0e0;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+    color: white;
+    padding: 60pt 40pt;
+    text-align: center;
+    page-break-after: always;
+}
+
+.hero-title {
+    font-size: 36pt;
+    font-weight: bold;
+    margin: 0 0 20pt 0;
+    color: var(--wwf-orange);
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+}
+
+.hero-subtitle {
+    font-size: 18pt;
+    margin: 0 0 40pt 0;
+    color: white;
+    font-weight: 300;
+}
+
+.hero-stats {
+    display: table;
+    width: 100%;
+    margin: 40pt auto 0;
+}
+
+.hero-stat {
+    display: table-cell;
+    text-align: center;
+    padding: 20pt;
+    border-right: 1pt solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-stat:last-child {
+    border-right: none;
+}
+
+.stat-number {
+    font-size: 32pt;
+    font-weight: bold;
+    color: var(--wwf-orange);
+    display: block;
+    margin-bottom: 8pt;
+}
+
+.stat-label {
+    font-size: 11pt;
+    color: white;
+    display: block;
+}
+
+/* Section Styles */
+.section {
+    padding: 40pt;
+    page-break-inside: avoid;
+}
+
+.section-header {
+    background: var(--wwf-orange);
+    color: white;
+    padding: 30pt 40pt;
+    margin: 0 -40pt 30pt -40pt;
+}
+
+.section-number {
+    font-size: 14pt;
+    font-weight: bold;
+    opacity: 0.8;
+    margin: 0 0 8pt 0;
+}
+
+.section-title {
+    font-size: 24pt;
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1pt;
+}
+
+.section-intro {
+    font-size: 12pt;
+    line-height: 1.8;
+    margin: 0 0 30pt 0;
+    color: #4a4a4a;
+}
+
+/* Content Styles */
+h2 {
+    font-size: 18pt;
+    color: var(--wwf-orange);
+    margin: 30pt 0 15pt 0;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 14pt;
+    color: var(--dark-gray);
+    margin: 20pt 0 10pt 0;
+    font-weight: bold;
+}
+
+p {
+    margin: 0 0 12pt 0;
+    text-align: justify;
+}
+
+/* Statistics Box */
+.stat-box {
+    background: var(--light-gray);
+    border-left: 4pt solid var(--wwf-orange);
+    padding: 20pt;
+    margin: 20pt 0;
+    page-break-inside: avoid;
+}
+
+.stat-box-title {
+    font-size: 12pt;
+    font-weight: bold;
+    color: var(--dark-gray);
+    margin: 0 0 12pt 0;
+}
+
+.stat-row {
+    display: table;
+    width: 100%;
+    margin: 8pt 0;
+}
+
+.stat-row-label {
+    display: table-cell;
+    width: 70%;
+    font-size: 10pt;
+    color: #4a4a4a;
+}
+
+.stat-row-value {
+    display: table-cell;
+    width: 30%;
+    font-size: 14pt;
+    font-weight: bold;
+    color: var(--wwf-orange);
+    text-align: right;
+}
+
+/* Quote Box */
+.quote-box {
+    border-left: 4pt solid var(--wwf-orange);
+    padding: 20pt 20pt 20pt 30pt;
+    margin: 25pt 30pt;
+    font-style: italic;
+    background: #fafafa;
+    page-break-inside: avoid;
+}
+
+.quote-text {
+    font-size: 12pt;
+    color: var(--dark-gray);
+    margin: 0 0 12pt 0;
+    line-height: 1.7;
+}
+
+.quote-author {
+    font-size: 10pt;
+    font-weight: bold;
+    color: #666;
+    font-style: normal;
+    margin: 0;
+}
+
+/* Success Story Box */
+.success-story {
+    border: 2pt solid var(--border-gray);
+    border-radius: 4pt;
+    padding: 25pt;
+    margin: 25pt 0;
+    background: white;
+    page-break-inside: avoid;
+}
+
+.success-story-title {
+    font-size: 14pt;
+    font-weight: bold;
+    color: var(--wwf-orange);
+    margin: 0 0 12pt 0;
+}
+
+.success-story-location {
+    font-size: 10pt;
+    color: #666;
+    margin: 0 0 15pt 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+}
+
+/* Bullet Lists */
+ul {
+    margin: 12pt 0 12pt 20pt;
+    padding: 0;
+}
+
+li {
+    margin: 6pt 0;
+    padding-left: 8pt;
+}
+
+/* Highlight Box */
+.highlight {
+    background: #fff8f0;
+    border: 1pt solid var(--wwf-orange);
+    padding: 15pt;
+    margin: 15pt 0;
+    border-radius: 3pt;
+    page-break-inside: avoid;
+}
+
+.highlight-title {
+    font-size: 11pt;
+    font-weight: bold;
+    color: var(--wwf-orange);
+    margin: 0 0 8pt 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20pt 0;
+}
+
+th {
+    background: var(--dark-gray);
+    color: white;
+    padding: 12pt;
+    text-align: left;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+td {
+    padding: 10pt 12pt;
+    border-bottom: 1pt solid var(--border-gray);
+    font-size: 10pt;
+}
+
+tr:nth-child(even) {
+    background: var(--light-gray);
+}
+
+/* Footer */
+.footer {
+    background: var(--wwf-black);
+    color: white;
+    padding: 30pt 40pt;
+    text-align: center;
+    margin-top: 40pt;
+}
+
+.footer-logo {
+    font-size: 24pt;
+    font-weight: bold;
+    margin: 0 0 15pt 0;
+}
+
+.footer-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    margin: 8pt 0;
+    opacity: 0.8;
+}
+
+/* Trend Indicator */
+.trend-up {
+    color: #10b981;
+    font-weight: bold;
+}
+
+.trend-down {
+    color: #ef4444;
+    font-weight: bold;
+}

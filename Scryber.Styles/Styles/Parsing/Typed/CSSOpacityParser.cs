@@ -57,6 +57,20 @@ namespace Scryber.Styles.Parsing.Typed
                 parsed = d;
                 return true;
             }
+            else if(value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                if (ParseDouble(str, out parsed))
+                {
+                    if (parsed < 0.0)
+                        parsed = 0.0;
+                    else if (parsed > 1.0)
+                        parsed = 1.0;
+                    return true;
+                }
+                else
+                    return false;
+            }
             else if(ParseDouble(value.ToString(), out parsed))
             {
                 if (parsed < 0.0)

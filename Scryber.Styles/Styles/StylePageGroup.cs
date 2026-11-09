@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Scryber.Styles.Selectors;
 
 namespace Scryber.Styles
@@ -28,7 +29,7 @@ namespace Scryber.Styles
 
         public StylePageGroup(PageMatcher matcher) : this()
         {
-            this.Matcher = matcher;
+            this.Matcher = matcher ?? throw new ArgumentNullException(nameof(matcher));
         }
 
         public StylePageGroup() : base(ObjectTypes.Style)
@@ -39,7 +40,20 @@ namespace Scryber.Styles
             if (null == this.Matcher)
                 base.MergeInto(style, Component);
             else if(this.Matcher.IsMatchedTo(Component))
-                base.MergeInto(style, Component);
+            {
+                bool hasName   = this.Matcher.Selectors != null && this.Matcher.Selectors.Length > 0;
+                bool hasPseudo = this.Matcher.PseudoClass != ComponentState.Normal;
+
+                // Specificity mirrors CSS Paged Media spec:
+                // @page name:pseudo = 30, @page :pseudo = 20, @page name = 10, @page = 0
+                int priority;
+                if      (hasName && hasPseudo) priority = 30;
+                else if (hasPseudo)            priority = 20;
+                else if (hasName)              priority = 10;
+                else                           priority = 0;
+
+                this.MergeInto(style, priority);
+            }
         }
     }
 }

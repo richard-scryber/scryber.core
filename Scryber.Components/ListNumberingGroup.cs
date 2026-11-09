@@ -553,7 +553,7 @@ namespace Scryber
         /// <param name="name"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool TryGetValue(string name, out PDFListNumberingStack item)
+        public new bool TryGetValue(string name, out PDFListNumberingStack item)
         {
             if (null == this.Dictionary)
             {

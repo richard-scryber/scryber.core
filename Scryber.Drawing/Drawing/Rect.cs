@@ -32,7 +32,7 @@ namespace Scryber.Drawing
     {
         public const char RectangleStartChar = '[';
         public const char RectangleEndChar = ']';
-        public const char RectangleSeparatorChar = ' ';
+        public static readonly char[] RectangleSeparatorChars = new char[] {' ',','};
         public const bool RectangleStartAndEndCharRequired = false;
 
 
@@ -242,6 +242,16 @@ namespace Scryber.Drawing
             return this.Inflate(size.Width, size.Height);
         }
 
+        public Rect Inflate(Thickness thickness)
+        {
+            Rect rect2 = this.Clone();
+            rect2.X -= thickness.Left;
+            rect2.Y -= thickness.Top;
+            rect2.Width += thickness.Left + thickness.Right;
+            rect2.Height += thickness.Top + thickness.Bottom;
+            return rect2;
+        }
+
         public static Rect Inflate(Rect rect, Unit x, Unit y)
         {
             Rect rect2 = rect.Clone();
@@ -280,6 +290,34 @@ namespace Scryber.Drawing
             Unit y2 = Unit.Max(a.Y + a.Height, b.Y + b.Height);
 
             return new Rect(x, y, x2 - x, y2 - y);
+        }
+
+        /// <summary>
+        /// Finds the rect that encloses all the points provided returning the minimum x, minimum y and required width and height to encompass. e.g. [2,4], [3, 2], [1, 2] = [1,2,2,3]
+        /// </summary>
+        /// <param name="pts"></param>
+        /// <returns></returns>
+        public static Rect Bounds(params Point[] pts)
+        {
+            if (pts.Length == 0)
+                return Rect.Empty;
+
+            var minx = pts[0].X;
+            var miny = pts[0].Y;
+            var maxx = minx;
+            var maxy = miny;
+
+            for (var i = 1; i < pts.Length; i++)
+            {
+                minx = Unit.Min(minx, pts[i].X);
+                miny = Unit.Min(miny, pts[i].Y);
+                maxx = Unit.Max(maxx, pts[i].X);
+                maxy = Unit.Max(maxy, pts[i].Y);
+            }
+
+            Rect bounds = new Rect(minx, miny, maxx - minx, maxy - miny);
+            return bounds;
+
         }
 
         public Rect Offset(Unit x, Unit y)
@@ -360,7 +398,7 @@ namespace Scryber.Drawing
 
             Unit t, l, w, h;
 
-            string[] rect = value.Split(RectangleSeparatorChar);
+            string[] rect = value.Split(RectangleSeparatorChars);
             if (rect.Length == 1)
             {
                 if (Unit.TryParse(rect[0], out t) == false)

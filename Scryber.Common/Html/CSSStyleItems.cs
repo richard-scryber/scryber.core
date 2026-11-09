@@ -1,0 +1,266 @@
+﻿using System;
+namespace Scryber.Html
+{
+    /// <summary>
+    /// All the known CSS style attributes
+    /// </summary>
+    public static class CSSStyleItems
+    {
+        public const string Border = "border";
+        public const string BorderWidth = "border-width";
+        public const string BorderStyle = "border-style";
+        public const string BorderColor = "border-color";
+        public const string BorderRadius = "border-radius";
+        public const string BoxDecorationBreak = "box-decoration-break";
+        public const string BoxDecorationBreakWebkit = "-webkit-box-decoration-break";
+        public const string BorderTopLeftRadius = "border-top-left-radius";
+        public const string BorderTopRightRadius = "border-top-right-radius";
+        public const string BorderBottomLeftRadius = "border-bottom-left-radius";
+        public const string BorderBottomRightRadius = "border-bottom-right-radius";
+
+        public const string BorderTop = "border-top";
+        public const string BorderLeft = "border-left";
+        public const string BorderRight = "border-right";
+        public const string BorderBottom = "border-bottom";
+
+        public const string BorderTopWidth = "border-top-width";
+        public const string BorderLeftWidth = "border-left-width";
+        public const string BorderRightWidth = "border-right-width";
+        public const string BorderBottomWidth = "border-bottom-width";
+
+        public const string BorderTopColor = "border-top-color";
+        public const string BorderLeftColor = "border-left-color";
+        public const string BorderRightColor = "border-right-color";
+        public const string BorderBottomColor = "border-bottom-color";
+
+        public const string BorderTopStyle = "border-top-style";
+        public const string BorderLeftStyle = "border-left-style";
+        public const string BorderRightStyle = "border-right-style";
+        public const string BorderBottomStyle = "border-bottom-style";
+
+
+        public const string FillColor = "color";
+
+        public const string Background = "background";
+        public const string BackgroundImage = "background-image";
+        public const string BackgroundColor = "background-color";
+        public const string BackgroundRepeat = "background-repeat";
+        public const string BackgroundSize = "background-size";
+        public const string BackgroundPosition = "background-position";
+        public const string BackgroundPositionX = "background-position-x";
+        public const string BackgroundPositionY = "background-position-y";
+
+        public const string FontStyle = "font-style";
+        public const string FontWeight = "font-weight";
+        public const string FontSize = "font-size";
+        public const string FontFamily = "font-family";
+        public const string FontDisplay = "font-display";
+        public const string FontStretch = "font-stretch";
+        public const string FontLineHeight = "line-height";
+        public const string Font = "font";
+        public const string FontSource = "src";
+
+        public const string Margins = "margin";
+        public const string MarginsLeft = "margin-left";
+        public const string MarginsRight = "margin-right";
+        public const string MarginsTop = "margin-top";
+        public const string MarginsBottom = "margin-bottom";
+        public const string MarginInlineStart = "margin-inline-start";
+        public const string MarginInlineEnd = "margin-inline-end";
+        public const string MarginInlineAll = "margin-inline";
+
+        public const string Padding = "padding";
+        public const string PaddingLeft = "padding-left";
+        public const string PaddingRight = "padding-right";
+        public const string PaddingTop = "padding-top";
+        public const string PaddingBottom = "padding-bottom";
+        public const string PaddingInlineStart = "padding-inline-start";
+        public const string PaddingInlineEnd = "padding-inline-end";
+        public const string PaddingInlineAll = "padding-inline";
+
+        public const string Opacity = "opacity";
+        public const string FillOpacity = "fill-opacity";
+        public const string Fill = "fill";
+
+        public const string Columns = "columns";
+        public const string ColumnCount = "column-count";
+        public const string ColumnGap = "column-gap";
+        public const string ColumnWidths = "column-width";
+        public const string ColumnSpan = "column-span";
+        public const string ColumnFill = "column-fill";
+        public const string ColumnRule = "column-rule";
+        public const string ColumnRuleColor = "column-rule-color";
+        public const string ColumnRuleWidth = "column-rule-width";
+        public const string ColumnRuleStyle = "column-rule-style";
+
+        public const string MarginBlockAll = "margin-block";
+        public const string MarginBlockStart = "margin-block-start";
+        public const string MarginBlockEnd = "margin-block-end";
+        public const string PaddingBlockAll = "padding-block";
+        public const string PaddingBlockStart = "padding-block-start";
+        public const string PaddingBlockEnd = "padding-block-end";
+
+        public const string Inset = "inset";
+        public const string InsetBlock = "inset-block";
+        public const string InsetBlockStart = "inset-block-start";
+        public const string InsetBlockEnd = "inset-block-end";
+        public const string InsetInline = "inset-inline";
+        public const string InsetInlineStart = "inset-inline-start";
+        public const string InsetInlineEnd = "inset-inline-end";
+
+        //Properties that are accepted, but have no meaning in a PDF
+        public const string Cursor = "cursor";
+        public const string PointerEvents = "pointer-events";
+        public const string WillChange = "will-change";
+        public const string ScrollBehavior = "scroll-behavior";
+        public const string UserSelect = "user-select";
+        public const string Transition = "transition";
+        public const string Animation = "animation";
+
+        public const string Left = "left";
+        public const string Top = "top";
+        public const string Right = "right";
+        public const string Bottom = "bottom";
+        public const string Float = "float";
+
+        public const string Width = "width";
+        public const string Height = "height";
+        public const string MinimumWidth = "min-width";
+        public const string MinimumHeight = "min-height";
+        public const string MaximumWidth = "max-width";
+        public const string MaximumHeight = "max-height";
+        public const string AspectRatio = "aspect-ratio";
+
+        public const string TextAlign = "text-align";
+        public const string VerticalAlign = "vertical-align";
+
+        public const string Display = "display";
+        public const string Overflow = "overflow";
+
+        public const string TextDecoration = "text-decoration";
+        public const string TextDecorationLine = "text-decoration-line";
+        public const string TextDecorationColor = "text-decoration-color";
+        public const string TextDecorationStyle = "text-decoration-style";
+        public const string TextDecorationThickness = "text-decoration-thickness";
+        public const string LetterSpacing = "letter-spacing";
+        public const string TextTransform = "text-transform";
+        public const string TextIndent = "text-indent";
+        public const string BoxSizing = "box-sizing";
+        public const string WordBreak = "word-break";
+        public const string OverflowWrap = "overflow-wrap";
+        public const string WordWrapAlias = "word-wrap";
+        public const string TextOverflow = "text-overflow";
+        public const string BoxShadow = "box-shadow";
+        public const string TextShadow = "text-shadow";
+        public const string Outline = "outline";
+        public const string OutlineColor = "outline-color";
+        public const string OutlineStyle = "outline-style";
+        public const string OutlineWidth = "outline-width";
+        public const string OutlineOffset = "outline-offset";
+        public const string Visibility = "visibility";
+        public const string ObjectFit = "object-fit";
+        public const string ObjectPosition = "object-position";
+        public const string BorderCollapse = "border-collapse";
+        public const string BorderSpacing = "border-spacing";
+        public const string Hyphenation = "hyphens";
+        public const string HyphenateLimitChars = "hyphenate-limit-chars";
+        public const string HyphenateLimitLength = "hyphens-limit-chars-length";
+        public const string HyphenationMinBefore = "hyphens-limit-chars-before";
+        public const string HyphenationMinAfter = "hyphens-limit-chars-after";
+        public const string HyphenationCharAppend = "hyphenate-character";
+
+        public const string WordSpacing = "word-spacing";
+
+        public const string WhiteSpace = "white-space";
+        public const string OverflowX = "overflow-x";
+        public const string OverflowY = "overflow-y";
+
+        public const string ListStyleType = "list-style-type";
+        public const string ListStyle = "list-style";
+
+        public const string ListItemGroup = "-pdf-li-group";
+        public const string ListItemConcatenate = "-pdf-li-concat";
+        public const string ListItemAlignment = "-pdf-li-align";
+        public const string ListItemInset = "-pdf-li-inset";
+        public const string ListItemPrefix = "-pdf-li-prefix";
+        public const string ListItemPostfix = "-pdf-li-postfix";
+
+        public const string PageBreakInside = "page-break-inside";
+        public const string PageBreakAfter = "page-break-after";
+        public const string PageBreakBefore = "page-break-before";
+        public const string PageSize = "size";
+        public const string PageGroupName = "page";
+
+        public const string PageNumberStyle = "-pdf-page-number-style";
+        public const string PageNumberStart = "-pdf-page-number-start";
+        public const string PageNumberPrefix = "-pdf-page-number-prefix";
+
+        public const string BreakInside = "break-inside";
+        public const string BreakAfter = "break-after";
+        public const string BreakBefore = "break-before";
+
+        public const string PositionModeType = "position";
+
+        public const string ZIndex = "z-index";
+
+        public const string StrokeColor = "stroke";
+        public const string StrokeOpacity = "stroke-opacity";
+        public const string StrokeWidth = "stroke-width";
+        public const string StrokeDash = "stroke-dasharray";
+        public const string StrokeDashOffset = "stroke-dashoffset";
+        public const string StrokeLineCap = "stroke-linecap";
+        public const string StrokeLineJoin = "stroke-linejoin";
+        
+        public const string GradientStopColor = "stop-color";
+        public const string GradientStopOffset = "stop-offset";
+        public const string GradientStopOpacity = "stop-opacity";
+        public const string X1Position = "x1";
+        public const string Y1Position = "y1";
+        public const string X2Position = "x2";
+        public const string Y2Position = "y2";
+        public const string GradientSpreadMode = "spreadMethod";
+        
+
+        public const string TextAnchorType = "text-anchor";
+        public const string DominantBaselineType = "dominant-baseline";
+
+        public const string Transform = "transform";
+        public const string TransformOrigin = "transform-origin";
+        public const string Content = "content";
+
+        public const string CounterReset = "counter-reset";
+        public const string CounterIncrement = "counter-increment";
+
+        public const string PaintOrder = "paint-order";
+
+        public const string FlexDirection = "flex-direction";
+        public const string FlexWrap = "flex-wrap";
+        public const string JustifyContent = "justify-content";
+        public const string AlignItems = "align-items";
+        public const string AlignContent = "align-content";
+        public const string AlignSelf = "align-self";
+        public const string Gap = "gap";
+        public const string RowGap = "row-gap";
+        public const string Flex = "flex";
+        public const string FlexGrow = "flex-grow";
+        public const string FlexShrink = "flex-shrink";
+        public const string FlexBasis = "flex-basis";
+        public const string Order = "order";
+
+        public const string GridTemplateColumns = "grid-template-columns";
+        public const string GridTemplateRows = "grid-template-rows";
+        public const string GridAutoFlow    = "grid-auto-flow";
+        public const string GridAutoColumns = "grid-auto-columns";
+        public const string GridAutoRows    = "grid-auto-rows";
+        public const string GridColumn      = "grid-column";
+        public const string GridColumnStart = "grid-column-start";
+        public const string GridColumnEnd   = "grid-column-end";
+        public const string GridRow         = "grid-row";
+        public const string GridRowStart    = "grid-row-start";
+        public const string GridRowEnd      = "grid-row-end";
+        public const string GridArea          = "grid-area";
+        public const string GridTemplateAreas = "grid-template-areas";
+        public const string GridGap = "grid-gap";
+    }
+}
+

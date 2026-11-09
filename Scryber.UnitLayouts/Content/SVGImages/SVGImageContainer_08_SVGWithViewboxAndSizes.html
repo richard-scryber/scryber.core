@@ -1,0 +1,69 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>SVG 08 - Inner View-box and Sizes</title>
+        <style>
+            body { padding: 10pt; }
+            img { border: 1px solid black; background-color: lightyellow; }
+            p { margin: 0; margin-bottom: 10pt; line-height: 20pt; }
+        </style>
+    </head>
+    <body>
+        <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" />
+        <p>1. SVG 200x150, width:200, height:150 - expects run 200x150</p>
+
+        <img src="Sample_HasViewbox_NoWidth_HasHeight.svg" />
+        <p>2. SVG 200x150 height:75 - expects run 100x75</p>
+
+        <img src="Sample_HasViewbox_HasWidth_NoHeight.svg" />
+        <p>3. SVG 200x150 width:100 expects run 100x75</p>
+        
+        <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="width: 300;" />
+        <p>4. SVG 200x150, width:200, height:150 - expects run 200x150</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="height: 100;" />
+        <p>5. SVG 200x150, width:200, height:150 - expects run 100x75</p>
+
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+        
+        <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="width: 150; height: 75;" />
+        <p>6. SVG 200x150, width:200, height:150 - expects run 150x75, centered</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="width: 100; height: 175;" />
+        <p>7. SVG 200x150, width:200, height:150 - expects run 100x175, centered</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_None.svg" style="width: 150; height: 75;" />
+        <p>8. SVG 200x150, width:200, height:150 - expects run 150x75, stretched</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_None.svg" style="width: 100; height: 175;" />
+        <p>9. SVG 200x150, width:200, height:150 - expects run 100x175, streched</p>
+
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_MeetTL.svg" style="width: 150; height: 75;" />
+        <p>10. SVG 200x150, width:200, height:150 - run 150x75, meet top left</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_MeetTL.svg" style="width: 100; height: 175;" />
+        <p>11. SVG 200x150, width:200, height:150 - run 100x175, meet top left</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_MeetBR.svg" style="width: 150; height: 75;" />
+        <p>12. SVG 200x150, width:200, height:150 - run 150x75, meet bottom right</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_MeetBR.svg" style="width: 100; height: 175;" />
+        <p>13. SVG 200x150, width:200, height:150 - run 100x175, meet bottom right</p>
+
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_SliceTL.svg" style="width: 150; height: 75;" />
+        <p>14. SVG 200x150, width:200, height:150 - run 150x75, slice top left</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_SliceTL.svg" style="width: 100; height: 175;" />
+        <p>15. SVG 200x150, width:200, height:150 - run 100x175, slice top left</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_SliceBR.svg" style="width: 150; height: 75;" />
+        <p>16. SVG 200x150, width:200, height:150 - run 150x75, slice bottom right</p>
+
+        <img src="Sample_HasViewbox_HasWidth_HasHeight_SliceBR.svg" style="width: 100; height: 175;" />
+        <p>17. SVG 200x150, width:200, height:150 - run 100x175, slice bottom right</p>
+
+    </body>
+</html>

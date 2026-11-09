@@ -13,16 +13,90 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("cx")]
-        public Unit CentreX { get; set; }
+        public Unit CentreX 
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreXKey, value);
+            }
+        }
 
         [PDFAttribute("cy")]
-        public Unit CenterY { get; set; }
+        public Unit CenterY { get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreYKey, value);
+            } 
+        }
 
         [PDFAttribute("rx")]
-        public Unit RadiusX { get; set; }
-
+        public Unit RadiusX
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryRadiusXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusXKey, value);
+            } 
+        }
+        
         [PDFAttribute("ry")]
-        public Unit RadiusY { get; set; }
+        public Unit RadiusY
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryRadiusYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusYKey, value);
+            } 
+        }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
 
         public SVGEllipse()
@@ -64,6 +138,20 @@ namespace Scryber.Svg.Components
             return rect;
         }
 
-        
+
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
+        {
+            var path = this.Path;
+
+            if (null != path)
+            {
+                var bounds = path.Bounds;
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange, context);
+        }
     }
 }

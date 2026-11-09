@@ -183,6 +183,36 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public double AspectRatio {get;set;} + RemoveAspectRatio()
+
+        /// <summary>
+        /// Gets or sets the width/height aspect ratio (e.g. 2.0 for a 2:1 ratio). Used to derive a missing
+        /// width or height when only one of the two is explicitly set.
+        /// </summary>
+        [PDFAttribute("aspect-ratio")]
+        public double AspectRatio
+        {
+            get
+            {
+                double d;
+                if (this.TryGetValue(StyleKeys.SizeAspectRatioKey, out d))
+                    return d;
+                else
+                    return double.NaN;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.SizeAspectRatioKey, value);
+            }
+        }
+
+        public void RemoveAspectRatio()
+        {
+            this.RemoveValue(StyleKeys.SizeAspectRatioKey);
+        }
+
+        #endregion
+
         #region public bool FullWidth {get;set;}
 
         /// <summary>

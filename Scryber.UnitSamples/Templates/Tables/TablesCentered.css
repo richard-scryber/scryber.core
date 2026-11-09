@@ -1,0 +1,42 @@
+@page {
+    size:Letter portrait;
+}
+
+body {
+    font-size: 10pt;
+    font-family: Calibri, sans-serif;
+    margin: .25in;
+}
+
+div {
+    margin: 0;
+}
+
+table, tr, td {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.note {
+    background-color: darkblue;
+    font-size: large;
+    color: white;
+    padding-inline: 1em;
+}
+
+table {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: lightgray;
+}
+
+#table-1 .average-header-text {
+    display: none;
+}
+
+#table-2 .average-header-text {
+    display: inline;
+}

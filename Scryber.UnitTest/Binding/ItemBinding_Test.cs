@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Core.UnitTests.Mocks;
+using System.Globalization;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -45,7 +46,7 @@ namespace Scryber.Core.UnitTests.Binding
     
                         <doc:Section>
                             <Content>
-                            <doc:Label text='{@:title}'></doc:Label>
+                            <doc:Label id='label' text='{@:title}'></doc:Label>
                             </Content>
                         </doc:Section>
 
@@ -56,7 +57,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
                 var sect = doc.Pages[0] as Section;
-                var label = sect.Contents[0] as Label;
+                var label = sect.FindAComponentById("label") as Label;
 
 
                 doc.InitializeAndLoad(OutputFormat.PDF);
@@ -94,7 +95,7 @@ namespace Scryber.Core.UnitTests.Binding
                             <doc:String-Param id='title' value='" + expectedString + @"' />
                             <doc:Int-Param id='int' value='" + expectedInt + @"' />
                             <doc:Guid-Param id='guid' value='" + expectedGuid + @"' />
-                            <doc:Double-Param id='double' value='" + expectedDouble + @"' />
+                            <doc:Double-Param id='double' value='" + expectedDouble.ToString(CultureInfo.InvariantCulture) + @"' />
                             <doc:Bool-Param id='bool' value='" + expectedBool + @"' />
                             <doc:Date-Param id='date' value='" + expectedDate + @"' />
                             <doc:Unit-Param id='unit' value='" + expectedUnit+ @"' />
@@ -107,11 +108,11 @@ namespace Scryber.Core.UnitTests.Binding
     
                         <doc:Section>
                             <Content>
-                                <doc:Label styles:fill-color='{@:color}' styles:x='{@:unit}' styles:padding='{@:thick}'
+                                <doc:Label id='label' styles:fill-color='{@:color}' styles:x='{@:unit}' styles:padding='{@:thick}'
                                            styles:border-style='{@:enum}' text='{@:title}'></doc:Label>
-                                <doc:Date value='{@:date}' />
-                                <doc:Number value='{@:int}' styles:font-bold='{@:bool}' />
-                                <doc:Number value='{@:double}' />
+                                <doc:Date id='date' value='{@:date}' />
+                                <doc:Number id='num1' value='{@:int}' styles:font-bold='{@:bool}' />
+                                <doc:Number id='num2' value='{@:double}'  />
                             </Content>
                         </doc:Section>
 
@@ -124,10 +125,10 @@ namespace Scryber.Core.UnitTests.Binding
                 
 
                 var sect = doc.Pages[0] as Section;
-                var label = sect.Contents[0] as Label;
-                var date = sect.Contents[1] as Date;
-                var num1 = sect.Contents[2] as Number;
-                var num2 = sect.Contents[3] as Number;
+                var label = sect.FindAComponentById("label") as Label;
+                var date = sect.FindAComponentById("date") as Date;
+                var num1 = sect.FindAComponentById("num1") as Number;
+                var num2 = sect.FindAComponentById("num2") as Number;
 
                 doc.InitializeAndLoad(OutputFormat.PDF);
                 doc.DataBind(OutputFormat.PDF);
@@ -187,7 +188,7 @@ namespace Scryber.Core.UnitTests.Binding
     
                         <doc:Section>
                             <Content>
-                                <doc:Label styles:class='blue' text='{@:title}'></doc:Label>
+                                <doc:Label id='label' styles:class='blue' text='{@:title}'></doc:Label>
                                 
                             </Content>
                         </doc:Section>
@@ -201,7 +202,7 @@ namespace Scryber.Core.UnitTests.Binding
                 
 
                 var sect = doc.Pages[0] as Section;
-                var label = sect.Contents[0] as Label;
+                var label = sect.FindAComponentById("label") as Label;
                 var style = doc.Styles[0] as Scryber.Styles.Style;
 
                 doc.InitializeAndLoad(OutputFormat.PDF);

@@ -143,7 +143,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsInstanceOfType(target, typeof(PDFGradientLinearBrush));
             gradient = (PDFGradientLinearBrush)target;
 
-            Assert.AreEqual(3, gradient.Colors.Length);
+            Assert.AreEqual(21, gradient.Colors.Length);
             Assert.AreEqual(true, gradient.Repeating);
             Assert.AreEqual(FillType.Pattern, gradient.FillStyle);
         }

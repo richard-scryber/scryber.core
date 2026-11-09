@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>SVG images testing preserveAspectRatio variants — all with viewBox 0 0 200 150, img 300x200</title>
+        <style>
+            body { padding: 5pt; }
+            img { border: 1px solid black; background-color: lavender; width: 300pt; height: 200pt; }
+            p { margin: 0; margin-bottom: 5pt; }
+        </style>
+    </head>
+    <body>
+        <!-- dest 300x200, vb 0 0 200 150, PAR xMidYMid meet: scale=min(1.5,1.333)=1.333, TX=16.67, TY=0 -->
+        <img id="par_xMidYMid_meet" src="Sample_ViewboxOnly_PAR_xMidYMid_Meet.svg" style="width:300pt;height:200pt" />
+        <p>xMidYMid meet — scale 1.333, TX 16.67, TY 0</p>
+
+        <!-- dest 300x200, vb 0 0 200 150, PAR xMinYMin meet: scale=1.333, TX=0, TY=0 -->
+        <img id="par_xMinYMin_meet" src="Sample_ViewboxOnly_PAR_xMinYMin_Meet.svg" style="width:300pt;height:200pt" />
+        <p>xMinYMin meet — scale 1.333, TX 0, TY 0</p>
+
+        <!-- dest 300x200, vb 0 0 200 150, PAR xMaxYMax meet: scale=1.333, TX=33.33, TY=0 -->
+        <img id="par_xMaxYMax_meet" src="Sample_ViewboxOnly_PAR_xMaxYMax_Meet.svg" style="width:300pt;height:200pt" />
+        <p>xMaxYMax meet — scale 1.333, TX 33.33, TY 0</p>
+
+        <!-- dest 300x200, vb 0 0 200 150, PAR none: scaleX=1.5, scaleY=1.333, TX=0, TY=0 -->
+        <img id="par_none" src="Sample_ViewboxOnly_PAR_None.svg" style="width:300pt;height:200pt" />
+        <p>none — scaleX 1.5, scaleY 1.333, TX 0, TY 0</p>
+
+        <!-- dest 300x200, vb 0 0 200 150, PAR xMidYMid slice: scale=max(1.5,1.333)=1.5, TX=0, TY=-12.5 -->
+        <img id="par_xMidYMid_slice" src="Sample_ViewboxOnly_PAR_xMidYMid_Slice.svg" style="width:300pt;height:200pt" />
+        <p>xMidYMid slice — scale 1.5, TX 0, TY -12.5</p>
+    </body>
+</html>

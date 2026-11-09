@@ -33,7 +33,7 @@ namespace Scryber.Styles
     public class ColumnsStyle : StyleItemBase
     {
         public static readonly Unit DefaultAlleyWidth = new Unit(10, PageUnits.Points);
-        public const bool DefaultAutoFlow = true;
+        public const ColumnFillMode DefaultAutoFlow = ColumnFillMode.Auto;
 
 
         #region public int ColumnCount {get;set;} + RemoveColumnCount
@@ -103,29 +103,29 @@ namespace Scryber.Styles
         /// onto the next column after an explicit instruction (e.g. pdf:ColumnBreak). 
         /// The default is true.
         /// </summary>
-        [PDFAttribute("auto-flow")]
-        public bool AutoFlow
+        [PDFAttribute("column-fill")]
+        public ColumnFillMode FillMode
         {
             get
             {
-                bool auto;
-                if (this.TryGetValue(StyleKeys.ColumnFlowKey,out auto))
-                    return auto;
+                ColumnFillMode value;
+                if (this.TryGetValue(StyleKeys.ColumnFillKey,out value))
+                    return value;
                 else
                     return DefaultAutoFlow;
             }
             set
             {
-                this.SetValue(StyleKeys.ColumnFlowKey, value);
+                this.SetValue(StyleKeys.ColumnFillKey, value);
             }
         }
 
         /// <summary>
         /// Removes any auto-flow setting from the style
         /// </summary>
-        public void RemoveAutoFlow()
+        public void RemoveFillMode()
         {
-            this.RemoveValue(StyleKeys.ColumnFlowKey);
+            this.RemoveValue(StyleKeys.ColumnFillKey);
         }
 
         #endregion
@@ -133,15 +133,15 @@ namespace Scryber.Styles
         #region public bool BreakBefore {get;set;} + RemoveBreakBefore()
 
         [PDFAttribute("break-before")]
-        public bool BreakBefore
+        public BreakContentType BreakBefore
         {
             get
             {
-                bool value;
+                BreakContentType value;
                 if (this.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out value))
-                    return value;
+                    return value ;
                 else
-                    return false;
+                    return BreakContentType.Auto;
             }
             set
             {
@@ -160,15 +160,15 @@ namespace Scryber.Styles
         #region public bool BreakAfter {get;set;} + RemoveBreakAfter()
 
         [PDFAttribute("break-after")]
-        public bool BreakAfter
+        public BreakContentType BreakAfter
         {
             get
             {
-                bool value;
+                BreakContentType value;
                 if (this.TryGetValue(StyleKeys.ColumnBreakAfterKey, out value))
                     return value;
                 else
-                    return false;
+                    return  BreakContentType.Auto;
             }
             set
             {

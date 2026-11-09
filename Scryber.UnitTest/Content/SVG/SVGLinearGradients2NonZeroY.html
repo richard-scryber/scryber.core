@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+        
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="2 Color Horizontal Gradients">2 Color Gradients Turning</p>
+    <svg id="2ColorHoriz" width="460" height="460" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
+            
+        </style>
+        
+<!--        <linearGradient id="2ColorDownRight" x1="0" x2="1" y1="0" y2="1" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="10" y="10" fill="url(#2ColorDownRight)" />-->
+
+<!--        -->
+<!--        <linearGradient id="2ColorDown"  x1="0" x2="0" y1="0" y2="1" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="190" y="10" fill="url(#2ColorDown)" />-->
+<!--        -->
+<!--        -->
+<!--        -->
+<!--        <linearGradient id="2ColorDownLeft" x1="1" x2="0" y1="0" y2="1" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="370" y="10" fill="url(#2ColorDownLeft)" />-->
+
+<!--        <linearGradient id="grad1" x1="0" x2="1" y1="0" y2="0" spreadMethod="pad"  >-->
+<!--        <stop offset="0" stop-color="red" />-->
+<!--        <stop offset="0.5" stop-color="white"  />-->
+<!--        <stop offset="1" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="370" y="90" fill="url(#grad1)" />-->
+        
+        <linearGradient id="2ColorLeftYOffset" x1="0" x2="0.5" y1="0.0" y2="0.1" >
+            <stop offset="0%" stop-color="aqua" />
+            <stop offset="50%" stop-color="white" />
+            <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+        <rect height="80" width="80" x="370" y="190" fill="url(#2ColorLeftYOffset)" />
+
+        <linearGradient id="2ColorLeftYZero" x1="1" x2="0" y1="0" y2="0" >
+            <stop offset="0%" stop-color="aqua" />
+            <stop offset="50%" stop-color="white" />
+            <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+        <rect height="80" width="80" x="370" y="290" fill="url(#2ColorLeftYZero)" />
+        
+<!--        <linearGradient id="2ColorRepeatUpLeft"  x1="1" x2="0" y1="1" y2="0" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="370" y="370" fill="url(#2ColorRepeatUpLeft)" />-->
+
+<!--        <linearGradient id="2ColorUp" x1="0" x2="0" y1="1" y2="0" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="190" y="370" fill="url(#2ColorUp)" />-->
+
+<!--        <linearGradient id="2ColorRepeatUpRight"  x1="0" x2="1" y1="1" y2="0" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="10" y="370" fill="url(#2ColorRepeatUpRight)" />-->
+
+
+<!--        <linearGradient id="2ColorRepeatRight"  x1="0" x2="1" y1="0" y2="0" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="10" y="190" fill="url(#2ColorRepeatRight)" />-->
+
+<!--        &lt;!&ndash;  Mids &ndash;&gt;-->
+<!--        -->
+<!--        <linearGradient id="2ColorRepeatHalfDownRight"  x1="0" x2="1" y1="0.33" y2="0.66" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="10" y="100" fill="url(#2ColorRepeatHalfDownRight)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfRightDown"  x1="0.33" x2="0.66" y1="0" y2="1" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="100" y="10" fill="url(#2ColorRepeatHalfRightDown)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfLeftDown"  x1="0.66" x2="0.33" y1="0" y2="1" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="280" y="10" fill="url(#2ColorRepeatHalfLeftDown)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfDownLeft"  x1="1" x2="0" y1="0.33" y2="0.66" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="370" y="100" fill="url(#2ColorRepeatHalfDownLeft)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfUpLeft"  x1="1" x2="0" y1="0.66" y2="0.33" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="370" y="280" fill="url(#2ColorRepeatHalfUpLeft)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfLeftUp"  x1="0.66" x2="0.33" y1="1" y2="0" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="280" y="370" fill="url(#2ColorRepeatHalfLeftUp)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfRightUp"  x1="0.33" x2="0.66" y1="1" y2="0" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="100" y="370" fill="url(#2ColorRepeatHalfRightUp)" />-->
+
+<!--        <linearGradient id="2ColorRepeatHalfUpRight"  x1="0" x2="1" y1="0.66" y2="0.33" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="maroon" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="80" width="80" x="10" y="280" fill="url(#2ColorRepeatHalfUpRight)" />-->
+    </svg>
+    
+    
+    
+
+</body>
+</html>

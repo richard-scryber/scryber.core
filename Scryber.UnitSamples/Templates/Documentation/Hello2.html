@@ -1,0 +1,111 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <!-- Give it a title -->
+    <title>Hello {{concat(user.firstName, " ", user.lastName) ?? "World"}}</title>
+    <!-- Add some remote fonts from google -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet" />
+    <!-- Load some icons from font-awesome -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.css' />
+
+    <style>
+        /* define some css variables based on the properties, but with a fallback default */
+        :root{
+            --brand-color: var(brand.mainColor, red);
+            --brand-bg: var(brand.lightColor, #faa);
+        }
+
+        /* Add remote fonts as the base font with fallback */
+        body{
+            font-family: 'Roboto', Arial, Helvetica, sans-serif;
+            margin: 20pt;
+            color: black;
+        }
+
+        /* classes with custom styling from the properties */
+        .title{
+            font-size: 18pt;
+            color: var(--brand-color);
+            margin-bottom: 1rem;
+        }
+        
+        .intro{
+            font-size: 12pt;
+            border: solid 1pt var(--brand-color);
+            padding: 5pt;
+            border-radius: 2.5pt;
+            background-color: var(--brand-bg);
+        }
+
+        .intro ul{
+            list-style: none;
+            margin: 0;
+            padding-left: 20pt;
+        }
+
+        .intro ul li{
+            line-height: 1.5;
+        }
+
+        .intro i.far {
+            font-size: 80%;
+            color: var(--brand-color)
+        }
+
+        /* floating profile picture with some spacing */
+        .profile-picture{
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            object-fit: cover;
+            float: left;
+            margin-right: 10pt;
+            border: solid 2pt var(--brand-color);
+        }
+
+        div.profile-picture{
+            font-size: 36px;
+            overflow:visible;
+            color: var(--brand-color);
+        }
+
+        div.profile-picture i{
+            display: inline-block;
+            overflow: visible;
+            padding-left: 7pt;
+            padding-top: 4pt;
+            vertical-align: bottom;
+        }
+</style>
+</head>
+
+<body>
+<!-- Only include the picture if it exists -->
+ {{#if (length(user.profilePicture) > 0) }}
+    <img src='{{user.profilePicture}}' class='profile-picture'/>
+{{else}}
+    <div class="profile-picture"><i class='far fa-user'></i></div>
+ {{/if}}
+
+ <!-- make the name a clickable email link -->
+<h1 class="title">
+    <a href="mailto:{{user.emailAddress}}" style="color: var(--brand-color);">
+        {{concat(user.firstName, " ", user.lastName) ?? "World"}}
+    </a></h1>
+
+<!-- if we have skills, loop through them skills with a count at the start -->
+{{#if count(user.skills)}}
+<div class='intro'>
+    {{user.firstName}} has {{count(user.skills)}} skills:
+    <ul>
+        {{#each user.skills}}
+            <!-- a list of skills  with a check icon -->
+            <li><i class="far fa-check-circle"></i> {{this}}</li>
+        {{/each}}
+    </ul>
+</div>
+{{else}}
+    <!-- Fallback to no skills -->
+    <div><em>{{user.fistName}} has no known skills</em></div>
+{{/if}}
+</body>
+</html>

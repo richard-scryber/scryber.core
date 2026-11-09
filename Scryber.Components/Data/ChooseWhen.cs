@@ -30,7 +30,7 @@ namespace Scryber.Data
         private bool _test;
 
         [PDFAttribute("test", BindingOnly = true)]
-        public bool Test
+        public virtual bool Test
         {
             get { return _test; }
             set

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Scryber.Options;
 
 namespace Scryber
 {
@@ -25,6 +27,14 @@ namespace Scryber
             if (null != _services)
                 provider = new FallBackServiceProvider(provider, _services);
             _services = provider;
+        }
+
+        public static void Init(IConfiguration config, bool clean = false)
+        {
+            var provider = new ConfigurationServiceProvider(config);
+            Init(clean);
+            _services = new FallBackServiceProvider(provider, _services);
+            _initialized = true;
         }
 
         public static void Init(bool clean = false)

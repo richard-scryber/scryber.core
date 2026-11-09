@@ -88,10 +88,21 @@ namespace Scryber.Styles
 
         #endregion
 
-
+        /// <summary>
+        /// If this StyleKey supports the use of relative dimensions (e.g 5%, 0.8rem) in it's values.
+        /// </summary>
         public virtual bool CanBeRelative
         {
             get { return false; }
+        }
+
+        /// <summary>
+        /// Returns true if the relative dimensions of this style key should use widths as a measure e.g. 20% = 0.2 * container.Width, rather than 0.2 * container.height
+        /// </summary>
+        public bool UseRelativeWidthAsPriority
+        {
+            get;
+            protected set;
         }
 
         //
@@ -417,7 +428,7 @@ namespace Scryber.Styles
         /// <param name="foritem"></param>
         /// <returns></returns>
         /// <remarks>Used by the PDFStyleKeys style type constructor - as we are assured this is threadsafe</remarks>
-        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, FlattenUnits<T> flatten)
+        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, IStyleKeyFlattenValue<T> flatten)
         {
             if (foritem.IsItemKey == false)
                 throw new InvalidOperationException("forItem is not an item");
@@ -431,6 +442,12 @@ namespace Scryber.Styles
 
         #endregion
 
+        public virtual bool CopyValue(Style fromStyle, Style toStyle)
+        {
+            //Base implementation does nothing and returns false
+            return false;
+        }
+        
         public virtual void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             //Does nothing in the default implementation
@@ -451,17 +468,30 @@ namespace Scryber.Styles
         {
         }
 
+        public override bool CopyValue(Style fromStyle, Style toStyle)
+        {
+            StyleValue<T> value;
+            if (fromStyle.TryGetValue(this, out value))
+            {
+                toStyle.SetValue(this, value.Value(fromStyle));
+                return true;
+            }
+            else
+                return base.CopyValue(fromStyle, toStyle);
+        }
     }
 
     public delegate void FlattenUnits<T>(Style style, StyleKey<T> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize);
 
+
     public class RelativeStyleKey<T> : StyleKey<T>
     {
         public override bool CanBeRelative { get { return true; } }
+        
 
-        public FlattenUnits<T> Flatten { get; protected set; }
+        public IStyleKeyFlattenValue<T> Flatten { get; protected set; }
 
-        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, FlattenUnits<T> flatten)
+        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, IStyleKeyFlattenValue<T> flatten)
             : base(fullhash, item, value, inherited, false)
         {
             Flatten = flatten ?? throw new ArgumentNullException(nameof(flatten));
@@ -469,7 +499,7 @@ namespace Scryber.Styles
 
         public override void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
-            this.Flatten(style, this, pageSize, containerSize, fontSize, rootFontSize);
+            this.Flatten.SetFlattenedValue(style, this, pageSize, containerSize, fontSize, rootFontSize);
         }
 
     }
@@ -494,7 +524,14 @@ namespace Scryber.Styles
             StyleValueBase exist;
             if (this.TryGetValue(key, out exist))
             {
-                if (exist.Priority <= priority)
+                //Importance is a separate cascade tier above specificity: an important value always
+                //wins over a non-important one regardless of priority. Within the same importance
+                //tier, the existing specificity/source-order comparison applies as before.
+                bool overrides = value.IsImportant != exist.IsImportant
+                    ? value.IsImportant
+                    : exist.Priority <= priority;
+
+                if (overrides)
                 {
                     this[key] = value.CloneWithPriority(priority);
                 }

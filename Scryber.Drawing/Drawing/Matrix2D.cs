@@ -3,21 +3,28 @@ namespace Scryber.Drawing
 {
     //Take the GDPI code from https://source.winehq.org/source/dlls/gdiplus/matrix.c
 
+    [Flags]
+    public enum MatrixTransformTypes
+    {
+        Identity = 0,
+        Translation = 1,
+        Scaling = 2,
+        Skew = 4,
+        Rotate = 8,
+        Matrix = 32,
+        Unknown = 64
+    }
+
     public struct Matrix2D
     {
-        [Flags]
-        private enum MatrixTypes
-        {
-            IsIdentity = 0,
-            IsTranslation = 1,
-            IsScaling = 2,
-            IsUnknown = 4
-        }
+        
 
-        private static readonly Matrix2D _identity = new Matrix2D(1, 0, 0, 1, 0, 0);
+        private static readonly Matrix2D _identity = new Matrix2D(1, 0, 0, 1, 0, 0, MatrixTransformTypes.Identity);
         
         private double _m11, _m12, _m21, _m22, _dx, _dy;
-        private MatrixTypes _type;
+        private MatrixTransformTypes _type;
+
+        public MatrixTransformTypes TransformTypes { get { return _type; } }
 
         public double[] Elements { get { return new double[] { _m11, _m12, _m21, _m22, _dx, _dy }; } }
 
@@ -42,10 +49,10 @@ namespace Scryber.Drawing
             _m22 = m22;
             _dx = dx;
             _dy = dy;
-            _type = MatrixTypes.IsUnknown;
+            _type = MatrixTransformTypes.Matrix;
         }
         
-        private Matrix2D(double m11, double m12, double m21, double m22, double dx, double dy, MatrixTypes type)
+        private Matrix2D(double m11, double m12, double m21, double m22, double dx, double dy, MatrixTransformTypes type)
         {
             _m11 = m11;
             _m12 = m12;
@@ -62,7 +69,7 @@ namespace Scryber.Drawing
         {
             this._dx += x;
             this._dy += y;
-            this._type |= MatrixTypes.IsTranslation;
+            this._type |= MatrixTransformTypes.Translation;
         }
 
         public void Scale(double x, double y)
@@ -149,7 +156,7 @@ namespace Scryber.Drawing
 
         public override string ToString()
         {
-            return $"[{Math.Round(_m11, 4)}, {Math.Round(_m12, 4)}, {Math.Round(_m21, 4)}, {Math.Round(_m22, 4)},{Math.Round(_dx, 4)},{Math.Round(_dy, 4)}]";
+            return $"[{Math.Round(_m11, 4)}, {Math.Round(_m12, 4)}, {Math.Round(_m21, 4)}, {Math.Round(_m22, 4)}, {Math.Round(_dx, 4)}, {Math.Round(_dy, 4)}]";
         }
 
         //operator methods
@@ -169,10 +176,10 @@ namespace Scryber.Drawing
 
         public static Matrix2D Multiply(Matrix2D one, Matrix2D two)
         {
-            if (two._type == MatrixTypes.IsIdentity)
+            if (two._type == MatrixTransformTypes.Identity)
                 return one;
 
-            if (one._type == MatrixTypes.IsIdentity)
+            if (one._type == MatrixTransformTypes.Identity)
                 return two;
 
             Matrix2D result = new Matrix2D(
@@ -184,9 +191,10 @@ namespace Scryber.Drawing
                 (one._m12 * two._m21) + (one._m22 * two._m22),
 
                 (one._m11 * two._dx) + (one._m21 * two._dy) + one._dx,
-                (one._m12 * two._dx) + (one._m22 * two._dy) + one._dy);
-                //one._dx * two._m11 + one._dy * two._m21 + two._dx,
-                //one._dx * two._m12 + one._dy * two._m22 + two._dy);
+                (one._m12 * two._dx) + (one._m22 * two._dy) + one._dy
+            );
+
+            result._type = one._type | two._type;
 
             return result;
         }
@@ -198,7 +206,7 @@ namespace Scryber.Drawing
                 scaleX, 0, 
                 0, scaleY, 
                 0, 0, 
-                MatrixTypes.IsScaling);
+                MatrixTransformTypes.Scaling);
             return result;
         }
 
@@ -208,7 +216,7 @@ namespace Scryber.Drawing
                 1.0, skewY,
                 skewX, 1.0,
                 0, 0, 
-                MatrixTypes.IsUnknown);
+                MatrixTransformTypes.Skew);
             return result;
         }
 
@@ -217,6 +225,7 @@ namespace Scryber.Drawing
         {
             return CreateRotation(angleRads, 0.0, 0.0);
         }
+
         private static Matrix2D CreateRotation(double angleRads, double centreX, double centreY)
         {
             double sin = Math.Sin(angleRads);
@@ -229,7 +238,7 @@ namespace Scryber.Drawing
                 cos, sin,
                 -sin, cos,
                 dx, dy,
-                MatrixTypes.IsUnknown);
+                MatrixTransformTypes.Rotate);
 
             return result;
         }

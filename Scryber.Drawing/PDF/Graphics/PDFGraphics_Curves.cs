@@ -23,6 +23,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.Svg;
 
 namespace Scryber.PDF.Graphics
 {
@@ -279,6 +280,48 @@ namespace Scryber.PDF.Graphics
         }
 
 
+        /// <summary>
+        /// Draws and strokes a wavy line from the start to the end (horizontal), using the current pen. 
+        /// The wave goes above and below the line by the amplitude, with the wavelength being the distance for a complete wave.
+        /// </summary>
+        public void DrawWavyLine(Point start, Point end, Unit amplitude, Unit wavelength)
+        {
+            double x = start.X.PointsValue;
+            double y = start.Y.PointsValue;
+            double endX = end.X.PointsValue;
+            double a = amplitude.PointsValue;
+            double half = wavelength.PointsValue / 2.0;
+
+            if (half <= 0 || a <= 0 || endX <= x)
+            {
+                this.DrawLine(start, end);
+                return;
+            }
+
+            //The handles of a cubic curve reach the peak at 3/4 of their height.
+            double handle = a * 4.0 / 3.0;
+            double direction = -1.0;
+
+            this.RenderMoveTo(new Unit(x, PageUnits.Points), new Unit(y, PageUnits.Points));
+
+            while (x < endX)
+            {
+                double next = Math.Min(x + half, endX);
+                double width = next - x;
+
+                //a partial last half wave is drawn with the same shape, but is shorter
+                this.RenderBezierCurveTo(
+                    new Unit(next, PageUnits.Points), new Unit(y, PageUnits.Points),
+                    new Unit(x + width * 0.3642, PageUnits.Points), new Unit(y + direction * handle, PageUnits.Points),
+                    new Unit(x + width * 0.6358, PageUnits.Points), new Unit(y + direction * handle, PageUnits.Points));
+
+                x = next;
+                direction = -direction;
+            }
+
+            this.RenderStrokePathOp();
+        }
+
         public void DrawLine(Unit x1, Unit y1, Unit x2, Unit y2)
         {
             this.RenderMoveTo(x1, y1);
@@ -336,13 +379,38 @@ namespace Scryber.PDF.Graphics
 
         private void OutputPath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path)
         {
-
             Rect bounds = new Rect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);
             
             if (null != brush)
                 brush.SetUpGraphics(this, bounds);
             if (null != pen)
                 pen.SetUpGraphics(this, bounds);
+
+            
+            PathAdornmentInfo info = null;
+            
+            
+            
+            if (null != path.PathMatrix)
+            {
+                this.SetTransformationMatrix(path.PathMatrix, false, true);
+            }
+            
+            if (path.HasAdornments)
+            {
+                AdornmentOrientationValue orientation = path.AdornmentOrientation;
+                double? angle;
+                if (orientation.HasAngle)
+                    angle = orientation.AngleRadians;
+                else
+                    angle = null;
+                
+                bool reverse = orientation.IsReverseAtStart;
+
+                info = new PathAdornmentInfo(location, angle, reverse, brush, pen);
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.Before);
+
+            }
 
             Point cursor = Point.Empty;
 
@@ -358,6 +426,14 @@ namespace Scryber.PDF.Graphics
             else if (null != pen)
                 this.RenderStrokePathOp();
 
+            //Transformation matrix will be released with restore graphics state
+            
+            
+
+            if (null != info)
+            {
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.After);
+            }
             
             if (null != brush)
                 brush.ReleaseGraphics(this, bounds);

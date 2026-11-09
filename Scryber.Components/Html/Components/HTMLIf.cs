@@ -17,10 +17,15 @@ namespace Scryber.Html.Components
         public override ITemplate Template { get => base.Template; set => base.Template = value; }
 
 
-        public HTMLIf() : base()
+        public HTMLIf() : this(HTMLObjectTypes.DataIf)
         {
         }
 
+
+        protected HTMLIf(ObjectType type) : base(type)
+        {
+
+        }
 
     }
 }

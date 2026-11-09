@@ -115,6 +115,11 @@ namespace Scryber.Components
         #endregion
 
 
+        protected override void OnInitialized(InitContext context)
+        {
+            base.OnInitialized(context);
+        }
+
         public ListItem()
             : this(ObjectTypes.ListItem)
         {
@@ -130,6 +135,7 @@ namespace Scryber.Components
         {
             Styles.Style defaultStyle = base.GetBaseStyle();
             defaultStyle.Size.FullWidth = true;
+            defaultStyle.Position.PositionMode = PositionMode.Relative;
             //defaultStyle.Overflow.Split = Drawing.OverflowSplit.Never;
             return defaultStyle;
         }

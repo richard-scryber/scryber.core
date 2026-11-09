@@ -32,6 +32,9 @@ namespace Scryber.Logging
     {
 
         private IEnumerable<TraceLog> _inner;
+        
+        public CompositeTraceLog(params TraceLog[] entries) : this((IEnumerable<TraceLog>)entries, "Composite")
+        {}
 
         public CompositeTraceLog(IEnumerable<TraceLog> entries, string name)
             : base(GetRecordLevelFromEntries(entries), name)

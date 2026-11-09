@@ -130,6 +130,12 @@ namespace Scryber.Data
         }
 
         #endregion
+        
+        private static readonly DataBindingBehaviour foreachBehaviour = new DataBindingBehaviour(
+            enumerate: true,
+            expandObject: false,
+            setContextData: true,
+            incrementIndex: true);
 
         public ForEach()
             : this(ObjectTypes.NoOp)
@@ -137,7 +143,7 @@ namespace Scryber.Data
         }
 
         protected ForEach(ObjectType type)
-            : base(type)
+            : base(type, foreachBehaviour)
         {
             _start = 0;
             _count = int.MaxValue;
@@ -154,10 +160,10 @@ namespace Scryber.Data
 
         protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
-            if(this.Template is IPDFDataTemplateGenerator)
+            if(this.Template is IDataTemplateGenerator)
             {
-                ((IPDFDataTemplateGenerator)this.Template).DataStyleStem = this.DataStyleIdentifier;
-                ((IPDFDataTemplateGenerator)this.Template).UseDataStyleIdentifier = this.CacheStyles;
+                ((IDataTemplateGenerator)this.Template).DataStyleStem = this.DataStyleIdentifier;
+                ((IDataTemplateGenerator)this.Template).UseDataStyleIdentifier = this.CacheStyles;
             }
             return this.Template;
         }
@@ -194,7 +200,7 @@ namespace Scryber.Data
                     data = source.Select(this.SelectPath, context);
                     dataSource = source;
                 }
-#if NET6_0
+#if NET6_0_OR_GREATER
                 else if(data is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
                 {
                     data = jele.EnumerateArray();
@@ -230,7 +236,7 @@ namespace Scryber.Data
 
             if (hasdata)
             {
-                context.DataStack.Push(data, dataSource);
+                context.DataStack.PushCollection(data, dataSource);
             }
             
             base.DoDataBind(context, includeChildren);
@@ -338,7 +344,7 @@ namespace Scryber.Data
 
         #region private class XPathDefaultIterator : IEnumerator
 
-        private class XPathDefaultEnumerator : IEnumerator
+        private class XPathDefaultEnumerator : IEnumerator, Scryber.Data.Enumerators.INoReadAheadEnumerator
         {
             private System.Xml.XPath.XPathNodeIterator _inner;
             private bool _isReset;
@@ -371,7 +377,7 @@ namespace Scryber.Data
 
         #endregion
 
-        #region private class XPathRangeEnumerator : IEnumerator
+        #region private class XPathRangeEnumerator : IEnumerator, Scryber.Data.Enumerators.INoReadAheadEnumerator
 
         /// <summary>
         /// Implements enumerating over a range (with an optional step)

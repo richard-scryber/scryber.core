@@ -15,7 +15,7 @@ namespace Scryber.Generation
 
         public PDFXMLReflectionParserFactory()
         {
-            SupportedTypes = new MimeType[] { MimeType.Xml, MimeType.xHtml, MimeType.xHtmlSimple };
+            SupportedTypes = new MimeType[] { MimeType.Xml, MimeType.xHtml, MimeType.xHtmlSimple, MimeType.Svg };
         }
 
         public IComponentParser CreateParser(MimeType type, ParserSettings settings)

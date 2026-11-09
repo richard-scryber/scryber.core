@@ -1,0 +1,23 @@
+body{
+    padding: 20pt;
+    background-color: #eaa;
+    color: red;
+}
+
+.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    border: solid 1pt red;
+    background-color: #eaa;
+    width: 150pt;
+}
+
+.positioned{
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: solid 1pt green;
+    background-color: #aea;
+    width: 150pt;
+}

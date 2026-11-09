@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Functions.Logical
 
         public override string Name { get { return "In"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 2);
 
@@ -35,25 +35,35 @@ namespace Scryber.Expressive.Functions.Logical
 
         #endregion
 
-        private bool Compare(object result, object compareto, Context context)
+        private bool Compare(object result, object compareto, ExpressionContext context)
         {
 
             if (result is string str)
             {
                 if (null == compareto)
-                    return str == null;
+                    return null == str;
                 else
                     return str.CompareTo(compareto.ToString()) == 0;
             }
-            else if (result is IEnumerable resultEnum)
+            else if (Collections.TryIsCollection(result, out var resultEnum))
             {
                 foreach (var item in resultEnum)
                 {
-                    if (Compare(item, compareto, context))
+                    if (item is string innerStr)
+                    {
+                        if (null == compareto)
+                            return null == innerStr;
+                        else
+                            return innerStr.CompareTo(compareto.ToString()) == 0;
+                    }
+                    else if (Comparison.CompareUsingMostPreciseType(compareto, item, context) == 0)
+                    {
                         return true;
+                    }
                 }
+                return false;
             }
-            if (Comparison.CompareUsingMostPreciseType(compareto, result, context) == 0)
+            else if (Comparison.CompareUsingMostPreciseType(compareto, result, context) == 0)
             {
                 return true;
             }

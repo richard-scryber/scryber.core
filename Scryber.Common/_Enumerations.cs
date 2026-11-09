@@ -187,7 +187,8 @@ namespace Scryber
     public enum TextFormat
     {
         Plain,
-        XML
+        XML,
+        XHTML
     }
 
     /// <summary>
@@ -416,6 +417,36 @@ namespace Scryber
         /// Does not define how the parser should treat the content, could be a document, fragment, or just some text. Not recommended for internally known parsers.
         /// </summary>
         Other
+    }
+    
+    
+    /// <summary>
+    /// Defines the output stage in document processing a log entry should be written. Can be combined into multiple stages.
+    /// </summary>
+    [Flags]
+    public enum LogEntryStages
+    {
+        /// <summary>
+        /// Will never be written
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Written at loading time
+        /// </summary>
+        Loading = 1,
+        /// <summary>
+        /// Written at the tie of data binding
+        /// </summary>
+        Binding = 2,
+        /// <summary>
+        /// Written at the time of document layout. All components should have their final value
+        /// </summary>
+        Layout = 4,
+        /// <summary>
+        /// Written at the time the document layout content is actually written to a stream of file.
+        /// </summary>
+        Rendering = 8,
+        Any = 15
     }
 
     public static class EnumParser

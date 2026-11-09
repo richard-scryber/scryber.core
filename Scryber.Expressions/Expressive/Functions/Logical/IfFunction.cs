@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Functions.Logical
 
         public override string Name { get { return "If"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 3, 3);
 

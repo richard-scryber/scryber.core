@@ -39,11 +39,11 @@ namespace Scryber
 
         public  object Result { get; set; }
 
-        public bool IsCompleted { get; private set; }
+        public virtual bool IsCompleted { get; private set; }
 
         public bool IsExecuting { get; private set; }
 
-        public bool IsSuccessful { get; private set; }
+        public virtual bool IsSuccessful { get; private set; }
         
         public TimeSpan CacheDuration { get; set; }
 
@@ -64,17 +64,17 @@ namespace Scryber
                     return this.FilePath;
             }
         }
-        public RemoteFileRequest(string type, string path, RemoteRequestCallback callback, IComponent owner = null, object args = null)
+        public RemoteFileRequest(string type, string path, TimeSpan cacheDuration, RemoteRequestCallback callback, IComponent owner = null, object args = null)
         {
             this.ResourceType = type ?? throw new ArgumentNullException(nameof(type));
             this.FilePath = path ?? throw new ArgumentNullException(nameof(path));
-            this.Callback = callback ?? throw new ArgumentNullException(nameof(callback));
+            this.Callback = callback;
             this.Owner = owner;
             this.Arguments = args;
             this.IsCompleted = false;
             this.IsExecuting = false;
             this.IsSuccessful = false;
-            this.CacheDuration = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
+            this.CacheDuration = cacheDuration;
         }
 
         public void StartRequest()

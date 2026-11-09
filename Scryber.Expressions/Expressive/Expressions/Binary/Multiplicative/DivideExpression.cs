@@ -9,7 +9,7 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
     {
         #region Constructors
 
-        public DivideExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public DivideExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 
@@ -19,10 +19,10 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
 
         /// <inheritdoc />
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) => 
+            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) => 
                 l is null || r is null || IsReal(l) || IsReal(r)
-                    ? Numbers.Divide(l, r)
-                    : Numbers.Divide(ConvertToDouble(l), r));
+                    ? Numbers.Divide(l, r, vars)
+                    : Numbers.Divide(ConvertToDouble(l, vars), r, vars));
 
         #endregion
 
@@ -31,18 +31,28 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static object ConvertToDouble(object value)
+        private static object ConvertToDouble(object value, IDictionary<string, object> variables)
         {
             if (value is Unit unit)
-                return unit.PointsValue;
-            else if(value is string s)
             {
-                if (Double.TryParse(s, out double d))
+                if (unit.IsRelative)
+                    unit = Numbers.ConvertRelativeUnit(unit, variables);
+                return unit.PointsValue;
+            }
+            else if (value is string s)
+            {
+                //numbers are always read in the invariant culture, the same as numbers in the expression itself.
+                if (Double.TryParse(s, System.Globalization.NumberStyles.Float | System.Globalization.NumberStyles.AllowThousands, System.Globalization.CultureInfo.InvariantCulture, out double d))
                     return d;
                 else if (Unit.TryParse(s, out unit))
+                {
+                    if (unit.IsRelative)
+                        unit = Numbers.ConvertRelativeUnit(unit, variables);
+
                     return unit.PointsValue;
+                }
             }
-            return Convert.ToDouble(value);
+            return Convert.ToDouble(value, System.Globalization.CultureInfo.InvariantCulture);
 
         }
         private static bool IsReal(object value)

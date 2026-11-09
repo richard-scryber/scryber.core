@@ -32,11 +32,7 @@ namespace Scryber.Text
         public PDFXmlFormatException() { }
         public PDFXmlFormatException(string message) : base(message) { }
         public PDFXmlFormatException(string message, Exception inner) : base(message, inner) { }
-
-        protected PDFXmlFormatException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
     
 }

@@ -132,8 +132,8 @@ namespace Scryber.Components
                 }
 
             }
-            Unit offsetx = 0 - minx;
-            Unit offsety = 0 - miny;
+            Unit offsetx = rect.X - minx;
+            Unit offsety = rect.Y - miny;
 
             //translate the point by the minimum values so the topleft is always 0,0 in the boundary rect.
 

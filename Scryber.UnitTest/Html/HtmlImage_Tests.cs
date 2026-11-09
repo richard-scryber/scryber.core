@@ -33,28 +33,12 @@ namespace Scryber.Core.UnitTests.Html
 
         public string GetLocalProjectPath()
         {
-            var dir = new DirectoryInfo(TestContext.TestRunDirectory);
-            while (dir.Name != "Scryber.Core")
-            {
-                dir = dir.Parent;
-                Assert.IsNotNull(dir);
-            }
-
-            dir = new DirectoryInfo(System.IO.Path.Combine(dir.FullName, "Scryber.UnitTest"));
-            Assert.IsTrue(dir.Exists, "The Unit Test project folder could not be found");
-            return dir.FullName + System.IO.Path.DirectorySeparatorChar;
+            return DocStreams.GetTestProjectDirectory() + "/";
         }
         
         public string GetLocalImagePath(string nameWithExtension)
         {
-            var dir = GetLocalProjectPath();
-            var path = System.IO.Path.Combine(dir, "Content", "HTML", "Images", nameWithExtension);
-            path = System.IO.Path.GetFullPath(path);
-            
-            //Check to make sure we are looking in the local path
-            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the path to the image file");
-
-            return path;
+            return DocStreams.AssertGetTemplatePath(System.IO.Path.Combine("HTML", "Images", nameWithExtension));
         }
         
         /// <summary>
@@ -63,8 +47,9 @@ namespace Scryber.Core.UnitTests.Html
         public void AssertGroupImage(PDFImageXObject img)
         {
             Assert.IsNotNull(img.ImageData, "The resource had no data");
-            var data = img.ImageData;
+            var data = img.ImageData as ImageRasterData;
             
+            Assert.IsNotNull(data, "The resource had no data, or is not a raster image");
             Assert.AreEqual(396, data.PixelWidth, "Expected a 5 pixel wide image");
             Assert.AreEqual(342, data.PixelHeight, "Expected a 5 pixel high image");
             Assert.AreEqual(8, data.BitsPerColor);
@@ -103,7 +88,9 @@ namespace Scryber.Core.UnitTests.Html
         /// <param name="img"></param>
         public void AssertJpgImage(PDFImageXObject img)
         {
-            Assert.AreEqual(8, img.ImageData.BitsPerColor, "Expected a 24 bit RGB image");
+            var data = img.ImageData as ImageRasterData;
+            Assert.IsNotNull(data, "The resource had no data, or is not a raster image");
+            Assert.AreEqual(8, data.BitsPerColor, "Expected a 24 bit RGB image");
             Assert.IsFalse(img.ImageData.HasAlpha, "Jpeg images should not have an alpha");
             Assert.IsTrue(img.ImageData.IsPrecompressedData,"Jpeg images should be pre-compressed");
             Assert.AreEqual(1, img.ImageData.Filters.Length, "Expected a single filter"); 
@@ -514,7 +501,9 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.AreEqual(1, line.Runs.Count);
 
                         var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
-                        Assert.AreEqual(img.ImageData.DisplayWidth, imgLayout.Width);
+                        
+                        var size = img.ImageData.GetSize();
+                        Assert.AreEqual(size.Width, imgLayout.Width);
                     }
 
                 }
@@ -619,7 +608,10 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.AreEqual(1, line.Runs.Count);
 
                         var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
-                        Assert.AreEqual(width, imgLayout.Width);
+                        
+                        //As per chrome, the height will use the available space and the content will overflow the available width
+                        var imgWidth = new Unit(2.75, PageUnits.Inches);
+                        Assert.AreEqual(imgWidth, imgLayout.Width);
 
                     }
 
@@ -635,7 +627,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImageSizeJpegFixedWidthWithContent_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/21e754878742d040249ed5da34612b1e535f031f/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png";
             var width = new Unit(40, PageUnits.Points);
             var html = @"<?scryber append-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
@@ -681,7 +673,8 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.AreEqual(1, line.Runs.Count);
 
                         var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
-                        Assert.AreEqual(width, imgLayout.Width);
+                        var imgWidth = new Unit(320, PageUnits.Points);
+                        Assert.AreEqual(Math.Round(imgWidth.PointsValue, 3), Math.Round(imgLayout.Width.PointsValue, 3));
 
                     }
 

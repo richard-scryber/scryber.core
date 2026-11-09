@@ -34,49 +34,24 @@ namespace Scryber.Options
 
         public static PDFImageFactoryList GetFactories(this ImagingOptions options)
         {
-            var list = new PDFImageFactoryList(_configured.Length);
-            for(var i = 0; i < _configured.Length; i++)
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var images = config.ImagingOptions.Factories ?? new List<ImageDataFactoryOption>();
+            var list = new PDFImageFactoryList(images.Count);
+            
+            for(var i = 0; i < images.Count; i++)
             {
-                if (null != _configured[i])
+                if (null != images[i])
                 {
-                    PDFImageFactory one = new PDFImageFactory(_options[i].Name, new System.Text.RegularExpressions.Regex(_options[i].Match), _configured[i]);
+                    PDFImageFactory one = new PDFImageFactory(images[i].Name, 
+                        new System.Text.RegularExpressions.Regex(images[i].Match), 
+                        images[i].GetInstance() as IPDFImageDataFactory);
                     list.Add(one);
                 }
             }
             return list;
 
         }
-
-
-        private static IPDFImageDataFactory[] _configured;
-        private static ImageDataFactoryOption[] _options;
-
-        /// <summary>
-        /// Static constructor that initializes the ImageDataFactoryOptions
-        /// </summary>
-        static ImageOptionExtension()
-        {
-            var config = ServiceProvider.GetService<IScryberConfigurationService>();
-            _options = config.ImagingOptions.Factories;
-            List<IPDFImageDataFactory> all = new List<IPDFImageDataFactory>();
-
-            if(null == _options)
-            {
-                _options = new ImageDataFactoryOption[] { };
-            }
-
-            if(null != _options && _options.Length > 0)
-            {
-                for(var i = 0; i < _options.Length; i++)
-                {
-                    var one = Utilities.TypeHelper.GetInstance<IPDFImageDataFactory>(_options[i].FactoryType, _options[i].FactoryAssembly, true);
-                    all.Add(one);
-                }
-                
-            }
-            _configured = all.ToArray();
-
-        }
+        
     }
 
     public class PDFImageFactoryList : List<PDFImageFactory>

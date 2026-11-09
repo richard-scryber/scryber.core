@@ -21,17 +21,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 
 namespace Scryber.Styles
 {
     /// <summary>
     /// Abstract base class for all style values. The generic type PDFStyeValue&lt;T&gt; is the concrete implementation for strongly typed values
     /// </summary>
-    public abstract class StyleValueBase
+    public abstract class StyleValueBase : ICloneable
     {
         public StyleKey Key { get; set; }
 
         public int Priority { get; set; }
+
+        //TODO: Implement the initial and inherit options.
+
+        public bool IsInitial { get; set; }
+
+        public bool IsInherit { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this value was declared with the CSS !important flag,
+        /// which takes priority over specificity/source-order within the cascade.
+        /// </summary>
+        public bool IsImportant { get; set; }
 
         protected StyleValueBase(StyleKey key)
         {
@@ -41,6 +54,11 @@ namespace Scryber.Styles
         public abstract object GetValue(Style forStyle);
 
 
+        public object Clone()
+        {
+            return this.CloneWithPriority(this.Priority);
+        }
+        
         public StyleValueBase CloneWithPriority(int priority)
         {
             var instance = this.MemberwiseClone() as StyleValueBase;
@@ -48,6 +66,12 @@ namespace Scryber.Styles
             return instance;
         }
 
+        public virtual void FlattenValue(StyleKey key, Style forStyle, Size page, Size container, Size font, Unit rootFont )
+        {
+            if (key.CanBeRelative)
+                key.FlattenValue(forStyle, page, container, font, rootFont);
+            //Base Implementation does nothing
+        }
     }
 
 
@@ -79,7 +103,9 @@ namespace Scryber.Styles
 
         public override object GetValue(Style forStyle)
         {
-            return Value(forStyle);
+            object result = Value(forStyle);
+            
+            return result;
         }
     }
 

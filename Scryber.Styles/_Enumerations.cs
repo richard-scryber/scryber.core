@@ -31,7 +31,10 @@ namespace Scryber
         Root,
         Before,
         After,
-        Unknown
+        Unknown,
+        First,
+        Left,
+        Right
     }
 
     public enum PaperOrientation
@@ -100,7 +103,8 @@ namespace Scryber
         RepeatX,
         RepeatY,
         RepeatBoth,
-        Fill
+        Fill,
+        Contain
     }
 
     public enum PageNumberDisplay
@@ -123,7 +127,11 @@ namespace Scryber
         RepeatAtTop
     }
 
-    
+    public enum HeadTailRepeat
+    {
+        None,
+        Repeat
+    }
     
 
     public enum NumberingOutputType
@@ -139,7 +147,24 @@ namespace Scryber
         Rotate,
         Scale,
         Skew,
+        Matrix
     }
 
-    
+    public enum PreferredFlattenDimension
+    {
+        Width,
+        Height,
+        Font
+    }
+
+    public enum AttachmentDisplayIcon
+    {
+        Graph,
+        PushPin,
+        Paperclip,
+        Tag,
+        None
+    }
+
+
 }

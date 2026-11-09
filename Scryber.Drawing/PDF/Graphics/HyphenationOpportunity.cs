@@ -4,8 +4,8 @@ namespace Scryber.PDF.Graphics
 
     public enum HyphenationType
     {
-        AllowedHyphenation = 1, //The strategy works for the proposal and the hypenation is allowed at the suggested location.
-
+        AllowedHyphenation = 1, //The strategy works for the proposal and the hyphenation is allowed at the suggested location.
+        NoHyphenation = 2 //The strategy will not hyphenate any words.
     }
 
 

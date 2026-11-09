@@ -1,0 +1,37 @@
+{
+  "name": "j-smith",
+  "profile": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "personal":{
+      "emailAddress": "j.smith@company.com",
+      "phone": "123-456-789",
+      "address": "123 Anywhere Street, Town and Country"
+    },
+    "title": "Design Manager",
+    "desc": "Lorem ipsum dolor sit amet, cu imperdiet conceptam has, tantas suscipit pertinacia eos ei, ut ullum inani integre eum. Porro corrumpit ei pro. Id nostro platonem dissentiet vel, te pri graece fuisset apeirian. Nam unum nominati postulant no. Sed ocurreret dissentias ea. Mel noster aperiri cu. Iuvaret adipiscing pro eu, in eum prima sadipscing.",
+    "langs": ["English", "Malay", "Mandarin"],
+    "expertise" : "Lorem ipsum dolor sit amet, cu imperdiet conceptam has, tantas suscipit pertinacia eos ei, ut ullum inani integre eum. Porro corrumpit ei pro. Id nostro platonem dissentiet vel, te pri graece fuisset apeirian. Nam unum nominati postulant no. Sed ocurreret dissentias ea. Mel noster aperiri cu. Iuvaret adipiscing pro eu, in eum prima sadipscing.",
+    "skills": [{
+      "name": "UI Design",
+      "level": 4
+    },{
+      "name": "Front End Coding",
+      "level": 2
+    },{
+      "name": "Scrum Master",
+      "level": 4
+    },{
+      "name" : "Team Leader",
+      "level": 5
+      }],
+    "profilePicture" : ""
+  },
+
+  "brand" : {
+    "primaryColor" : "rgb(0,168,161)",
+    "secondaryColor" : "rgb(0,168,161)",
+    "darkColor" : "rgb(43,44,65)"
+  }
+
+}

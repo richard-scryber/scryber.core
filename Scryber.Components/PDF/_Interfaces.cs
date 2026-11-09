@@ -1,6 +1,7 @@
 ﻿using System;
 using Scryber.Styles;
 using System.Collections.Generic;
+using Scryber.PDF.Graphics;
 using Scryber.PDF.Layout;
 
 namespace Scryber.PDF
@@ -97,4 +98,16 @@ namespace Scryber.PDF
 
     #endregion
 
+
+    /// <summary>
+    /// Inline border and background styles on run that have been set higher up in the chain
+    /// and should be used if no border or background is on the item.
+    /// </summary>
+    public interface IFallbackStyledRun
+    {
+        PDFBrush FallbackBackground { get; set; }
+        
+        PDFPenBorders FallbackBorder { get; set; }
+        
+    }
 }

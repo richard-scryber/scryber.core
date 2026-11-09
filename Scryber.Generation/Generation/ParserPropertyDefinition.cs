@@ -85,6 +85,12 @@ namespace Scryber.Generation
         /// </summary>
         public bool IsParserSourceValue { get; set; }
 
+        /// <summary>
+        /// If true then the content of the property can be wrapped in a &lt;![CDATA[ .... ]]&gt; node.
+        /// </summary>
+        public bool AllowCData { get; set; }
+
+
         public object GetValue(System.Xml.XmlReader reader, ParserSettings settings)
         {
             try

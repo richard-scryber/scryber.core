@@ -50,9 +50,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLDiv()
-            : base()
+            : this(HTMLObjectTypes.Div)
         {
         }
+
+        protected HTMLDiv(ObjectType type): base(type)
+        { }
 
 
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
@@ -61,5 +64,14 @@ namespace Scryber.Html.Components
             return style;
         }
 
+        // protected override void OnInitialized(InitContext context)
+        // {
+        //     base.OnInitialized(context);
+        // }
+        //
+        // protected override void OnLoaded(LoadContext context)
+        // {
+        //     base.OnLoaded(context);
+        // }
     }
 }

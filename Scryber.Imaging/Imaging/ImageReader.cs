@@ -5,10 +5,14 @@ using System.IO;
 using Scryber.Drawing;
 using Scryber.Options;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Scryber.Imaging
 {
+    /// <summary>
+    /// Converts binary data for *RASTER* images into a Scryber.Drawing.ImageData instance. Use the factory method ImageReader.Create() to instantiate.
+    /// </summary>
     public class ImageReader
     {
 
@@ -29,8 +33,12 @@ namespace Scryber.Imaging
 
         public ImageData ReadStream(string name, Stream stream, bool compress)
         {
-            Image image = Image.Load(stream);
-
+            DecoderOptions options = new DecoderOptions()
+            {
+                MaxFrames = 1
+            };
+            Image image = Image.Load(options, stream);
+            
             if (compress)
                 image = CompressImage(image);
 

@@ -37,6 +37,11 @@ namespace Scryber.Drawing
         public const char ThicknessEndChar = ']';
         public const bool ThicknessStartAndEndRequired = false;
 
+        /// <summary>
+        /// Represtents the value of 'auto' in CSS
+        /// </summary>
+        public static readonly Unit ThicknessAutoValue = new Unit(Double.Epsilon, PageUnits.Points);
+        
         #region Top{get;set}, Left{get;set}, Bottom{get;set}, Right{get;set}
 
         private Unit _top;

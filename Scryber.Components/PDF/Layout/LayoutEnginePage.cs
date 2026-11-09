@@ -31,6 +31,15 @@ namespace Scryber.PDF.Layout
 
         private StyleStack _origStyleStack;
 
+        /// <summary>
+        /// True while laying out the content of a generated page header or footer.
+        /// Header/footer content is regenerated on every page, so a page-break request
+        /// originating from within it (e.g. break-after/break-before: always|page) must
+        /// not be allowed to build another page - that would regenerate the same header
+        /// or footer, hit the same break request, and recurse without end.
+        /// </summary>
+        private bool _isLayingOutHeaderOrFooter;
+
         //
         // properties
         //
@@ -60,7 +69,6 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
 
         //
         // ctor(s)
@@ -92,19 +100,46 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected override void DoLayoutComponent()
         {
+            if(!this.ShouldLayoutComponent(this.Component, this.FullStyle))
+                return;
+            
             IDisposable record = this.Context.PerformanceMonitor.Record(PerformanceMonitorType.Layout_Pages, "Page " + this.Component.ID);
 
             //Take a copy of the style stack for the header and footer
             this.PageStyleStack = this.Context.StyleStack.Clone();
 
+            // Build an effective style that merges @page pseudo-class overrides for this page index
+            // without permanently mutating this.FullStyle (which is reused for continuation pages).
+            var firstPageIndex = this.DocumentLayout.AllPages.Count;
+            var effectiveStyle = this.GetEffectiveStyleForPage(firstPageIndex);
 
             //Get the page size and position options
-            PageSize pgsize = this.FullStyle.CreatePageSize();
-            pgsize.Size = this.GetNextPageSize(this.Component, this.FullStyle, pgsize.Size);
+            PageSize pgsize = effectiveStyle.CreatePageSize();
+            pgsize = this.GetNextPageSize(this.Component, effectiveStyle, pgsize, false);
 
-            PDFPositionOptions options = this.FullStyle.CreatePostionOptions();
+            var isInPositioned = this.Context.PositionDepth > 0;
+            PDFPositionOptions options = effectiveStyle.CreatePostionOptions(isInPositioned);
 
 
+            // When effectiveStyle == FullStyle, no @page pseudo-class rules matched, so
+            // options.Margins has no page margins. Fall back to CurrentPageSize margins (pgsize.Margins)
+            // which were populated from GetPageStyle("", -1) during document layout creation.
+            // When effectiveStyle != FullStyle, options.Margins was already populated by
+            // effectiveStyle.CreatePostionOptions() with the correct merged (base + pseudo-class) margins.
+            if (ReferenceEquals(effectiveStyle, this.FullStyle) && pgsize.Margins != null)
+            {
+                var updated = options.Margins;
+                if(pgsize.Margins.Left.HasValue)
+                    updated.Left = pgsize.Margins.Left.Value;
+                if(pgsize.Margins.Top.HasValue)
+                    updated.Top = pgsize.Margins.Top.Value;
+                if(pgsize.Margins.Right.HasValue)
+                    updated.Right = pgsize.Margins.Right.Value;
+                if(pgsize.Margins.Bottom.HasValue)
+                    updated.Bottom = pgsize.Margins.Bottom.Value;
+
+                options.Margins = updated;
+            }
             
             
 
@@ -122,7 +157,7 @@ namespace Scryber.PDF.Layout
             
             
 
-            PDFLayoutPage pg = BuildNewPage(pgsize.Size, options, colOpts, action);
+            PDFLayoutPage pg = BuildNewPage(pgsize, options, colOpts, action);
 
             //Graphics
             PDFGraphics g = pg.CreateGraphics(null, this.StyleStack, this.Context);
@@ -153,6 +188,11 @@ namespace Scryber.PDF.Layout
 
         }
 
+        // Tracks the most recently encountered named @page group, updated when content sections
+        // with a page: CSS property are encountered. Used so that BuildContinuationPage and
+        // GetEffectiveStyleForPage can apply pseudo-class styles for named @page rules.
+        private string _currentPageName = string.Empty;
+
         private PageNumberGroup _numbergroup;
         private int _firstpageIndex;
 
@@ -173,8 +213,100 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, LayoutEnginePage.LOG_CATEGORY, "Un-registered the page numbering");
         }
 
-        private Size GetNextPageSize(IComponent owner, Style full, Size orig)
+        private PageSize GetNextPageSize(IComponent owner, Style full, PageSize orig, bool isContinuation)
         {
+            var curr = this.DocumentLayout.CurrentPageSize.Clone();
+            
+            if(null == curr)
+                throw new InvalidOperationException("Cannot get the current page size from the document layout, this should always be set when we are laying out a page");
+                
+            Size size;
+            
+            StyleValue<PaperSize> paper;
+            StyleValue<PaperOrientation> orient;
+            PaperOrientation orientVal= PaperOrientation.Portrait;
+
+            if(full.TryGetValue(StyleKeys.PagePaperSizeKey, out paper))
+            {
+                //we have an explicit size defined on the page, so use this, and check for orientation as well (default is portrait).
+
+                if(paper.Value(full) == PaperSize.Custom)
+                {
+                    //If we have a custom paper size, then we need to get the size from the page size group key.
+                    var pgSize = full.CreatePageSize();
+                    size = pgSize.Size;
+
+
+                    if(full.TryGetValue(StyleKeys.PageWidthKey, out var width))
+                    {
+                        size.Width = width.Value(full);
+                    }
+                    
+                    if(full.TryGetValue(StyleKeys.PageHeightKey, out var height))
+                    {
+                        size.Height = height.Value(full);
+                    }
+            
+                }
+                else
+                {
+                    //check for orientation as well (default is portrait).
+                    if(full.TryGetValue(StyleKeys.PageOrientationKey, out orient))
+                    {
+                        orientVal = orient.Value(full);
+                    }
+
+                    
+                    size = Papers.GetSizeInMM(paper.Value(full));
+
+                    if(orientVal == PaperOrientation.Landscape)
+                    {
+                        size = new Size(size.Height, size.Width);
+                    }
+                }
+                curr.Size = size;
+                return curr;
+
+            }
+            else if(full.IsValueDefined(StyleKeys.PageWidthKey) || full.IsValueDefined(StyleKeys.PageHeightKey))
+            {
+                var pgSize = full.CreatePageSize();
+                size = pgSize.Size;
+
+                if(full.TryGetValue(StyleKeys.PageWidthKey, out var width))
+                {
+                    size.Width = width.Value(full);
+                }
+                
+                if(full.TryGetValue(StyleKeys.PageHeightKey, out var height))
+                {
+                    size.Height = height.Value(full);
+                }
+                curr.Size = size;
+                return curr;
+            }
+            else if(full.TryGetValue(StyleKeys.PageOrientationKey, out orient))
+            {
+                //If we have an orientation but no paper size, then we need to use the current paper size for the page.
+                size = curr.Size;
+                if(orient.Value(full) == PaperOrientation.Landscape && size.Width < size.Height)
+                {
+                    size = new Size(size.Height, size.Width);
+                }
+                curr.Size = size;
+            }
+            else
+            {
+                //No explicit page size or orientation,
+                // so just return the current page size if we are a continuation and we have no explicit page group
+                if (isContinuation  && !full.IsValueDefined(StyleKeys.PageNameGroupKey))
+                    return orig;
+                else //we are not a continuation, or we do have an explicit size which will be picked up from the style page: [group name]
+                    return curr;
+            }
+
+
+            //old code to get the page size from the page name group key, but we are now pushing page sizes onto the stack, so this is no longer needed, but we will keep it here for reference for now.    
             var name = full.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
 
             if(!string.IsNullOrEmpty(name))
@@ -188,7 +320,7 @@ namespace Scryber.PDF.Layout
                 style = this.DocumentLayout.DocumentComponent.GetAppliedStyle(this.Page, style);
 
                 var pgSize = style.CreatePageSize();
-                orig = pgSize.Size;
+                orig = pgSize;
 
                 this.Page.StyleClass = prev;
             }
@@ -206,8 +338,17 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         public override bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
-            
-            
+            if (_isLayingOutHeaderOrFooter)
+            {
+                //Header/footer content is regenerated on every page it appears on, so honouring a
+                //page-break request from within it would regenerate the same header/footer, hit the
+                //same break request, and build new pages without end. Treat this as unable to overflow.
+                if (this.Context.ShouldLogVerbose)
+                    this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Ignoring a page break requested from within page header/footer content for " + this.Component);
+
+                return false;
+            }
+
             StyleValue<OverflowAction> action;
             if (this.FullStyle.TryGetValue(StyleKeys.OverflowActionKey, out action) && action.Value(this.FullStyle) == OverflowAction.NewPage)
             {
@@ -243,12 +384,13 @@ namespace Scryber.PDF.Layout
                     //open = parent;
                 }
                 lastpage.Close();
-                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size);
+                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size, true);
                 PDFLayoutPage page = BuildContinuationPage(lastpage, pgSize);
 
                 block = page.CurrentBlock;
                 region = block.CurrentRegion;
 
+                depth.Pop(); //As we build the PageBlock, and the inner ContentBlock we need to pop again.
                 if(this.Context.ShouldLogVerbose)
                     this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Built a new continuation page for " + this.Component + " and recreated the " + toclose.Count + " blocks and regions on the new page");
                 return true;
@@ -269,15 +411,23 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="copyfrom"></param>
         /// <returns></returns>
-        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, Size size)
+        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, PageSize size)
         {
             //Take a reference of the current stack and replace with the page stack from first page
             StyleStack orig = this.Context.StyleStack;
             this.Context.StyleStack = this.PageStyleStack;
 
-            
+            // Compute effective style for this continuation page index, applying @page pseudo-class
+            // overrides (:first, :left, :right) without mutating this.FullStyle.
+            var continuationIndex = this.DocumentLayout.AllPages.Count;
+            var effectiveStyle = GetEffectiveStyleForPage(continuationIndex);
 
-            PDFLayoutPage page = this.BuildNewPage(size, copyfrom.PositionOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
+            // Recompute the page size from the effective style so that :first size override
+            // does not bleed into continuation pages.
+            PageSize continuationSize = GetNextPageSize(this.Component, effectiveStyle, size, true);
+            PDFPositionOptions continuationOptions = effectiveStyle.CreatePostionOptions(false);
+
+            PDFLayoutPage page = this.BuildNewPage(continuationSize, continuationOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
 
             //becasue we are a continuation page, we have the same number style, so let's just register it with null
             this.DocumentLayout.RegisterPageNumbering(page, null);
@@ -291,7 +441,90 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-        
+
+        /// <summary>
+        /// Called by LayoutEngineBase when a content component with a named page group is encountered.
+        /// Updates _currentPageName so that continuation pages use the correct named @page pseudo-class,
+        /// and retroactively patches the current (first) page's PositionOptions if it has no content yet.
+        /// </summary>
+        public virtual void OnPageNamePushed(string pageName)
+        {
+            if (string.IsNullOrEmpty(pageName)) return;
+
+            bool isFirstPush = string.IsNullOrEmpty(_currentPageName);
+            _currentPageName = pageName;
+
+            if (isFirstPush)
+            {
+                // Retroactively apply the named @page pseudo-class style to the current (first) page.
+                // This is safe here because PushPageSize fires before any child content is placed.
+                var currentPage = this.DocumentLayout.CurrentPage;
+                if (currentPage != null && !currentPage.IsClosed)
+                {
+                    var pageIndex = this.DocumentLayout.AllPages.Count - 1;
+                    var effectiveStyle = GetEffectiveStyleForPage(pageName, pageIndex);
+                    if (!ReferenceEquals(effectiveStyle, this.FullStyle))
+                        currentPage.PositionOptions = effectiveStyle.CreatePostionOptions(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by LayoutEngineBase when a content component's named page group ends (PopPageSize).
+        /// Resets _currentPageName so subsequent continuation pages revert to the unnamed @page style.
+        /// </summary>
+        public virtual void OnPageNamePopped(string pageName)
+        {
+            if (_currentPageName == pageName)
+                _currentPageName = string.Empty;
+        }
+
+        /// <summary>
+        /// Returns a style that applies @page pseudo-class overrides (:first, :left, :right) for the
+        /// given page index on top of this.FullStyle, without mutating this.FullStyle.
+        /// Uses _currentPageName (set by OnPageNamePushed) if this.FullStyle has no page name.
+        /// Returns this.FullStyle directly when there are no applicable overrides.
+        /// </summary>
+        protected virtual Style GetEffectiveStyleForPage(int pageIndex)
+        {
+            var pageName = !string.IsNullOrEmpty(_currentPageName)
+                ? _currentPageName
+                : this.FullStyle.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
+            return GetEffectiveStyleForPage(pageName, pageIndex);
+        }
+
+        protected virtual Style GetEffectiveStyleForPage(string pageName, int pageIndex)
+        {
+            var pageStyle = this.DocumentLayout.DocumentComponent.GetPageStyle(pageName, pageIndex);
+            if (!pageStyle.HasValues)
+                return this.FullStyle;
+
+            var effectiveStyle = new StyleFull();
+            this.FullStyle.MergeInto(effectiveStyle);
+            pageStyle.MergeInto(effectiveStyle);
+            return effectiveStyle;
+        }
+
+        /// <summary>
+        /// Returns position options for a continuation page, re-evaluating :left/:right pseudo-class margins
+        /// for the specific document-absolute page index.
+        /// </summary>
+        protected virtual PDFPositionOptions GetContinuationPositionOptions(PDFLayoutPage copyfrom, int pageIndex)
+        {
+            var pageName = this.FullStyle.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
+            var pageStyle = this.DocumentLayout.DocumentComponent.GetPageStyle(pageName, pageIndex);
+
+            if (!pageStyle.HasValues)
+                return copyfrom.PositionOptions;
+
+            // Clone the unmodified base style and merge the pseudo-class override on top.
+            var contStyle = new StyleFull();
+            this.FullStyle.MergeInto(contStyle);
+            pageStyle.MergeInto(contStyle);
+
+            return contStyle.CreatePostionOptions(false);
+        }
+
         //
         // support methods
         //
@@ -306,7 +539,7 @@ namespace Scryber.PDF.Layout
         /// <param name="alley"></param>
         /// <param name="colcount"></param>
         /// <param name="action"></param>
-        protected virtual PDFLayoutPage BuildNewPage(Size pgsize, PDFPositionOptions options, PDFColumnOptions colOpts, OverflowAction action)
+        protected virtual PDFLayoutPage BuildNewPage(PageSize pgsize, PDFPositionOptions options, PDFColumnOptions colOpts, OverflowAction action)
         {
             PDFLayoutDocument doclayout = this.DocumentLayout;
             PDFLayoutPage pg = doclayout.BeginNewPage(this.Page, this, this.FullStyle, action);
@@ -350,6 +583,7 @@ namespace Scryber.PDF.Layout
             if (headtemplate != null)
             {
                 PDFPageHeader header = new PDFPageHeader();
+                //header.ElementName = "header";
                 this.Page.AddGeneratedHeader(header, this.DocumentLayout.CurrentPageIndex);
                 //Create the content inside the header component
                 InstantiateTemplateForPage(header, headtemplate);
@@ -363,7 +597,16 @@ namespace Scryber.PDF.Layout
                 this.DocumentLayout.CurrentPage.BeginHeader(header, full, this.Context);
 
                 header.RegisterPreLayout(this.Context);
-                this.DoLayoutAChild(header);
+                bool wasLayingOut = _isLayingOutHeaderOrFooter;
+                _isLayingOutHeaderOrFooter = true;
+                try
+                {
+                    this.DoLayoutAChild(header);
+                }
+                finally
+                {
+                    _isLayingOutHeaderOrFooter = wasLayingOut;
+                }
                 header.RegisterLayoutComplete(this.Context);
 
                 this.DocumentLayout.CurrentPage.EndHeader();
@@ -376,6 +619,7 @@ namespace Scryber.PDF.Layout
             if (foottemplate != null)
             {
                 PDFPageFooter footer = new PDFPageFooter();
+                //footer.ElementName = "footer";
                 this.Page.AddGeneratedFooter(footer, this.DocumentLayout.CurrentPageIndex);
 
                 InstantiateTemplateForPage(footer, foottemplate);
@@ -390,7 +634,16 @@ namespace Scryber.PDF.Layout
                 this.DocumentLayout.CurrentPage.BeginFooter(footer, full, this.Context);
 
                 footer.RegisterPreLayout(this.Context);
-                this.DoLayoutAChild(footer);
+                bool wasLayingOut = _isLayingOutHeaderOrFooter;
+                _isLayingOutHeaderOrFooter = true;
+                try
+                {
+                    this.DoLayoutAChild(footer);
+                }
+                finally
+                {
+                    _isLayingOutHeaderOrFooter = wasLayingOut;
+                }
                 footer.RegisterLayoutComplete(this.Context);
 
                 this.DocumentLayout.CurrentPage.EndFooter();

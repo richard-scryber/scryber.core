@@ -108,6 +108,12 @@ namespace Scryber.Data
         // .ctors
         //
 
+        protected static readonly DataBindingBehaviour ifBehaviour = new DataBindingBehaviour(
+            enumerate: false,
+            expandObject: false,
+            setContextData: false,
+            incrementIndex: false);
+        
         /// <summary>
         /// Use the NoOp opbject type so that inner content is not generated
         /// </summary>
@@ -116,8 +122,14 @@ namespace Scryber.Data
         {
         }
 
-        protected If(ObjectType type)
-            : base(type)
+
+        protected If(ObjectType type) : this(type, ifBehaviour)
+        {
+            
+        }
+        
+        protected If(ObjectType type, DataBindingBehaviour behaviour)
+            : base(type, behaviour)
         {
         }
 

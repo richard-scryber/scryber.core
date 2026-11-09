@@ -25,7 +25,7 @@ namespace Scryber.Expressive.Functions.String
         public EvalFunction() : base()
         { }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             //We can accept 1 parameter that is an array
             this.ValidateParameterCount(parameters, 1, 1);
@@ -48,7 +48,7 @@ namespace Scryber.Expressive.Functions.String
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("The expression '" + exprString + "' could not be compiled into a valid expression");
+                    throw new Exceptions.DynamicExpressionException("The expression '" + exprString + "' could not be compiled into a valid expression", ex);
                 }
 
                 _last = expr;
@@ -56,12 +56,20 @@ namespace Scryber.Expressive.Functions.String
             }
 
 
-            return _last.Evaluate(variables);
+            try
+            {
+                return _last.Evaluate(variables);
+            }
+            catch (Exceptions.ExpressiveException ex) when (Exceptions.ExpressionErrors.IsSyntaxError(ex))
+            {
+                //The expression is data, so not a syntax error in the template.
+                throw new Exceptions.DynamicExpressionException("The expression '" + exprString + "' could not be evaluated: " + ex.Message, ex);
+            }
             
             
         }
 
-        protected virtual void Evaluate(StringBuilder sb, IEnumerable parameters, IDictionary<string, object> variables, Context context)
+        protected virtual void Evaluate(StringBuilder sb, IEnumerable parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             foreach (var p in parameters)
             {

@@ -12,7 +12,7 @@ namespace Scryber.Expressive.Functions.Relational
 
         public override string Name { get { return "Index"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 0, 0);
 
@@ -21,6 +21,86 @@ namespace Scryber.Expressive.Functions.Relational
                 return value;
             else
                 return -1;
+        }
+    }
+    
+    public class AtIndexFunction : FunctionBase
+    {
+
+        public const string CurrentIndexVariableName = "[CurrentIndex]";
+
+        public override string Name { get { return "@Index"; } }
+
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
+        {
+            this.ValidateParameterCount(parameters, 0, 0);
+
+            object value;
+            if (variables.TryGetValue(CurrentIndexVariableName, out value))
+                return value;
+            else
+                return -1;
+        }
+    }
+
+    /// <summary>
+    /// True for the first item when binding over a collection (@first)
+    /// </summary>
+    public class AtFirstFunction : FunctionBase
+    {
+        public override string Name { get { return "@First"; } }
+
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
+        {
+            this.ValidateParameterCount(parameters, 0, 0);
+
+            object value;
+            if (variables.TryGetValue(IndexFunction.CurrentIndexVariableName, out value) && value is int index)
+                return index == 0;
+            else
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// True for the last item when binding over a collection (@last)
+    /// </summary>
+    public class AtLastFunction : FunctionBase
+    {
+        public const string CurrentLastVariableName = "[CurrentLast]";
+
+        public override string Name { get { return "@Last"; } }
+
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
+        {
+            this.ValidateParameterCount(parameters, 0, 0);
+
+            object value;
+            if (variables.TryGetValue(CurrentLastVariableName, out value) && value is bool last)
+                return last;
+            else
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// The key (or property name) of the current item when binding over a dictionary or object, or the index when binding over a collection (@key)
+    /// </summary>
+    public class AtKeyFunction : FunctionBase
+    {
+        public const string CurrentKeyVariableName = "[CurrentKey]";
+
+        public override string Name { get { return "@Key"; } }
+
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
+        {
+            this.ValidateParameterCount(parameters, 0, 0);
+
+            object value;
+            if (variables.TryGetValue(CurrentKeyVariableName, out value) && value is string key)
+                return key;
+            else
+                return string.Empty;
         }
     }
 }

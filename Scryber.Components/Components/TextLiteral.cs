@@ -27,7 +27,7 @@ namespace Scryber.Components
 {
     [PDFParsableComponent("Text")]
     [PDFJSConvertor("scryber.studio.design.convertors.text")]
-    public class TextLiteral : Component, IPDFTextLiteral, ITextComponent
+    public class TextLiteral : Component, ITextLiteral, ITextComponent
     {
 
         private string _text;
@@ -50,7 +50,7 @@ namespace Scryber.Components
             }
         }
 
-        private TextFormat _reader = TextFormat.Plain;
+        private TextFormat _reader = TextFormat.XML;
 
         [PDFAttribute("format")]
         public TextFormat ReaderFormat
@@ -66,7 +66,7 @@ namespace Scryber.Components
         }
 
         public TextLiteral(string text)
-            : this(text, ObjectTypes.Text)
+            : this(text, TextFormat.Plain)
         {
         }
 
@@ -96,9 +96,9 @@ namespace Scryber.Components
         }
 
 
-        protected override void SetArrangement(ComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
-            base.SetArrangement(arrange);
+            base.SetArrangement(arrange, context);
         }
         
     }

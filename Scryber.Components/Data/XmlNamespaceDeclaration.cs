@@ -168,5 +168,17 @@ namespace Scryber.Data
                 }
             }
         }
+
+        public Dictionary<string, string> GetMappings()
+        {
+            var dic = new Dictionary<string, string>(this.Count);
+
+            foreach (var entry in this)
+            {
+                dic.Add(entry.Prefix, entry.NamespaceURI);
+            }
+
+            return dic;
+        }
     }
 }

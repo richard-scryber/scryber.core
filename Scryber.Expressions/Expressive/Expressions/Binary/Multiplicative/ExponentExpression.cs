@@ -8,7 +8,7 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
     {
         #region Constructors
 
-        public ExponentExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public ExponentExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 
@@ -17,8 +17,8 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
         #region BinaryExpressionBase Members
 
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) =>
-                Math.Pow(Convert.ToDouble(l), Convert.ToDouble(r)));
+            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) =>
+                Math.Pow(Convert.ToDouble(l, this.Context.DecimalCurrentCulture), Convert.ToDouble(r, this.Context.DecimalCurrentCulture)));
 
         #endregion
     }

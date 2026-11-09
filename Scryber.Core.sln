@@ -14,33 +14,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components", "Scryb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Components.Mvc", "Scryber.Components.Mvc\Scryber.Components.Mvc.csproj", "{B335EFBC-5BE1-4CAD-AD75-7075FA643EE2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scryber.Core.Schemas", "Scryber.Core.Schemas", "{75B6EFDC-0508-4DA7-A090-D393E4416049}"
-	ProjectSection(SolutionItems) = preProject
-		Scryber.Core.Schemas\Scryber.Base.xsd = Scryber.Core.Schemas\Scryber.Base.xsd
-		Scryber.Core.Schemas\Scryber.Components.xsd = Scryber.Core.Schemas\Scryber.Components.xsd
-		Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec = Scryber.Core.Schemas\Scryber.Core.Schemas.nuspec
-		Scryber.Core.Schemas\Scryber.Data.xsd = Scryber.Core.Schemas\Scryber.Data.xsd
-		Scryber.Core.Schemas\Scryber.Styles.xsd = Scryber.Core.Schemas\Scryber.Styles.xsd
-		Scryber.Core.Schemas\Scryber.Types.xsd = Scryber.Core.Schemas\Scryber.Types.xsd
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B291362D-A874-45F3-9A31-0127AEC19190}"
-	ProjectSection(SolutionItems) = preProject
-		docs\_config.yml = docs\_config.yml
-		docs\conf.py = docs\conf.py
-		docs\index.rst = docs\index.rst
-		docs\libgdiplus.md = docs\libgdiplus.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{A8F3B995-F089-4333-A4D0-789359C00E25}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7E9620B1-26E8-4F2A-BDB4-64488827BBEF}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.md = LICENSE.md
 		README.md = README.md
-		ScyberLogo2_alpha_small.png = ScyberLogo2_alpha_small.png
-		Directory.Build.props = Directory.Build.props
-		Scryber.Core.nuspec = Scryber.Core.nuspec
+		PaperworkLogoTransparent.png = PaperworkLogoTransparent.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Expressive", "Scryber.Expressions\Scryber.Expressive.csproj", "{813BEF24-BA3B-4E9C-8BDC-CA5084B2162E}"
@@ -52,6 +30,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Imaging", "Scryber.Imaging\Scryber.Imaging.csproj", "{B69052AD-968E-4A26-A054-B936F064F739}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.UnitLayouts", "Scryber.UnitLayouts\Scryber.UnitLayouts.csproj", "{38F1C0BB-AB28-4125-8D25-18BFD9178598}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.UnitWebTest", "Scryber.UnitWebTest\Scryber.UnitWebTest.csproj", "{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{304ADB2C-E5D5-4D48-8B6A-8A8475F00B5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,12 +108,21 @@ Global
 		{38F1C0BB-AB28-4125-8D25-18BFD9178598}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{38F1C0BB-AB28-4125-8D25-18BFD9178598}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38F1C0BB-AB28-4125-8D25-18BFD9178598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A8F3B995-F089-4333-A4D0-789359C00E25} = {B291362D-A874-45F3-9A31-0127AEC19190}
+		{38F1C0BB-AB28-4125-8D25-18BFD9178598} = {304ADB2C-E5D5-4D48-8B6A-8A8475F00B5D}
+		{53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA} = {304ADB2C-E5D5-4D48-8B6A-8A8475F00B5D}
+		{6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF} = {304ADB2C-E5D5-4D48-8B6A-8A8475F00B5D}
+		{67CD1FE5-8199-431E-BE32-93F84BFCE3EE} = {304ADB2C-E5D5-4D48-8B6A-8A8475F00B5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {43103F0A-F9CB-4C80-9DD9-6F58FF0A2918}

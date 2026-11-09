@@ -122,7 +122,7 @@ namespace Scryber.UnitSamples
                     Margins = new Thickness(10),
                     Padding = new Thickness(5),
                     BackgroundColor = StandardColors.Gray,
-                    PositionMode = PositionMode.Block
+                    DisplayMode = DisplayMode.Block
                 };
 
                 //add some inner content

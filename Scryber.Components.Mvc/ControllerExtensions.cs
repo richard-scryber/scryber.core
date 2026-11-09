@@ -45,7 +45,7 @@ namespace Scryber.Components.Mvc
         /// Generate and return a PDF document file result from the template in the content stream
         /// </summary>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
         /// <returns>A file action result with the appropriate headers and content type</returns>
@@ -60,7 +60,7 @@ namespace Scryber.Components.Mvc
         /// Generate and return a PDF document file result from the template in the content stream
         /// </summary>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="path">The path to the file for any relative references</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
@@ -129,7 +129,7 @@ namespace Scryber.Components.Mvc
         /// </summary>
         /// <typeparam name="T">The generic type declaration for the model to be passed to the document when binding</typeparam>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="model">The instance of the model to use when binding</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
@@ -146,7 +146,7 @@ namespace Scryber.Components.Mvc
         /// </summary>
         /// <typeparam name="T">The generic type declaration for the model to be passed to the document when binding</typeparam>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="path">The path of the file for any relative references</param>
         /// <param name="model">The instance of the model to use when binding</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
@@ -221,7 +221,7 @@ namespace Scryber.Components.Mvc
         /// Generate and return a PDF document file result from the template in the content stream
         /// </summary>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
         /// <returns>A file action result with the appropriate headers and content type</returns>
@@ -236,7 +236,7 @@ namespace Scryber.Components.Mvc
         /// Generate and return a PDF document file result from the template in the content stream
         /// </summary>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="path">The path to the file for any relative references</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
@@ -306,7 +306,7 @@ namespace Scryber.Components.Mvc
         /// </summary>
         /// <typeparam name="T">The generic type declaration for the model to be passed to the document when binding</typeparam>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="model">The instance of the model to use when binding</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>
         /// <param name="outputFileName">The name of the file to be downloaded if it is an attachment, if not set the document file name or controller request action name will be used</param>
@@ -323,7 +323,7 @@ namespace Scryber.Components.Mvc
         /// </summary>
         /// <typeparam name="T">The generic type declaration for the model to be passed to the document when binding</typeparam>
         /// <param name="controller">Self reference to the controller as an extension method</param>
-        /// <param name="content">The xml template content within the stream</param>
+        /// <param name="content">The XML template content within the stream</param>
         /// <param name="path">The path of the file for any relative references</param>
         /// <param name="model">The instance of the model to use when binding</param>
         /// <param name="inline">If true, then the output PDF will be directly streamed to the output, otherwise it will be as an attachment</param>

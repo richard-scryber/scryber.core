@@ -54,6 +54,11 @@ namespace Scryber.Styles.Parsing.Typed
                 space = unit;
                 return true;
             }
+            else if(value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return ParseCSSUnit(str, out space);
+            }
             else if(TryGetWordSpacing(value.ToString(), out space))
             {
                 return true;

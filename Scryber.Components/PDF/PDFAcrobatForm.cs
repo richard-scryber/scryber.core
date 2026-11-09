@@ -42,7 +42,12 @@ namespace Scryber.PDF
                 {
                     var child = fld.OutputToPDF(context, writer);
                     if (null != child)
-                        children.Add(child);
+                    {
+                        foreach (var oref in child)
+                        {
+                            children.Add(oref);
+                        }
+                    }
                 }
 
                 writer.BeginDictionary();

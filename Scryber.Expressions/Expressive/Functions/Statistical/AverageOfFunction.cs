@@ -20,12 +20,12 @@ namespace Scryber.Expressive.Functions.Statistical
 		{
 		}
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
 			this.ValidateParameterCount(parameters, 2, 2);
 
 			object value;
-			IExpression lookup = parameters[1];
+			IExpression lookup = Helpers.Lookups.Resolve(parameters[1], context);
 
 			IExpression each = parameters[0];
 
@@ -35,18 +35,20 @@ namespace Scryber.Expressive.Functions.Statistical
 
             object total = 0;
 
-            if (value is IEnumerable enumerate)
+            if (Collections.TryIsCollection(value, out var enumerate))
             {
                 foreach (var item in enumerate)
                 {
                     CurrentDataExpression.SetCurrentData(item, variables);
                     var one = lookup.Evaluate(variables);
-                    total = Numbers.Add(total ?? 0, one ?? 0);
+                    
+                    
+                    total = Numbers.Add(total ?? 0, one ?? 0, variables);
                     count++;
                 }
             }
 
-            return Numbers.Divide(total, (double)count);
+            return Numbers.Divide(total, (double)count, variables);
         }
     }
 }

@@ -60,12 +60,28 @@ namespace Scryber.Html.Components
             }
         }
 
+        [PDFAttribute("align")]
+        public override HorizontalAlignment HorizontalAlignment
+        {
+            get => base.HorizontalAlignment;
+            set => base.HorizontalAlignment = value;
+        }
+
+        [PDFAttribute("valign")]
+        public override VerticalAlignment VerticalAlignment
+        {
+            get => base.VerticalAlignment;
+            set => base.VerticalAlignment = value;
+        }
+
+        
         public HTMLTableSection(ObjectType type) : base(type)
         {
 
         }
 
         Style _applied = null;
+
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
             if (forComponent is TableRow && this.Rows.Contains((TableRow)forComponent))
@@ -107,7 +123,10 @@ namespace Scryber.Html.Components
         }
 
         public HTMLTableHead()
-            : base((ObjectType)"htTH")
+            : this(HTMLObjectTypes.TableHead)
+        { }
+
+        protected HTMLTableHead(ObjectType type) : base(type)
         { }
 
         protected override Style GetBaseStyle()
@@ -125,7 +144,10 @@ namespace Scryber.Html.Components
     {
 
         public HTMLTableBody()
-            : base((ObjectType)"htTB")
+            : this(HTMLObjectTypes.TableBody)
+        { }
+
+        protected HTMLTableBody(ObjectType type) : base(type)
         { }
 
 
@@ -136,7 +158,10 @@ namespace Scryber.Html.Components
     {
 
         public HTMLTableFooter()
-            : base((ObjectType)"htTF")
+            : this(HTMLObjectTypes.TableFoot)
+        { }
+
+        protected HTMLTableFooter(ObjectType type) : base(type)
         { }
 
 

@@ -54,6 +54,11 @@ namespace Scryber.Styles.Parsing.Typed
                     style.Background.PatternRepeat = PatternRepeat.Fill;
                     return true;
                 }
+                else if (h.ToLower() == "contain")
+                {
+                    style.Background.PatternRepeat = PatternRepeat.Contain;
+                    return true;
+                }
                 else
                 {
                     if (reader.ReadNextValue())
@@ -110,6 +115,12 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     size = Unit.Zero;
                     forstyle.SetValue(StyleKeys.BgRepeatKey, PatternRepeat.Fill);
+                    return true;
+                }
+                else if(str == "contain")
+                {
+                    size = Unit.Zero;
+                    forstyle.SetValue(StyleKeys.BgRepeatKey, PatternRepeat.Contain);
                     return true;
                 }
                 else if(Unit.TryParse(str, out size))

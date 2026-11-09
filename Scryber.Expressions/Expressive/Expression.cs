@@ -39,7 +39,7 @@ namespace Scryber.Expressive
         #region Fields
 
         private IExpression compiledExpression;
-        private readonly Context context;
+        private readonly ExpressionContext context;
         private readonly string originalExpression;
         private readonly ExpressionParser parser;
         private string[] referencedVariables;
@@ -64,7 +64,7 @@ namespace Scryber.Expressive
         /// <summary>
         /// Gets the current context for the expression evaluation
         /// </summary>
-        public Context ExpressionContext
+        public ExpressionContext ExpressionContext
         {
             get { return this.context; }
         }
@@ -77,15 +77,15 @@ namespace Scryber.Expressive
         /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="context"/>.
         /// </summary>
         /// <param name="expression">The expression to be evaluated.</param>
-        /// <param name="context">The <see cref="Context"/> to use when evaluating.</param>
-        public Expression(string expression, Context context)
+        /// <param name="context">The <see cref="Expressive.ExpressionContext"/> to use when evaluating.</param>
+        public Expression(string expression, ExpressionContext context)
             : this(expression, new ExpressionParser(context, new Tokeniser(context)), context)
         {
 
         }
 
 
-        public Expression(string expression, ExpressionParser parser, Context context)
+        public Expression(string expression, ExpressionParser parser, ExpressionContext context)
         {
             this.originalExpression = expression;
             this.context = context ?? throw new ArgumentNullException(nameof(context));
@@ -96,6 +96,8 @@ namespace Scryber.Expressive
         #region Public Methods
 
         const int SignificantDigits = 10;
+        const double MinRoundDouble = 0.09d;
+        const decimal MaxRoundDecimal = 0.09m;
 
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
@@ -103,20 +105,21 @@ namespace Scryber.Expressive
         /// <exception cref="Exceptions.ExpressiveException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
         /// <param name="variables">The variables to be used in the evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
-        public object Evaluate(IDictionary<string, object> variables = null)
+        public object Evaluate(IDictionary<string, object> variables)
         {
             try
             {
                 this.CompileExpression();
 
                 var result = this.compiledExpression?.Evaluate(ApplyStringComparerSettings(variables, this.context.ParsingStringComparer));
-                if(result is double)
+                
+                if(result is double d && d > MinRoundDouble)
                 {
-                    result = Math.Round((double)result, SignificantDigits);
+                    result = Math.Round(d, SignificantDigits);
                 }
-                else if(result is decimal)
+                else if(result is decimal m && m > MaxRoundDecimal)
                 {
-                    result = Math.Round((decimal)result, SignificantDigits);
+                    result = Math.Round(m, SignificantDigits);
                 }
 
                 return result;
@@ -142,8 +145,17 @@ namespace Scryber.Expressive
                     return default;
                 else if (value is T t)
                     return t;
-                else
+                else if (value is IConvertible)
                     return (T)Convert.ChangeType(value, typeof(T));
+                else if (typeof(T) == typeof(string))
+                {
+                    var str = value.ToString();
+                    return (T)Convert.ChangeType(str, typeof(T));
+                }
+                else
+                {
+                    throw new NotSupportedException($"Cannot convert {value.GetType()} to {typeof(T)}");
+                }
             }
             catch (ExpressiveException)
             {
@@ -268,6 +280,12 @@ namespace Scryber.Expressive
             this.compiledExpression = this.parser.CompileExpression(this.originalExpression, variables);
 
             this.referencedVariables = variables.ToArray();
+        }
+
+
+        public void BindExpression(IVariableProvider provider)
+        {
+
         }
 
 #region Private Methods

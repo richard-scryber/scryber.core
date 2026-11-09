@@ -198,8 +198,8 @@ namespace Scryber.Core.UnitTests.Drawing
             Scryber.Drawing.Size expected = new Scryber.Drawing.Size(new Unit(0, PageUnits.Millimeters), new Unit(10, PageUnits.Millimeters));
             Scryber.Drawing.Size actual;
             actual = target.Subtract(margins);
-            Assert.AreEqual(expected.Width.PointsValue, actual.Width.PointsValue);
-            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 2), Math.Round(actual.Height.PointsValue, 2));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 8), Math.Round(actual.Width.PointsValue, 8));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 8), Math.Round(actual.Height.PointsValue, 8));
         }
 
         /// <summary>

@@ -269,14 +269,12 @@ namespace Scryber.Html.Components
         }
 
 
-        public HTMLHead() : this(ObjectTypes.NoOp)
+        public HTMLHead() : this(HTMLObjectTypes.Head)
         {
-
         }
 
-        public HTMLHead(ObjectType type): base(type)
+        protected HTMLHead(ObjectType type): base(type)
         {
-
         }
 
         
@@ -284,7 +282,7 @@ namespace Scryber.Html.Components
 
 
     /// <summary>
-    /// Simple class to store the base for the document
+    /// Simple class to store the base for the document, can be implicitly converted from a string.
     /// </summary>
     public class HTMLHeadBase
     {
@@ -297,7 +295,12 @@ namespace Scryber.Html.Components
 
         public HTMLHeadBase()
         {
+        }
 
+
+        public static implicit operator HTMLHeadBase(string href)
+        {
+            return new HTMLHeadBase() { Href = href };
         }
     }
 }

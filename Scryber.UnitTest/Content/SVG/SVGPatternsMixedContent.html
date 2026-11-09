@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title>Patterns Wide</title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+        
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="Repeating Fill patterns">Repeating wide fill patterns with aspect ratio</p>
+    <svg id="Patterns" width="550" height="350" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            text{ font-size: 10pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
+           
+        </style>
+        <defs>
+            <linearGradient id="rg" >
+                <stop offset="0" stop-color="red" />
+                <stop offset="100%" stop-color="blue" />
+            </linearGradient>
+
+            <linearGradient id="rgup" x1="0" x2="0" y1="1" y2="0" >
+                <stop offset="0" stop-color="red" />
+                <stop offset="100%" stop-color="blue" />
+            </linearGradient>
+
+            <linearGradient id="rgreverse" x1="0" x2="1" y1="1" y2="0" >
+                <stop offset="0" stop-color="red" />
+                <stop offset="100%" stop-color="blue" />
+            </linearGradient>
+
+            <pattern id="withText" width="40%" height="10%" viewBox="0,0,80,10" preserveAspectRatio="none"   >
+                <ellipse fill="url(#rgreverse)" cx="40" cy="5" rx="40" ry="5" />
+                <rect fill="url(#rg)" x="0" y="0" width="30" height="6" ></rect>
+                <rect fill="black" x="25" y="2" width="35" height="6" ></rect>
+                <rect fill="url(#rgup)" x="55" y="4" width="20" height="6" ></rect>
+                <text fill="#AAA" x="8" y="8" textLength="64" >PATTERN</text> 
+            </pattern>
+            
+            <pattern id="withImage" width="50%" height="50%" viewBox="0,0,50,50" preserveAspectRatio="xMidYMid meet" >
+                <image href="../../Resources/group2x.png" width="50" height="50" preserveAspectRatio="xMidYMid meet" />
+                <rect x="0" y="0" width="50" height="50" fill="transparent" stroke-width="0.2" stroke="black" />
+            </pattern>
+           
+        </defs>
+
+        <!-- Default-->
+        <rect id="mixed" height="90" width="80" x="10" y="10" fill="url(#withText)" stroke="black" stroke-width="0.1" />
+        <text x="10" y="110" >Complex mixed Pattern</text>
+        
+        <ellipse rx="130" ry="45" cx="230" cy="55" fill="url(#withImage)" stroke="black" stroke-width="0.5" />
+        <text x="180" y="110" >Pattern with image</text>
+        
+        <!-- Column 1 -->
+<!--        <rect id="squarexminymin" height="90" width="80" x="100" y="10" fill="url(#xminymin)" stroke="black" stroke-width="0.1" />-->
+<!--        <text x="100" y="110">X min, Y min</text>-->
+<!--        -->
+<!--        <rect id="squarexminymid" height="90" width="100" x="65" y="120" fill="url(#xminymid)" stroke="black" stroke-width="0.1" />-->
+<!--        <text x="65" y="220">X min, Y mid</text>-->
+<!--        -->
+<!--        <rect id="squarexminymax" height="90" width="140" x="10" y="230" fill="url(#xminymax)" stroke="black" stroke-width="0.1" />-->
+<!--        <text x="10" y="330">X min, Y max</text>-->
+        
+        
+    </svg>
+    
+    
+    
+
+</body>
+</html>

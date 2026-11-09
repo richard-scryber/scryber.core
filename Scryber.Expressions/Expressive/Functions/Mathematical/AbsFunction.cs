@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Functions.Mathematical
 
         public override string Name { get { return "Abs"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 1, 1);
 
@@ -24,9 +24,9 @@ namespace Scryber.Expressive.Functions.Mathematical
                 switch (valueType)
                 {
                     case TypeCode.Decimal:
-                        return Math.Abs(Convert.ToDecimal(value));
+                        return Math.Abs(Convert.ToDecimal(value, context.DecimalCurrentCulture));
                     case TypeCode.Double:
-                        return Math.Abs(Convert.ToDouble(value));
+                        return Math.Abs(Convert.ToDouble(value, context.DecimalCurrentCulture));
                     case TypeCode.Int16:
                         return Math.Abs(Convert.ToInt16(value));
                     case TypeCode.UInt16:
@@ -40,7 +40,7 @@ namespace Scryber.Expressive.Functions.Mathematical
                     case TypeCode.SByte:
                         return Math.Abs(Convert.ToSByte(value));
                     case TypeCode.Single:
-                        return Math.Abs(Convert.ToSingle(value));
+                        return Math.Abs(Convert.ToSingle(value, context.DecimalCurrentCulture));
                     default:
                         break;
                 }

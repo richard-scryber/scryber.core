@@ -16,7 +16,7 @@ namespace Scryber.Expressive.Expressions.Unary.Additive
         #region BinaryExpressionBase Members
 
         public override object Evaluate(IDictionary<string, object> variables) =>
-            Numbers.Add(0, this.expression.Evaluate(variables));
+            Numbers.Add(0, this.expression.Evaluate(variables), variables);
 
         #endregion
     }

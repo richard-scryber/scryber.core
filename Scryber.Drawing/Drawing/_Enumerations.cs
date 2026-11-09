@@ -38,13 +38,24 @@ namespace Scryber.Drawing
         Custom
     }
 
+    /// <summary>
+    /// Defines the type of an graphical image - Raster for pixel based (png, jpg), Vector for drawings (svg, eps), or unknown.
+    /// </summary>
+    public enum ImageType
+    {
+        Raster,
+        Vector,
+        Unknown
+    }
+
     public enum ImageFormat
     {
         Png,
         Jpeg,
         Tiff,
         Gif,
-        Bitmap
+        Bitmap,
+        WebP
     }
 
     /// <summary>
@@ -57,6 +68,7 @@ namespace Scryber.Drawing
         Millimeters = 1,
         Inches = 2,
         Pixel = 3,
+        //relative break point
         Percent = 4,
         EMHeight = 5,
         EXHeight = 6,
@@ -65,7 +77,7 @@ namespace Scryber.Drawing
         ViewPortWidth = 9,
         ViewPortHeight = 10,
         ViewPortMin = 11,
-        ViewPortMax = 12
+        ViewPortMax = 12,
     }
 
     
@@ -84,6 +96,17 @@ namespace Scryber.Drawing
     }
 
 
+    /// <summary>
+    /// How the border of a block is drawn where the block is split across pages or columns (box-decoration-break)
+    /// </summary>
+    public enum BoxDecorationBreak
+    {
+        /// <summary>Each part has the full border (the default)</summary>
+        Clone,
+        /// <summary>The border is cut where the block is split - no top border on a continuation, and no bottom border where it continues</summary>
+        Slice
+    }
+
     [Flags()]
     public enum Sides
     {
@@ -91,6 +114,72 @@ namespace Scryber.Drawing
         Left = 2,
         Bottom = 4,
         Right = 8
+    }
+
+    /// <summary>
+    /// Defines how an image is fitted into the box it is displayed in (object-fit).
+    /// </summary>
+    public enum ObjectFit
+    {
+        Fill,
+        Contain,
+        Cover,
+        None,
+        ScaleDown
+    }
+
+    /// <summary>
+    /// A position on one axis for an object within its box (object-position) - either a percentage of the free space, or an absolute offset.
+    /// </summary>
+    public struct ObjectPosition
+    {
+        public bool IsPercent { get; }
+        public double Percent { get; }
+        public Unit Offset { get; }
+
+        public ObjectPosition(double percent)
+        {
+            IsPercent = true;
+            Percent = percent;
+            Offset = Unit.Zero;
+        }
+
+        public ObjectPosition(Unit offset)
+        {
+            IsPercent = false;
+            Percent = 0;
+            Offset = offset;
+        }
+
+        /// <summary>
+        /// Gets the distance from the start of the box, for the free space (box size minus the object size) available.
+        /// </summary>
+        public double GetOffset(double freeSpace)
+        {
+            return IsPercent ? freeSpace * (Percent / 100.0) : Offset.PointsValue;
+        }
+
+        public static readonly ObjectPosition Start = new ObjectPosition(0);
+        public static readonly ObjectPosition Center = new ObjectPosition(50);
+        public static readonly ObjectPosition End = new ObjectPosition(100);
+    }
+
+    /// <summary>
+    /// Defines how the borders of table cells are drawn. Separate (default) each cell has its own borders, Collapse the borders between cells are shared.
+    /// </summary>
+    public enum BorderCollapse
+    {
+        Separate,
+        Collapse
+    }
+
+    /// <summary>
+    /// Defines if the width and height of a box include the padding and border (BorderBox) or are the content only (ContentBox)
+    /// </summary>
+    public enum BoxSizing
+    {
+        ContentBox,
+        BorderBox
     }
 
     public enum LineType
@@ -241,7 +330,8 @@ namespace Scryber.Drawing
     {
         Base64,
         Local,
-        Url
+        Url,
+        Resource
     }
 
     public enum FontSourceFormat
@@ -257,37 +347,297 @@ namespace Scryber.Drawing
     public enum PositionMode
     {
         /// <summary>
+        /// Default positioning within the flow of the content
+        /// </summary>
+        Static = 0,
+
+        /// <summary>
         /// A postion that is set explicitly on the page, no matter where its parent is
         /// </summary>
-        Absolute,
+        Fixed = 1,
 
         /// <summary>
-        /// A postion that is set relative to this Components parent position.
+        /// A postion that is set relative to this Components (first positioned) parent position.
         /// </summary>
-        Relative,
+        Absolute = 2,
 
         /// <summary>
-        /// A block element breaks is rendered on it's own line
+        /// A block that still maintains the space used, but is shifted by the position
         /// </summary>
-        Block,
+        Relative = 3
 
+    }
+
+    public enum DisplayMode
+    {
         /// <summary>
         /// No Expicit postion - if it fits next to the last component on the current line, then it will be appended,
         /// otherwise a new line will be created. Following elements will be appended to the same line
         /// </summary>
-        Inline,
-
+        Inline = 0,
+        
         /// <summary>
         /// A block that sits on the current line of either a fixed size, or taking the space up that it's internal contents need.
         /// </summary>
-        InlineBlock,
+        InlineBlock = 1,
+        
+        /// <summary>
+        /// A block element breaks any current line is rendered on it's own, with any positioning
+        /// </summary>
+        Block = 2,
+
+        /// <summary>Flex container — lays out children in a row or column with flex alignment.</summary>
+        FlexBox = 3,
+
+        /// <summary>
+        /// Specific dispaly mode that will vertically align content within a cell.
+        /// </summary>
+        TableCell = 4,
+
+        /// <summary>Grid container — lays out children in a defined column/row grid.</summary>
+        FlexGrid = 5,
+
+        /// <summary>Acts as a table container — children are transposed into table rows/cells.</summary>
+        Table = 6,
+
+        /// <summary>Acts as a table row — children with display:table-cell become cells.</summary>
+        TableRow = 7,
 
         /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
         /// </summary>
-        Invisible
+        Invisible = 10
+    }
 
-        //TODO:Float - Appears at the current position with content flowing around it
+    public enum FlexDirection
+    {
+        Row = 0,
+        RowReverse = 1,
+        Column = 2,
+        ColumnReverse = 3
+    }
+
+    public enum FlexWrap
+    {
+        Nowrap = 0,
+        Wrap = 1,
+        WrapReverse = 2
+    }
+
+    public enum FlexJustify
+    {
+        FlexStart = 0,
+        FlexEnd = 1,
+        Center = 2,
+        SpaceBetween = 3,
+        SpaceAround = 4,
+        SpaceEvenly = 5
+    }
+
+    public enum FlexAlignMode
+    {
+        Stretch = 0,
+        FlexStart = 1,
+        FlexEnd = 2,
+        Center = 3,
+        Baseline = 4,
+        Auto = 5,
+        SpaceBetween = 6,
+        SpaceAround = 7,
+        SpaceEvenly = 8
+    }
+
+    public enum GridAutoFlow
+    {
+        Row    = 0,
+        Column = 1
+    }
+
+    // -----------------------------------------------------------------------
+    // Grid line value — encapsulates one grid-column/row start or end value.
+    // Replaces the separate int + span int style keys.
+    // -----------------------------------------------------------------------
+
+    public readonly struct GridLineValue
+    {
+        public enum LineKind { Unset, Auto, Explicit, Named }
+
+        public readonly LineKind Kind;
+        public readonly int      Value;  // 1-based line number or span count
+        public readonly string   Name;   // non-null when Kind == Named
+        public readonly bool     IsSpan; // "span N" or "span <name>"
+
+        public bool IsUnset    => Kind == LineKind.Unset;
+        public bool IsAuto     => Kind == LineKind.Auto;
+        public bool IsExplicit => Kind == LineKind.Explicit;
+        public bool IsNamed    => Kind == LineKind.Named;
+        public bool IsSet      => Kind != LineKind.Unset;
+
+        private GridLineValue(LineKind kind, string name, int value, bool isSpan)
+        { Kind = kind; Name = name; Value = value; IsSpan = isSpan; }
+
+        public static GridLineValue Unset  => default;
+        public static GridLineValue Auto   => new GridLineValue(LineKind.Auto,     null, 0, false);
+        public static GridLineValue Line(int n)                           => new GridLineValue(LineKind.Explicit, null, n,    false);
+        public static GridLineValue Span(int n)                           => new GridLineValue(LineKind.Explicit, null, n,    true);
+        public static GridLineValue Named(string nm, bool span = false)   => new GridLineValue(LineKind.Named,    nm,   0,    span);
+
+        // Resolve to 0-based start index, or -1 for auto/unresolved.
+        public int ResolveStart(System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>> lineNames)
+        {
+            if (!IsSet || IsAuto || IsSpan) return -1;
+            if (IsExplicit) return Value > 0 ? Value - 1 : -1;
+            if (IsNamed && lineNames != null && lineNames.TryGetValue(Name, out var lines) && lines.Count > 0)
+                return lines[0] - 1;
+            return -1;
+        }
+
+        // Resolve to span count given the resolved 0-based start index.
+        public int ResolveSpan(int resolvedStart, int trackCount,
+            System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>> lineNames)
+        {
+            if (!IsSet) return 1;
+
+            if (IsExplicit)
+            {
+                if (IsSpan) return System.Math.Max(1, Value);
+                // end line number → span = end - start
+                int endLine = Value > 0 ? Value : trackCount + 2 + Value;
+                int startLine = resolvedStart >= 0 ? resolvedStart + 1 : 1;
+                return System.Math.Max(1, endLine - startLine);
+            }
+
+            if (IsNamed && lineNames != null && lineNames.TryGetValue(Name, out var lines) && lines.Count > 0)
+            {
+                if (IsSpan)
+                {
+                    // span <name>: distance to the next occurrence of this line after start
+                    int startLine = resolvedStart >= 0 ? resolvedStart + 1 : 1;
+                    foreach (var l in lines)
+                        if (l > startLine) return l - startLine;
+                    return 1;
+                }
+                // end name: span = first matching line - start
+                int startL = resolvedStart >= 0 ? resolvedStart + 1 : 1;
+                return System.Math.Max(1, lines[0] - startL);
+            }
+
+            return 1;
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Grid template areas value — parsed form of grid-template-areas.
+    // -----------------------------------------------------------------------
+
+    public readonly struct GridTemplateAreasValue
+    {
+        private readonly string[,] _grid; // [row, col] — null = empty cell (dot)
+
+        public int RowCount { get; }
+        public int ColCount { get; }
+
+        public bool IsEmpty => _grid == null || RowCount == 0 || ColCount == 0;
+
+        private GridTemplateAreasValue(string[,] grid, int rows, int cols)
+        { _grid = grid; RowCount = rows; ColCount = cols; }
+
+        // All distinct non-empty area names in document order.
+        public System.Collections.Generic.IEnumerable<string> AreaNames()
+        {
+            if (_grid == null) yield break;
+            var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+            for (int r = 0; r < RowCount; r++)
+                for (int c = 0; c < ColCount; c++)
+                {
+                    var n = _grid[r, c];
+                    if (n != null && seen.Add(n)) yield return n;
+                }
+        }
+
+        // Resolve a named area to 1-based line indices (start inclusive, end exclusive).
+        // Returns false if the name is not found in the grid.
+        public bool TryGetAreaBounds(string name,
+            out int rowStart, out int rowEnd, out int colStart, out int colEnd)
+        {
+            rowStart = rowEnd = colStart = colEnd = 0;
+            if (_grid == null || string.IsNullOrEmpty(name)) return false;
+
+            bool found = false;
+            for (int r = 0; r < RowCount; r++)
+            {
+                for (int c = 0; c < ColCount; c++)
+                {
+                    if (!string.Equals(_grid[r, c], name, System.StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    if (!found)
+                    {
+                        rowStart = r + 1; rowEnd = r + 2;
+                        colStart = c + 1; colEnd = c + 2;
+                        found = true;
+                    }
+                    else
+                    {
+                        if (r + 1 < rowStart) rowStart = r + 1;
+                        if (r + 2 > rowEnd)   rowEnd   = r + 2;
+                        if (c + 1 < colStart) colStart = c + 1;
+                        if (c + 2 > colEnd)   colEnd   = c + 2;
+                    }
+                }
+            }
+            return found;
+        }
+
+        // Parse the raw CSS value: a sequence of quoted row strings.
+        // Dots (any run of only '.' characters) denote empty cells.
+        public static bool TryParse(string raw, out GridTemplateAreasValue result)
+        {
+            result = default;
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+
+            var rows = new System.Collections.Generic.List<string[]>();
+            int i = 0;
+            while (i < raw.Length)
+            {
+                // skip whitespace
+                while (i < raw.Length && char.IsWhiteSpace(raw[i])) i++;
+                if (i >= raw.Length) break;
+
+                char open = raw[i];
+                if (open != '"' && open != '\'') { i++; continue; } // skip non-quoted tokens
+                i++;
+                int start = i;
+                while (i < raw.Length && raw[i] != open) i++;
+                string rowStr = raw.Substring(start, i - start);
+                i++; // skip closing quote
+
+                var cells = rowStr.Split(new[] { ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries);
+                var row = new string[cells.Length];
+                for (int c = 0; c < cells.Length; c++)
+                    row[c] = IsDot(cells[c]) ? null : cells[c];
+                rows.Add(row);
+            }
+
+            if (rows.Count == 0) return false;
+
+            int colCount = 0;
+            foreach (var r in rows) if (r.Length > colCount) colCount = r.Length;
+
+            var grid = new string[rows.Count, colCount];
+            for (int r = 0; r < rows.Count; r++)
+                for (int c = 0; c < rows[r].Length; c++)
+                    grid[r, c] = rows[r][c];
+
+            result = new GridTemplateAreasValue(grid, rows.Count, colCount);
+            return true;
+        }
+
+        // Any token consisting solely of '.' characters is an empty cell.
+        private static bool IsDot(string s)
+        {
+            foreach (char c in s) if (c != '.') return false;
+            return s.Length > 0;
+        }
     }
 
     public enum FloatMode
@@ -309,6 +659,92 @@ namespace Scryber.Drawing
 
     }
 
+    /// <summary>
+    /// Defines the location of the rendered character in an SVG text block, based on the x value.
+    /// </summary>
+    public enum TextAnchor
+    {
+        /// <summary>
+        /// An x value defines the starting point of the rendered characters.
+        /// </summary>
+        Start,
+
+        /// <summary>
+        /// An x value defines the middle point of the rendered characters.
+        /// </summary>
+        Middle,
+
+        /// <summary>
+        /// An x value defines the end point of the rendered characters.
+        /// </summary>
+        End
+    }
+
+    /// <summary>
+    /// Defines the baseline adjustment of the rendered characters in an SVG Textblock.
+    /// Such that the vertical offset of the characters can ge set for a specific y position.
+    /// </summary>
+    public enum DominantBaseline
+    {
+        /// <summary>
+        /// Allows the rendering engine to align the baseline for a set of characters as it wishes. Defaults to TextTop
+        /// </summary>
+        Auto,
+
+        /// <summary>
+        /// Aligns the text position
+        /// as per the baseline of a font with descenders below the the y position.
+        /// </summary>
+        Text_Top,
+        
+        /// <summary>
+        /// Aligns the text position
+        /// as per the baseline of a font with descenders below the the y position.
+        /// </summary>
+        Text_Bottom,
+
+        /// <summary>
+        /// Aligns the text to the middle of the lowercase x character height, based on the y position and the font size.
+        /// </summary>
+        Middle,
+
+        /// <summary>
+        /// Aligns the text to the middle of the uppercase M character height, based on the y position and the font size.
+        /// </summary>
+        Central,
+
+        /// <summary>
+        /// Aligns the text to the top of the uppercase M character height, based on the y position and the font size.
+        /// </summary>
+        Hanging,
+
+        /// <summary>
+        /// Aligns the text to the top of the lowercase x character height, based on the y position and the font size.
+        /// </summary>
+        Mathematical,
+
+        /// <summary>
+        /// Aligns the text to the bottom of the lowercase y descender, based on the y position and the font size
+        /// </summary>
+        Ideographic,
+
+        /// <summary>
+        /// As per text top
+        /// </summary>
+        Alphabetic,
+
+        /// <summary>
+        /// Aligns the text to its font bounding box with characters above the y position based on the font size.
+        /// </summary>
+        Text_After_Edge,
+
+        /// <summary>
+        /// Aligns the text to its font bounding box with characters below the y position 
+        /// </summary>
+        Text_Before_Edge
+
+    }
+
     public enum OverflowAction
     {
         /// <summary>
@@ -326,6 +762,12 @@ namespace Scryber.Drawing
         /// so the extra is not shown.
         /// </summary>
         Clip,
+        
+        /// <summary>
+        /// The layout will not be adjusted and assume the standard rendering,
+        /// however any content beyond the size of the contain will still be rendered.
+        /// </summary>
+        Visible,
 
         /// <summary>
         /// No new page will be generated, but child content will be rendered beyond any boundaries
@@ -338,6 +780,21 @@ namespace Scryber.Drawing
         //Component,
         Any,
         Never
+    }
+
+    public enum BreakContentType
+    {
+        Auto = 0,
+        Avoid = 1,
+        Region = 5,
+        Column = 6,
+        Page = 7,
+        All = 8,
+        Left = 9,
+        Right = 10,
+        Recto = 11,
+        Verso = 12
+        
     }
 
     public enum Visibility
@@ -353,7 +810,11 @@ namespace Scryber.Drawing
         /// <summary>
         /// The item is not visible, but still takes up any required space.
         /// </summary>
-        Hidden
+        Hidden,
+        /// <summary>
+        /// For a table row (or group of rows) it is removed, with its space, as with display none. For any other item it is the same as hidden.
+        /// </summary>
+        Collapse
     }
 
     public enum Corner
@@ -414,6 +875,8 @@ namespace Scryber.Drawing
         Origin
     }
 
+    
+
     /// <summary>
     /// Defines a type of supported gradient
     /// </summary>
@@ -428,14 +891,14 @@ namespace Scryber.Drawing
     /// </summary>
     public enum GradientAngle
     {
-        Top = 0,
-        Left = 270,
-        Bottom = 180,
-        Right = 90,
-        Top_Left = 315,
-        Top_Right = 45,
-        Bottom_Left = 225,
-        Bottom_Right = 135
+        Top = 270,
+        Left = 180,
+        Bottom = 90,
+        Right = 0,
+        Top_Left = 225,
+        Top_Right = 315,
+        Bottom_Left = 135,
+        Bottom_Right = 45
     }
 
     /// <summary>
@@ -452,7 +915,7 @@ namespace Scryber.Drawing
     /// </summary>
     public enum RadialShape
     {
-        [Obsolete("Ellipse gradients are not currently supported", true)]
+        [Obsolete("Ellipse gradients are not currently supported", false)]
         Ellipse,
         Circle
     }
@@ -469,6 +932,35 @@ namespace Scryber.Drawing
         FarthestCorner
     }
 
+    public enum GradientSpreadMode
+    {
+        Pad,
+        Reflect,
+        Repeat
+    }
+
+    public enum GradientUnitType
+    {
+        ObjectBoundingBox,
+        UserSpaceOnUse
+    }
+
+    public enum AdornmentOrder
+    {
+        Before,
+        After
+    }
+
+    [Flags]
+    public enum AdornmentPlacements
+    {
+        None = 0,
+        Start = 1,
+        Middle = 2,
+        End = 4,
+        All = Start + Middle + End
+    }
+
 
     /// <summary>
     /// The supported types of style content values
@@ -482,6 +974,48 @@ namespace Scryber.Drawing
         Counters,
         Attribute,
         Quote
+    }
+    
+    public enum AspectRatioAlign : byte
+    {
+        None,
+        xMinYMin,
+        xMidYMin,
+        xMaxYMin,
+        xMinYMid,
+        xMidYMid,
+        xMaxYMid,
+        xMinYMax,
+        xMidYMax,
+        xMaxYMax
+    }
+
+    public enum AspectRatioMeet : byte
+    {
+        None,
+        Meet,
+        Slice
+    }
+
+    /// <summary>
+    /// Defines how flowing columns should be filled
+    /// </summary>
+    public enum ColumnFillMode
+    {
+        /// <summary>
+        /// Columns are filled sequentially. Content takes up the room it needs over each column. Some columns may remain empty.
+        /// </summary>
+        Auto,
+        /// <summary>
+        /// Content is equally divided between columns in the last page (or block of content). So it only takes the minimum amount of height within that page.
+        /// We make no distinction and balance all columns on all the pages
+        /// </summary>
+        Balance = 1,
+        
+        /// <summary>
+        /// The content is divided equally in all columns on all pages. (not currently supported and equates to Balance so equivalent value)
+        /// </summary>
+        Balance_All = 1
     }
 
 }

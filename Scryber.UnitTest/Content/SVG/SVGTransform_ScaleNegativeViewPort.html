@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+            width: 300pt;
+            height: 300pt;
+        }
+
+        .box {
+            border-radius: 5pt;
+        }
+
+        path.transparentish {
+            fill: aqua;
+            fill-opacity: 0.5;
+            stroke-opacity: 0.5;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
+    <style>
+
+        
+        body {
+            font: 100 12pt 'Roboto';
+            padding: 20pt;
+        }
+        
+        svg{
+            width: 150pt;
+            height: 150pt;
+        }
+        
+    </style>
+</head>
+<body title="Negative Viewbox Samples" >
+
+    <svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg" width="200pt" height="200pt">
+        <!-- uniform scale -->
+        <circle cx="0" cy="0" r="10" fill="red" transform="scale(4)" />
+
+        <!-- vertical scale -->
+        <circle cx="0" cy="0" r="10" fill="yellow" transform="scale(1, 4)" />
+
+        <!-- horizontal scale -->
+        <circle cx="0" cy="0" r="10" fill="pink" transform="scale(4, 1)" />
+
+        <!-- No scale -->
+        <circle cx="0" cy="0" r="10" fill="black" />
+    </svg>
+    
+</body>
+</html>

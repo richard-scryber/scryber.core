@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using Scryber.Expressive.Tokenisation;
 using Scryber.Drawing;
+using Scryber.Expressive.Functions.Relational;
 
 namespace Scryber.Expressive
 {
@@ -17,7 +18,7 @@ namespace Scryber.Expressive
     {
         #region Fields
 
-        private readonly Context context;
+        private readonly ExpressionContext context;
         private readonly ITokeniser tokeniser;
 
         #endregion
@@ -29,7 +30,7 @@ namespace Scryber.Expressive
         /// </summary>
         /// <param name="context"></param>
         /// <param name="tokeniser"></param>
-        public ExpressionParser(Context context, ITokeniser tokeniser)
+        public ExpressionParser(ExpressionContext context, ITokeniser tokeniser)
         {
             this.context = context;
             this.tokeniser = tokeniser;
@@ -182,7 +183,7 @@ namespace Scryber.Expressive
                             expressions.Add(this.CompileExpression(captiveTokens, minimumPrecedence: OperatorPrecedence.Minimum, variables: variables, isWithinFunction: true));
                             captiveTokens.Clear();
                         }
-                        else if (string.Equals(nextToken.CurrentToken, Context.ParameterSeparator.ToString(), StringComparison.Ordinal) && parenCount == 1)
+                        else if (string.Equals(nextToken.CurrentToken, ExpressionContext.ParameterSeparator.ToString(), StringComparison.Ordinal) && parenCount == 1)
                         {
                             // TODO: Should we expect expressions to be null???
                             expressions.Add(this.CompileExpression(captiveTokens, minimumPrecedence: 0, variables: variables, isWithinFunction: true));
@@ -202,7 +203,18 @@ namespace Scryber.Expressive
                     CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
 
                     tokens.Dequeue();
-
+                    if (currentToken.CurrentToken.StartsWith("0b"))
+                    {
+                        //we should not error here as the IsNumeric check has already confirmed it's valid
+                        var parsedInt = Convert.ToInt32(currentToken.CurrentToken.Substring(2), 2);
+                        leftHandSide = new ConstantValueExpression(parsedInt);
+                    }
+                    else if (currentToken.CurrentToken.StartsWith("0x"))
+                    {
+                        //we should not error here as the IsNumeric check has already confirmed it's valid
+                        var parsedInt = Convert.ToInt32(currentToken.CurrentToken, 16);
+                        leftHandSide = new ConstantValueExpression(parsedInt);
+                    }
                     if (int.TryParse(currentToken.CurrentToken, NumberStyles.Any, this.context.DecimalCurrentCulture, out var intValue))
                     {
                         leftHandSide = new ConstantValueExpression(intValue);
@@ -276,13 +288,13 @@ namespace Scryber.Expressive
                     else
                         leftHandSide = new ConstantValueExpression(unit);
                 }
-                else if (currentToken.CurrentToken.StartsWith(Context.DateSeparator.ToString()) && currentToken.CurrentToken.EndsWith(Context.DateSeparator.ToString())) // or a date?
+                else if (currentToken.CurrentToken.StartsWith(ExpressionContext.DateSeparator.ToString()) && currentToken.CurrentToken.EndsWith(ExpressionContext.DateSeparator.ToString())) // or a date?
                 {
                     CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
 
                     tokens.Dequeue();
 
-                    var dateToken = currentToken.CurrentToken.Replace(Context.DateSeparator.ToString(), "");
+                    var dateToken = currentToken.CurrentToken.Replace(ExpressionContext.DateSeparator.ToString(), "");
 
                     // If we can't parse the date let's check for some known tags.
                     if (!DateTime.TryParse(dateToken, out var date))
@@ -311,11 +323,11 @@ namespace Scryber.Expressive
                     tokens.Dequeue();
                     leftHandSide = new ConstantValueExpression(CleanString(currentToken.CurrentToken.Substring(1, currentToken.Length - 2)));
                 }
-                else if (string.Equals(currentToken.CurrentToken, Context.ParameterSeparator.ToString(), StringComparison.Ordinal)) // Make sure we ignore the parameter separator
+                else if (string.Equals(currentToken.CurrentToken, ExpressionContext.ParameterSeparator.ToString(), StringComparison.Ordinal)) // Make sure we ignore the parameter separator
                 {
                     if (!isWithinFunction)
                     {
-                        throw new ExpressiveException("Unexpected parameter separator token '" + Context.ParameterSeparator + "' or unnrecognised outer function.");
+                        throw new ExpressiveException("Unexpected parameter separator token '" + ExpressionContext.ParameterSeparator + "' or unnrecognised outer function.");
                     }
                     tokens.Dequeue();
                 }
@@ -363,6 +375,22 @@ namespace Scryber.Expressive
             else if(currentToken.Equals("e", this.context.ParsingStringComparison))
             {
                 constant = new ConstantValueExpression(Math.E);
+            }
+            else if (currentToken.Equals("@index", this.context.ParsingStringComparison) && this.context.TryGetFunction("@index", out var func))
+            {
+                constant = new FunctionExpression("@index", func, this.context, Array.Empty<IExpression>());
+            }
+            else if (currentToken.Equals("@first", this.context.ParsingStringComparison) && this.context.TryGetFunction("@first", out var firstFunc))
+            {
+                constant = new FunctionExpression("@first", firstFunc, this.context, Array.Empty<IExpression>());
+            }
+            else if (currentToken.Equals("@last", this.context.ParsingStringComparison) && this.context.TryGetFunction("@last", out var lastFunc))
+            {
+                constant = new FunctionExpression("@last", lastFunc, this.context, Array.Empty<IExpression>());
+            }
+            else if (currentToken.Equals("@key", this.context.ParsingStringComparison) && this.context.TryGetFunction("@key", out var keyFunc))
+            {
+                constant = new FunctionExpression("@key", keyFunc, this.context, Array.Empty<IExpression>());
             }
             else
             {
@@ -423,14 +451,22 @@ namespace Scryber.Expressive
             return new string(buffer, 0, outIdx);
         }
 
-        protected virtual IExpression CreateVariableExpression(string token, Context context)
+        private const string SelfExpression = "this";
+        private const string ParentExpression = "_ParentData_";
+
+        protected virtual IExpression CreateVariableExpression(string token, ExpressionContext context)
         {
-            return new VariableExpression(token);
+            if (token.Equals(SelfExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                return new SelfVariableExpression();
+            else if (token.Equals(ParentExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase: StringComparison.Ordinal))
+                return new ParentVariableExpression();
+            else
+                return new VariableExpression(token, context.IsCaseInsensitiveParsingEnabled);
         }
 
         
 
-        private static void CheckForExistingParticipant(IExpression participant, Token token, bool isWithinFunction)
+        private void CheckForExistingParticipant(IExpression participant, Token token, bool isWithinFunction)
         {
             if (participant != null)
             {

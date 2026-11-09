@@ -90,7 +90,8 @@ namespace Scryber.Data
         {
             var style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.PositionMode = PositionMode.Static;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             return style;
         }
     }

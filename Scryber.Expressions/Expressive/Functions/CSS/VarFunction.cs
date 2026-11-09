@@ -31,15 +31,30 @@ namespace Scryber.Expressive.Functions.CSS
         /// <param name="parameters">The expression parameters</param>
         /// <param name="context">The current expression context</param>
         /// <returns>The value of the parameter, or the default (second parameter) or null</returns>
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
-            object value = parameters[0].Evaluate(variables);
+            object value;
+
+            try
+            {
+                value = parameters[0].Evaluate(variables);
+            }
+            catch (Scryber.Expressive.Exceptions.NullRootVariableException) when (parameters.Length > 1)
+            {
+                //The root variable is not set, but we have a default so use it.
+                value = null;
+            }
 
             //Allow the pass through of an optional second parameter with a fallback value
 
             if (null == value && parameters.Length > 1)
+            {
                 value = parameters[1].Evaluate(variables);
+
+                if (value == null && parameters[1] is VariableExpression variable)
+                    value = variable.variableName;
+            }
 
             return value;
         }

@@ -48,17 +48,8 @@ namespace Scryber.Core.UnitTests.Configuration
 
         public void ConfigClassInitialize()
         {
-            var path = this.TestContext.TestRunDirectory;
-            path = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../scrybersettings.json"));
-            if (!File.Exists(path))
-            {
-                path = System.IO.Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
-                path = System.IO.Path.GetFullPath(path);
-
-                if (!File.Exists(path))
-                    throw new FileNotFoundException("Cannot find the location of the scrybersettings.json file to run the tests from");
-            }
-
+            var path = System.IO.Path.Combine(DocStreams.GetTestProjectDirectory(), "scrybersettings.json");
+            
             var builder = new ConfigurationBuilder()
                                 .AddJsonFile(path, optional: false, reloadOnChange: false);
 
@@ -149,7 +140,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             //Should be 3 registered fonts
             Assert.IsNotNull(font.Register, "The font register should not be null");
-            Assert.AreEqual(3, font.Register.Length, "There are not 3 registered fonts");
+            Assert.AreEqual(3, font.Register.Count, "There are not 3 registered fonts");
 
             var family = "Segoe UI";
             string style = null;
@@ -225,7 +216,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(60, img.ImageCacheDuration, "The image cache duration is not 60");
             Assert.IsNotNull(img.Factories, "The image factories are null");
 
-            Assert.AreEqual(1, img.Factories.Length);
+            Assert.AreEqual(1, img.Factories.Count);
             Assert.AreEqual(".*\\.dynamic", img.Factories[0].Match, "The img factory match path is incorrect");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockImageFactory", img.Factories[0].FactoryType, "The image factory type is not correct");
             Assert.AreEqual("Scryber.UnitTests", img.Factories[0].FactoryAssembly, "The image factory assembly is not correct");
@@ -247,7 +238,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(TraceRecordLevel.Warnings, trace.TraceLevel, "Trace level is not Debug");
 
             Assert.IsNotNull(trace.Loggers, "The tracing loggers is null");
-            Assert.AreEqual(2, trace.Loggers.Length, "The length of the tracing loggers is not 1");
+            Assert.AreEqual(2, trace.Loggers.Count, "The length of the tracing loggers is not 1");
 
             Assert.AreEqual("Spoof", trace.Loggers[0].Name, "THe logger name is not Spoof");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockTraceLog", trace.Loggers[0].FactoryType, "The logger type does not match");
@@ -382,6 +373,66 @@ namespace Scryber.Core.UnitTests.Configuration
 
         }
 
+        [TestMethod]
+        public void CustomPathImageFactory_DecodesRequestedStream_Test()
+        {
+            //A requestor loads the content for a custom path, and the registered plain handler decodes it
+            var pngFile = DocStreams.AssertGetTemplatePath("HTML/Images/Toroid24.png");
+            var bytes = File.ReadAllBytes(pngFile);
+
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' ><body style='padding:20pt;' >
+<img src='db://products/42' alt='From the database' style='width:100pt' />
+</body></html>";
+
+            var handler = new DatabaseImageFactory();
+            var requests = 0;
+
+            using (var sr = new System.IO.StringReader(html))
+            using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+            {
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.ImageFactories.Insert(0, new ImageFactoryCustom(new Regex("^db://"), "Database", true, handler));
+                doc.RemoteFileRegistered += (s, a) =>
+                {
+                    if (!a.Request.FilePath.StartsWith("db://"))
+                        return;
+                    requests++;
+                    using (var ms = new MemoryStream(bytes))
+                        a.Request.Callback(a.Request.Owner, a.Request, ms);
+                };
+
+                using (var stream = DocStreams.GetOutputStream("CustomPathImageFactory.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.AreEqual(1, requests, "The request was not raised once");
+                Assert.AreEqual(1, handler.DecodeCount, "The handler did not decode the requested image");
+                Assert.AreEqual(bytes.Length, handler.LastLength, "The handler did not get the content");
+                Assert.IsTrue(doc.SharedResources.Any(r => r is Scryber.PDF.Resources.PDFImageXObject), "The image was not added to the document");
+            }
+        }
+
+        public class DatabaseImageFactory : IPDFImageDataFactory
+        {
+            public bool ShouldCache { get { return false; } }
+            public int DecodeCount { get; private set; }
+            public int LastLength { get; private set; }
+
+            public ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type)
+            {
+                DecodeCount++;
+                LastLength = data.Length;
+                using (var ms = new MemoryStream(data))
+                    return ImageReader.Create().ReadStream(document.GetIncrementID(owner.Type) + "db_png", ms, false);
+            }
+
+            public ImageData LoadImageData(IDocument document, IComponent owner, string path)
+            {
+                throw new NotSupportedException("The content is supplied by the requestor");
+            }
+        }
+
         public void EnsureDataImageFactory(Document doc)
         {
             var factories = doc.ImageFactories;
@@ -394,7 +445,7 @@ namespace Scryber.Core.UnitTests.Configuration
         }
 
 
-        public Options.ImageDataFactoryOption[] EnsureDataImageFactory()
+        public List<Options.ImageDataFactoryOption> EnsureDataImageFactory()
         {
             var services = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             var orig = services.ImagingOptions.Factories;
@@ -414,7 +465,7 @@ namespace Scryber.Core.UnitTests.Configuration
                     Match = path,
                     Name = "DataImages"
                 });
-                services.ImagingOptions.Factories = factories.ToArray();
+                services.ImagingOptions.Factories = factories;
 
             }
             return orig;
@@ -424,6 +475,11 @@ namespace Scryber.Core.UnitTests.Configuration
         public class DataBase64ImageFactory : IPDFImageDataFactory
         {
             public bool ShouldCache { get { return false; } }
+
+            public ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type)
+            {
+                throw new NotImplementedException("Only testing the base 64 loading.");
+            }
 
             /// <summary>
             /// Loads an image from a base 64 data image

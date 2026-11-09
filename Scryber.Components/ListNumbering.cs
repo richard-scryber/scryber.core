@@ -138,6 +138,8 @@ namespace Scryber
                 else
                     index--;
             }
+            
+            
 
             if (index < 0)
                 return string.Empty;

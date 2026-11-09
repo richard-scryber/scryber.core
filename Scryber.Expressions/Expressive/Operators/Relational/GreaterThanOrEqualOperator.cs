@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Operators.Relational
 
         public override IEnumerable<string> Tags => new[] { ">=" };
 
-        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             return new GreaterThanOrEqualExpression(expressions[0], expressions[1], context);
         }

@@ -1,0 +1,43 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            line-height: 30pt;
+            border: solid 1px green;
+            padding: 0pt;
+        }
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+        }
+
+
+        #fixed {
+            position: fixed;
+            border: solid 1px blue;
+            bottom: 100pt;
+        }
+
+        header, footer{
+            height: 30pt;
+            background-color: #AAA;
+            padding: 5pt;
+        }
+    </style>
+</head>
+<body>
+    <header>This is the page header</header>
+    <h5>Block below is fixed positioned to the page, without a specific location</h5>
+    <span id="before">Before the fixed.</span>
+    <div id="fixed">Fixed to the page</div>
+    <span id="after"> After the fixed block.</span>
+    <footer>This is the page footer</footer>
+</body>
+</html>
+

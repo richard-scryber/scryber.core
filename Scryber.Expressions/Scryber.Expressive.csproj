@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>Scryber</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -18,10 +18,8 @@
     <None Remove="Expressive\Functions\Coalesce\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Expressive\" />
     <Folder Include="Expressive\Exceptions\" />
-    <Folder Include="Expressive\Functions\CSS\" />
-    <Folder Include="Expressive\Functions\Coalesce\" />
+    <Folder Include="Expressive\Functions\Structural\" />
   </ItemGroup>
 
   <ItemGroup>

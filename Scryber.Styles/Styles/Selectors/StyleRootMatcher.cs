@@ -11,7 +11,7 @@ namespace Scryber.Styles.Selectors
 
         public override bool IsMatchedTo(IComponent component, ComponentState state, out int priority)
         {
-            if (component is IDocument)
+            if (component is IDocument || component is ICanvas)
             {
                 priority = 0;
                 return true;

@@ -9,12 +9,12 @@ namespace Scryber.Html.Components
     {
         
 
-        [PDFAttribute("data-content")]
-        public string DataContent { get; set; }
-
-        public HTMLSection() : base()
+        public HTMLSection() : this(HTMLObjectTypes.Section)
         {
         }
+
+        protected HTMLSection(ObjectType type) : base(type)
+        { }
 
         protected override void OnDataBound(DataContext context)
         {
@@ -26,7 +26,7 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.PageStyle.BreakBefore = true;
-
+            
             return style;
         }
     }

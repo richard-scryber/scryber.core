@@ -606,6 +606,16 @@ namespace Scryber.PDF
         {
             this.WriteArrayRealEntries(true, reals);
         }
+        
+        public void WriteArrayRealEntries(float[] reals, string format)
+        {
+            this.WriteArrayRealEntries(true, reals, format);
+        }
+        
+        public void WriteArrayRealEntries(double[] reals, string format)
+        {
+            this.WriteArrayRealEntries(true, reals, format);
+        }
 
         /// <summary>
         /// Optionally creates a new array and then writes the numbers to the array, closing it if opened
@@ -621,6 +631,44 @@ namespace Scryber.PDF
             {
                 this.BeginArrayEntry();
                 this.WriteReal((decimal)f);
+                this.EndArrayEntry();
+            }
+            
+            if(createarray)
+                this.EndArray();
+        }
+        
+        public void WriteArrayRealEntries(bool createarray, float[] reals, string format)
+        {
+            if(createarray)
+                this.BeginArrayS();
+            
+            if (string.IsNullOrEmpty(format))
+                format = "F";
+            
+            foreach (float f in reals)
+            {
+                this.BeginArrayEntry();
+                this.WriteReal(f, format);
+                this.EndArrayEntry();
+            }
+            
+            if(createarray)
+                this.EndArray();
+        }
+        
+        public void WriteArrayRealEntries(bool createarray, double[] reals, string format)
+        {
+            if(createarray)
+                this.BeginArrayS();
+            
+            if (string.IsNullOrEmpty(format))
+                format = "F";
+            
+            foreach (double f in reals)
+            {
+                this.BeginArrayEntry();
+                this.WriteReal(f, format);
                 this.EndArrayEntry();
             }
             

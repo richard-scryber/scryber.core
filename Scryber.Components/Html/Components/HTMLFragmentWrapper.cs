@@ -8,7 +8,7 @@ namespace Scryber.Html.Components
     /// Wraps a fragment of html that can be built. The instance itself is ignored and the contents output as part of the document, as it implements the IInvisibleContainer
     /// </summary>
     /// <remarks>
-    /// This class is used by the HtmlFragmentParser to wrap any individual content. But the <fragment xmlns=... can be used to include it in any content
+    /// This class is used by the HtmlFragmentParser to wrap any individual content. But <fragment xmlns=... /> can be used to include it in any content
     /// </remarks>
     [PDFParsableComponent("fragment")]
 	public class HTMLFragmentWrapper : ContainerComponent, INamingContainer, IInvisibleContainer

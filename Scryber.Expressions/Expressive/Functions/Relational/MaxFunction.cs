@@ -1,4 +1,5 @@
-﻿using Scryber.Expressive.Expressions;
+﻿using System;
+using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,48 +13,80 @@ namespace Scryber.Expressive.Functions.Relational
 
         public override string Name => "Max";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
-            var result = parameters[0].Evaluate(variables);
-
-            if (result is IEnumerable enumerableResult)
-            {
-                result = Max(enumerableResult, context);
-            }
-
+            object max = null;
+            object result;
             
-
-            // Skip the first item in the list as it has already been evaluated.
-            foreach (var value in parameters.Skip(1))
+            for (var i = 0; i < parameters.Length; i++)
             {
-                var evaluatedValue = value.Evaluate(variables);
+                var param = parameters[i];
 
-                if (evaluatedValue is IEnumerable enumerable)
+                result = param.Evaluate(variables);
+                result = Comparison.ExtractAnyJsonValue(result);
+
+                if (result != null)
                 {
-                    evaluatedValue = Max(enumerable, context);
-                }
+                    if (Collections.TryIsCollection(result, out var ienm))
+                    {
+                        foreach (var innerResult in ienm)
+                        {
+                            var innerValue = Comparison.ExtractAnyJsonValue(innerResult);
+                            if (null == max)
+                            {
+                                max = innerValue;
+                            }
+                            else if (null == innerValue)
+                            {
+                                //ignore nulls
+                            }
+                            else if (innerValue is string innerStr)
+                            {
+                                if (System.String.Compare(max.ToString(), innerStr, context.EqualityStringComparison) < 0)
+                                {
+                                    max = innerValue;
+                                }
+                            }
+                            else if(innerValue is IComparable comp)
+                            {
+                                if (Comparison.CompareUsingMostPreciseType(max, comp, context) < 0)
+                                    max = comp;
+                            }
+                        }
+                    }
+                    else //not a collection
+                    {
+                        if (null == max)
+                        {
+                            max = result;
+                        }
+                        else if (result is string str)
+                        {
+                            if (System.String.Compare(max.ToString(), str, context.EqualityStringComparison) < 0)
+                            {
+                                max = str;
+                            }
+                        }
+                        else if (result is IComparable comp)
+                        {
+                            if (Comparison.CompareUsingMostPreciseType(max, comp, context) < 0)
+                                max = comp;
+                        }
 
-                // Null means we should bail out.
-                if (evaluatedValue is null)
-                {
-                    return null;
+                    }
                 }
-
-                result = Comparison.CompareUsingMostPreciseType(result, evaluatedValue, context) > 0
-                    ? result
-                    : evaluatedValue;
             }
 
-            return result;
+            return max;
         }
 
         #endregion
 
         #region Private Methods
 
-        private static object Max(IEnumerable enumerable, Context context)
+        private static object Max(IEnumerable enumerable, ExpressionContext context)
         {
             object enumerableResult = null;
 

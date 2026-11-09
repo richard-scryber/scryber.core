@@ -1,0 +1,46 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            font-size: 15pt;
+            line-height: 30pt;
+            padding: 0pt;
+        }
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            column-count: 2;
+            margin: 20pt;
+        }
+
+        .spacer{
+            height: 600pt;
+            border: solid 1pt green;
+        }
+
+        #rel {
+            position: relative;
+            border: solid 1px blue;
+            top: -30pt;
+            left: -10pt;
+            width: 50%;
+            margin: 20pt;
+            padding: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <h5>Block below is relative positioned to the page, on the second column</h5>
+    <div class="spacer">Before the relative - Pushes the relative over to the next column</div>
+    <div id="rel">Relative to the page, with text that is long enough to force it to split and overflow the current available space and start on a new column. 
+        As we are relatively positioned - then we should not be split into different columns.</div>
+    <span id="after"> After the relative block.</span>
+</body>
+</html>
+

@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='false' log-level='verbose'  ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>        
+        p {
+            margin: 0;
+            background-color: silver;
+            height: 20pt;
+        }
+        h2{
+            color: white;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            padding-top: 2pt;
+            height: 20pt;
+            text-align: center;
+            font-style: normal;
+            font-size: small;
+        }
+        
+        .break{
+            break-before: column;
+        }
+        p.tall{
+            height: 58pt;
+        }
+    </style>
+</head>
+<body style="margin: 20pt; border: solid 1pt red">
+    <h2>Wider than natural</h2>
+    <p>This is XMin YMin Slice in a wide image</p>
+    <div style="border: solid 1pt blue" >
+        <img id="xMinYMinWide" src="../../Resources/ReferencedSVG/ChartAllSizesXMinYMinSlice.svg" width="400" height="80" style="border-color: black; border-width:0.1pt; margin: 5pt" />
+    </div>
+    <p>This is XMid YMid Slice in a wide image</p>
+    <div style="border: solid 1pt blue" >
+        <img id="xMidYMidWide" src="../../Resources/ReferencedSVG/ChartAllSizesXMidYMidSlice.svg" width="400" height="80" style="border-color: black; border-width:0.1pt; margin: 5pt" />
+    </div>
+    <p>This is XMax YMax Slice in a wide image</p>
+    <div style="border: solid 1pt blue;" >
+        <img id="xMaxYMaxWide" src="../../Resources/ReferencedSVG/ChartAllSizesXMaxYMaxSlice.svg" width="400" height="80" style="border-color: black; border-width:0.1pt; margin: 5pt;" />
+    </div>
+ <p>This is None Slice in a wide image</p>
+    <div style="border: solid 1pt blue" >
+        <img id="xNoneWide" src="../../Resources/ReferencedSVG/ChartAllSizesNoneSlice.svg" width="400" height="80" style="border-color: black; border-width:0.1pt; margin: 5pt" />
+    </div>
+<h2>Taller than natural</h2>
+    <div style="column-count: 4;">
+        <p class="tall">This is XMin YMin Slice in a tall image</p>
+        <div style="border: solid 1pt blue" >
+            <img id="xMinYMinTall" src="../../Resources/ReferencedSVG/ChartAllSizesXMinYMinSlice.svg" width="100" height="250" style="border-color: black; border-width: 0.1pt; margin: 5pt" />
+        </div>
+        <p class="tall break">This is XMid YMid Slice in a tall image</p>
+        <div style="border: solid 1pt blue" >
+            <img id="xMidYMidTall" src="../../Resources/ReferencedSVG/ChartAllSizesXMidYMidSlice.svg" width="100" height="250" style="border-color: black; margin: 5pt" />
+        </div>
+        <p class="tall break">This is XMax YMax Slice in a tall image</p>
+        <div style="border: solid 1pt blue;" >
+            <img id="xMaxYMaxTall" src="../../Resources/ReferencedSVG/ChartAllSizesXMaxYMaxSlice.svg" width="100" height="250" style="border-color: black; margin: 5pt" />
+        </div>
+        <p class="tall break">This is None Slice in a tall image</p>
+        <div style="border: solid 1pt blue" >
+            <img id="xNoneTall" src="../../Resources/ReferencedSVG/ChartAllSizesNoneSlice.svg" width="100" height="250" style="border-color: black; margin: 5pt" />
+        </div>
+    </div>
+
+
+</body>
+</html>

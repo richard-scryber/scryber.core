@@ -137,7 +137,7 @@ namespace Scryber.PDF
 
         #endregion
 
-        
+        public PDFTransformationMatrix RenderMatrix { get; set; }
 
         //
         // .ctor

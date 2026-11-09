@@ -147,8 +147,8 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style s = base.GetBaseStyle();
-            s.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
-            
+            s.Position.DisplayMode = Scryber.Drawing.DisplayMode.Block;
+            s.Position.PositionMode = PositionMode.Static;
             return s;
         }
 
@@ -160,20 +160,26 @@ namespace Scryber.Components
         /// <param name="fullstyle"></param>
         protected override void DoRegisterArtefacts(PDFLayoutContext context, PDF.PDFArtefactRegistrationSet set, Style fullstyle)
         {
-            IResourceContainer resources = this.GetResourceContainer();
-            if (null == resources)
-                throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
-            PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
+            if (this.Visible && fullstyle.Position.DisplayMode != DisplayMode.Invisible)
+            {
+                IResourceContainer resources = this.GetResourceContainer();
+                if (null == resources)
+                    throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
+                PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
 
-            if (null != xobj)
-                resources.Register(xobj);
+                if (null != xobj)
+                    resources.Register(xobj);
 
-            base.DoRegisterArtefacts(context, set, fullstyle);
+                base.DoRegisterArtefacts(context, set, fullstyle);
+            }
         }
 
 
         public virtual PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+            if (!this.Visible)
+                return null;
+
             PDFGraphics graphics = context.Graphics;
             Style full = null;
 
@@ -184,17 +190,31 @@ namespace Scryber.Components
             if (null == full)
                 full = context.FullStyle;
 
+            if (full.Position.DisplayMode == DisplayMode.Invisible)
+                return null;
+
+            //Hidden images are laid out, but not drawn
+            if (full.GetValue(StyleKeys.TextVisibilityKey, Visibility.Visible) != Visibility.Visible)
+                return null;
+
             PDFImageXObject img = this.GetImageObject(context, full);
             if (img != null)
             {
-                Point pos = context.Offset;
+                img.RegisterUse(context.Graphics.Container.Resources, this);
+                
+                Point pos = img.GetRequiredOffsetForRender(context.Offset, context.Space, context);
+                
+                Size imgsize = img.GetRequiredSizeForRender(context.Offset, context.Space, context);
 
+                Rect? clipRect = img.GetClippingRect(context.Offset, context.Space, context);
 
-                Size imgsize = context.Space;
-
-                //the pictures are drawn from their bottom left corner, so take off the height.
-                //if (context.DrawingOrigin == DrawingOrigin.TopLeft)
-                //    pos.Y = pos.Y + imgsize.Height;
+                //Raster images can be fitted into the box, rather than stretched to fill it.
+                if (img.ImageData is ImageRasterData && full.TryGetValue(StyleKeys.SizeObjectFitKey, out StyleValue<ObjectFit> fitValue))
+                {
+                    var fit = fitValue.Value(full);
+                    if (fit != ObjectFit.Fill)
+                        this.ApplyObjectFit(img, full, fit, ref pos, ref imgsize, ref clipRect);
+                }
 
                 graphics.SaveGraphicsState();
 
@@ -206,6 +226,12 @@ namespace Scryber.Components
                         graphics.SetFillOpacity(op.Value(full));
                     }
                 }
+
+                if (clipRect.HasValue)
+                {
+                    graphics.SetClipRect(clipRect.Value);
+                }
+                
                 PDFObjectRef imgref = img.EnsureRendered(context, writer);
                 graphics.PaintImageRef(img, imgsize, pos);
 
@@ -216,9 +242,65 @@ namespace Scryber.Components
                 return null;
         }
 
+        /// <summary>
+        /// Adjusts the position, size and clipping of a raster image, for the object-fit and object-position of the style.
+        /// The box is the position and size passed in.
+        /// </summary>
+        protected virtual void ApplyObjectFit(PDFImageXObject img, Style full, ObjectFit fit, ref Point pos, ref Size size, ref Rect? clip)
+        {
+            var natural = img.GetImageSize();
+            double nw = natural.Width.PointsValue;
+            double nh = natural.Height.PointsValue;
+            double bw = size.Width.PointsValue;
+            double bh = size.Height.PointsValue;
+
+            if (nw <= 0 || nh <= 0 || bw <= 0 || bh <= 0)
+                return;
+
+            double scale;
+            switch (fit)
+            {
+                case ObjectFit.Contain:
+                    scale = Math.Min(bw / nw, bh / nh);
+                    break;
+                case ObjectFit.Cover:
+                    scale = Math.Max(bw / nw, bh / nh);
+                    break;
+                case ObjectFit.ScaleDown:
+                    scale = Math.Min(1.0, Math.Min(bw / nw, bh / nh));
+                    break;
+                default: //None
+                    scale = 1.0;
+                    break;
+            }
+
+            double sw = nw * scale;
+            double sh = nh * scale;
+
+            double offsetX = GetObjectOffset(full, StyleKeys.SizeObjectPositionXKey, bw - sw);
+            double offsetY = GetObjectOffset(full, StyleKeys.SizeObjectPositionYKey, bh - sh);
+
+            var box = new Rect(pos, size);
+
+            //clip anything that is outside the box
+            if (sw > bw + 0.001 || sh > bh + 0.001)
+                clip = box;
+
+            pos = new Point(pos.X + new Unit(offsetX, PageUnits.Points), pos.Y + new Unit(offsetY, PageUnits.Points));
+            size = new Size(new Unit(sw, PageUnits.Points), new Unit(sh, PageUnits.Points));
+        }
+
+        private static double GetObjectOffset(Style full, StyleKey<ObjectPosition> key, double freeSpace)
+        {
+            if (full.TryGetValue(key, out StyleValue<ObjectPosition> found))
+                return found.Value(full).GetOffset(freeSpace);
+            else
+                return freeSpace / 2.0; //default of 50%
+        }
+
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
-            PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
+            PDFPositionOptions pos = appliedstyle.CreatePostionOptions(context.PositionDepth > 0);
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();
             PDFImageXObject xobj = this.GetImageObject(context, appliedstyle);
             Size naturalSize = xobj.GetImageSize();
@@ -229,11 +311,60 @@ namespace Scryber.Components
             {
                 w = pos.Width.Value;
                 h = pos.Height.Value;
+
+                // Both dimensions "have a value" here not just when an author explicitly styled
+                // both (where max/min clamping genuinely shouldn't apply - CSS lets explicit
+                // width+height override everything), but also for the HTML5 width/height
+                // attribute UA-default fallback (HTMLImage.OnInitialized forces both literally
+                // whenever neither is styled directly on the img, e.g. only aspect-ratio was set
+                // and the real constraint lives on an ancestor like a <figure>). That fallback
+                // must not silently defeat max-width/max-height/min-width/min-height, or those
+                // properties become inert on any image carrying both width/height attributes -
+                // effectively all of them. When a max/min clamp actually changes one dimension,
+                // the other is re-derived from aspect-ratio (or the natural ratio as a fallback)
+                // rather than kept at its own literal value, so the image stays proportioned
+                // instead of distorting - mirroring the else-if branches just below.
+                if (pos.MaximumWidth.HasValue && w > pos.MaximumWidth.Value)
+                {
+                    w = pos.MaximumWidth.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        h = w / pos.AspectRatio.Value;
+                    else
+                        h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+                }
+                if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
+                {
+                    h = pos.MaximumHeight.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        w = h * pos.AspectRatio.Value;
+                    else
+                        w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
+                if (pos.MinimumWidth.HasValue && w < pos.MinimumWidth.Value)
+                {
+                    w = pos.MinimumWidth.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        h = w / pos.AspectRatio.Value;
+                    else
+                        h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+                }
+                if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                {
+                    h = pos.MinimumHeight.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        w = h * pos.AspectRatio.Value;
+                    else
+                        w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
             }
             else if(pos.Width.HasValue)
             {
                 w = pos.Width.Value;
-                h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+                if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                    h = w / pos.AspectRatio.Value;
+                else
+                    h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
 
                 if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
                     h = pos.MaximumHeight.Value;
@@ -243,7 +374,11 @@ namespace Scryber.Components
             else if(pos.Height.HasValue)
             {
                 h = pos.Height.Value;
-                w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+
+                if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                    w = h * pos.AspectRatio.Value;
+                else
+                    w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
 
                 if (pos.FillWidth)
                     w = available.Width;

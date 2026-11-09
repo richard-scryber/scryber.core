@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Scryber.Imaging
 {
-    public abstract class PDFImageDataBase : ImageData
+    public abstract class PDFImageDataBase : ImageRasterData
     {
         
 
@@ -53,7 +53,7 @@ namespace Scryber.Imaging
         /// <param name="bitDepth"></param>
         /// <param name="hasAlpha"></param>
         /// <param name="colorSpace"></param>
-        internal void SetSourceImageFormat(ImageFormat imageFormat, int bitDepth, bool hasAlpha, ColorSpace colorSpace)
+        public virtual void SetSourceImageFormat(ImageFormat imageFormat, int bitDepth, bool hasAlpha, ColorSpace colorSpace)
         {
             this.HasAlpha = hasAlpha;
             this.ColorSpace = colorSpace;

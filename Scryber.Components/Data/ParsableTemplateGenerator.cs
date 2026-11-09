@@ -24,7 +24,7 @@ using Scryber.Components;
 
 namespace Scryber.Data
 {
-    public class ParsableTemplateGenerator : ITemplate, IPDFTemplateGenerator, IPDFDataTemplateGenerator
+    public class ParsableTemplateGenerator : ITemplate, ITemplateGenerator, IDataTemplateGenerator
     {
         
         private string _toparse;
@@ -248,7 +248,17 @@ namespace Scryber.Data
                 IComponent comp;
                 if (doc is ITemplateParser)
                 {
-                    comp = ((ITemplateParser)doc).ParseTemplate(remote,sr);
+                    try
+                    {
+                        comp = ((ITemplateParser)doc).ParseTemplate(remote, sr);
+                    }
+                    catch (PDFParserException ex)
+                    {
+                        //The template content (e.g. a repeating loop) could not be parsed - an invalid expression
+                        //for example. This must be raised in strict AND lax mode. As the parse happens during
+                        //data binding, wrap as a PDFDataException so Component.DataBind does not swallow it in lax mode.
+                        throw new PDFDataException("The content of the template could not be parsed: " + ex.Message, ex);
+                    }
                 }
                 else
                     throw RecordAndRaise.NullReference(Errors.ParentDocumentMustBeTemplateParser);
@@ -342,9 +352,9 @@ namespace Scryber.Data
                 if (component is IDataStyledComponent)
                     (component as IDataStyledComponent).DataStyleIdentifier = next;
 
-                if(component is IPDFDataTemplateGenerator)
+                if(component is IDataTemplateGenerator)
                 {
-                    var dt = component as IPDFDataTemplateGenerator;
+                    var dt = component as IDataTemplateGenerator;
                     if (string.IsNullOrEmpty(dt.DataStyleStem))
                         dt.DataStyleStem = next;
                 }

@@ -1,0 +1,150 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+   <style type="text/css">
+      
+      body{
+         margin: 30pt;
+         border: solid 1pt red;
+         line-height: 30pt;
+         font-family: sans-serif;
+         font-size: 20pt;
+         text-align: justify;
+      }
+      
+      .positioned{
+         margin: 10pt;
+         border: solid 1pt green;
+         vertical-align: middle;
+         display: block;
+         
+      }
+      
+      #nest{
+         border: solid 1pt blue;
+         padding: 10pt;
+         position: relative;
+      }
+      
+      table.full{
+         border: solid 1pt green;
+      }
+      
+      table.full td{
+         border: solid 1pt blue;
+         margin: 5pt;
+         padding: 4pt;
+         font-size: 12pt;
+         line-height: 14pt;
+      }
+
+      td svg{
+         border: solid 1pt red;
+         display: block;
+      }
+      
+   </style>
+    
+</head>
+<body>
+   Before the nesting
+   <div id="nest" >
+      Before the SVG
+      <table class="full">
+         <tr>
+            <td>
+               <div>X min, Y min</div>
+               <svg version="1.1" id="Canvas11" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMinYMin slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+            <td>
+               <div>X mid, Y min</div>
+               <svg version="1.1" id="Canvas12" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMidYMin slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+            <td>
+               <div>X max, Y min</div>
+               <svg version="1.1" id="Canvas13" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMaxYMin slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+         </tr>
+         <!-- Y Mid row -->
+         <tr>
+            <td>
+               <div>X min, Y min</div>
+               <svg version="1.1" id="Canvas21" xmlns="http://www.w3.org/2000/svg" width="100pt" height="150pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMinYMin slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+            <td>
+               <div>X mid, Y mid</div>
+               <svg version="1.1" id="Canvas22" xmlns="http://www.w3.org/2000/svg" width="100pt" height="150pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+            <td>
+               <div>X max, Y max</div>
+               <svg version="1.1" id="Canvas23" xmlns="http://www.w3.org/2000/svg" width="100pt" height="150pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMaxYMax slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+         </tr>
+         <tr>
+            <td>
+               <div>X min, Y min</div>
+               <svg version="1.1" id="Canvas31" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMinYMin slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+            <td>
+               <div>X mid, Y mid</div>
+               <svg version="1.1" id="Canvas32" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+            <td>
+               <div>X max, Y max</div>
+               <svg version="1.1" id="Canvas33" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt" style="border: solid 1pt red"
+                    viewBox="0 0 240 240" preserveAspectRatio="xMaxYMax slice"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"    >
+                  <rect id="referenceRect" width="200" height="200" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5" />
+                  <text x="20" y="20" dominant-baseline="hanging" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+               </svg>
+            </td>
+         </tr>
+      </table>
+      
+      After the SVG that flows down on to multiple lines in the content of the page.
+   </div>
+   After the nesting
+</body>
+</html>
+

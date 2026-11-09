@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        @page {
+            size: 600pt 800pt;
+            margin: 0;
+        }
+
+        body {
+            margin: 20pt;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: bold;
+            font-style: normal;
+            color: #000;
+            text-decoration: none;
+        }
+
+        h1 {
+            font-size: 24pt;
+            margin: 11pt 0;
+        }
+
+        h2 {
+            font-size: 18pt;
+            margin: 13pt 0;
+        }
+
+        h3 {
+            font-size: 14pt;
+            margin: 16pt 0;
+        }
+        
+        .container{
+            border: solid 1px green;
+            padding : 5px;
+        }
+
+        .item {
+            padding: 10px;
+            border: solid 1px blue;
+            background-color: rgba(128, 255, 255, 0.3);
+            font-size: 8pt;
+        }
+        
+        main{
+            column-count: 2;
+        }
+        
+    </style>
+</head>
+<body>
+<h1>Testing the grid layout options</h1>
+<main>
+    <h3>1. Simple grid layout.</h3>
+    <style>
+        .container-1{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            width: 100%;
+        }
+    
+    </style>
+    <div class="container container-1">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+        <div class="item item-6">Six</div>
+    </div>
+    <hr/>
+    <h3>2. Line based placement.</h3>
+    <style>
+        .container-2{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            width: 100%;
+        }
+
+        .container-2 .a {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        .container-2 .b {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            grid-row-end: 3;
+        }
+        .container-2 .c {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 2;
+            grid-row-end: 3;
+        }
+        .container-2 .d {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        .container-2 .e {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 2;
+            grid-row-end: 3;
+        }
+        .container-2 .f {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+    </style>
+    <div class="container container-2">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>3. Line based placement, grid-row, grid-column.</h3>
+    <style>
+        .container-3{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            width: 100%;
+        }
+
+        .container-3 .a {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+        .container-3 .b {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+        }
+        .container-3 .c {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
+        }
+        .container-3 .d {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+        }
+        .container-3 .e {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+        }
+        .container-3 .f {
+            grid-column: 3 / 4;
+            grid-row: 1 / 2;
+        }
+    </style>
+    <div class="container container-3">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <style >
+        .container-4{
+            display: grid;
+            grid-template-columns: 50px 50px 50px;
+            gap: 10px;
+            column-gap: 20px;
+            width: 100%;
+        }
+
+
+        .container-4 .a {
+            grid-area: 1 / 2 / 2 / span 2;
+        }
+        .container-4 .b {
+            grid-area: 2 / 3 / 3 / 3;
+        }
+        .container-4 .c {
+            grid-area: 2 / 4 / 3 / 4;
+        }
+        .container-4 .d {
+            grid-area: 1 / 1 / 2 / 2;
+        }
+        .container-4 .e {
+            grid-area: 2 / 1 / 3 / span 2;
+        }
+        .container-4 .f {
+            grid-area: 1 / 4 / 2 / 4;
+        }
+    </style>
+    <h3>4. Line based placement, grid-area with column spans.</h3>
+    <div class="container container-4">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>5. Line based placement, spanning tracks.</h3>
+    
+    <style>
+        .container-5{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+        }
+
+
+        .container-5 .a {
+            grid-column: 1 / span 2;
+            grid-row: 1;
+        }
+        .container-5 .b {
+            grid-column: 3 ;
+            grid-row: 1 / span 2;
+        }
+        .container-5 .c {
+            grid-column: 1 ;
+            grid-row: 2 ;
+        }
+        .container-5 .d {
+            grid-column: 2;
+            grid-row: 2;
+        }
+    </style>
+    <div class="container container-5">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>6. Using Repeat notation.</h3>
+    <style>
+        .container-6{
+            display: grid;
+            grid-template-columns: repeat(4, [col] 50px ) ;
+            grid-template-rows: repeat(3, [row] auto  );
+            gap: 10px;
+            column-gap: 20px;
+            position: relative;
+        }
+
+        .container-6 .a {
+            grid-column: col / span 2;
+            grid-row: row ;
+        }
+        .container-6 .b {
+            grid-column: col 3 / span 2 ;
+            grid-row: row ;
+        }
+        .container-6 .c {
+            grid-column: col ;
+            grid-row: row 2 ;
+        }
+        .container-6 .d {
+            grid-column: col 2 / span 3 ;
+            grid-row: row 2 ;
+        }
+        .container-6 .e {
+            grid-column: col / span 4;
+            grid-row: row 3;
+        }
+    </style>
+    <div class="container container-6">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3>7. Explicit and Implicit Grid.</h3>
+    <style>
+        .container-7{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-auto-columns: 3fr 1fr;
+        }
+
+        .container-7 .a {
+            grid-column: 1 / 3;
+            grid-row: 1;
+        }
+        .container-7 .b {
+            grid-column: 3 ;
+            grid-row: 1 / 3;
+        }
+        .container-7 .c {
+            grid-column: 1 ;
+            grid-row: 2 ;
+        }
+        .container-7 .d {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .container-7 .e {
+            grid-column: 4 / 5;
+            grid-row: 1 / 4;
+        }
+        .container-7 .f {
+            grid-column: 5 / 6;
+            grid-row: 3 / 4;
+        }
+    </style>
+    <div class="container container-7">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3 >8. Explicit and Implicit Grid Before.</h3>
+    <style>
+        .container-8{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 60px 60px;
+            grid-auto-columns: 200px;
+        }
+
+        .container-8 .a {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .container-8 .b {
+            grid-column: 3 ;
+            grid-row: 1 / 2;
+        }
+        .container-8 .c {
+            grid-column: 2;
+            grid-row: 2 ;
+        }
+        .container-8 .d {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .container-8 .e {
+            grid-column: 1;
+            grid-row: 1 / 4;
+        }
+    </style>
+    <div class="container container-8">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3 >9. Defining Areas.</h3>
+    <style>
+        .container-9{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 80px  80px  80px;
+            grid-template-areas:
+               "....... header  header"
+               "sidebar content content";
+        }
+
+        .container-9 .sidebar {
+            grid-area: sidebar;
+        }
+
+        .container-9 .content {
+            grid-area: content;
+        }
+
+        .container-9 .header {
+            grid-area: header;
+        }
+        
+    </style>
+    <div class="container container-9">
+        <div class="item header">Header</div>
+        <div class="item sidebar">Sidebar</div>
+        <div class="item content">Content</div>
+    </div>
+    <hr/>
+    <h3 >10. Expanding Content.</h3>
+    <style>
+        .container-10{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 80px  80px  80px;
+            grid-template-areas:
+               "....... header  header"
+               "sidebar content content"
+               "footer footer footer";
+        }
+
+        .container-10 .sidebar {
+            grid-area: sidebar;
+        }
+
+        .container-10 .content {
+            grid-area: content;
+        }
+
+        .container-10 .header {
+            grid-area: header;
+        }
+
+        .container-10 .footer {
+            grid-area: footer;
+        }
+
+    </style>
+    <div class="container container-10">
+        <div class="item header">Header</div>
+        <div class="item sidebar">Sidebar</div>
+        <div class="item content">Content that flows down and makes the column much taller than the default space reserved for the cell.</div>
+        <div class="item footer">Footer</div>
+    </div>
+    <hr/>
+    <h3 >11. Grid item as a new positioning context.</h3>
+    <style>
+        .container-11{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 80px  100px  100px;
+            grid-template-areas:
+               "....... header  header"
+               "sidebar content content"
+               "footer footer footer";
+        }
+
+        .container-11 .sidebar {
+            grid-area: sidebar;
+        }
+
+        .container-11 .content {
+            grid-area: content;
+            position: relative;
+            padding: 50pt;
+        }
+        
+        .container-11 .content img{
+            width: 30pt;
+        }
+
+        .container-11 .header {
+            grid-area: header;
+        }
+
+        .container-11 .footer {
+            grid-area: footer;
+        }
+
+
+        .topleft {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .topright {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .bottomleft {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .bottomright {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+    </style>
+    <div class="container container-11">
+        <div class="item header">Header</div>
+        <div class="item sidebar">Sidebar</div>
+        <div class="item content">Content<br /> The four arrows are inline images inside the content area.
+            <img src="../../Images/arrow-top-left.png" alt="top left" class="topleft" />
+            <img src="../../Images/arrow-top-right.png" alt="top right" class="topright" />
+            <img src="../../Images/arrow-bottom-left.png" alt="bottom left" class="bottomleft" />
+            <img src="../../Images/arrow-bottom-right.png" alt="bottom right" class="bottomright" /></div>
+        <div class="item footer">Footer</div>
+    </div>
+    <hr/>
+    <h3 >12. Grid auto placement.</h3>
+    <style>
+        .container-12{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(4, 60px);
+        }
+    </style>
+    <div class="container container-12">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+    </div>
+    <hr/>
+    <h3 >13. Grid auto flow column.</h3>
+    <style>
+        .container-13{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(2, 60px);
+            grid-auto-flow: column;
+        }
+    </style>
+    <div class="container container-13">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+    </div>
+    <hr/>
+    <h3 >14. Grid auto placement.</h3>
+    <style>
+        .container-14{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(6, 40px);
+            grid-auto-flow: column;
+        }
+        
+        .container-14 .item-2{
+            grid-column: 2 / 5;
+            grid-row: 2 / 3;
+            border: 2px solid red;
+        }
+    </style>
+    <div class="container container-14">
+        <div class="item">1</div>
+        <div class="item item-2">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+    </div>
+    <hr/>
+    <h3 >15. Auto fill in repeating tracks.</h3>
+    <style>
+        .container-15{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fill, 100px);
+        }
+
+        .container-15 .a {
+            grid-column: 1 / 3;
+        }
+        .container-15 .b {
+            grid-column: 3 / 5;
+        }
+        .container-15 .c {
+            grid-column: 1 / 2;
+            grid-row: 2 ;
+        }
+        .container-15 .d {
+            grid-column: 2 / 5;
+            grid-row: 2;
+        }
+        
+        .container-15 .e {
+            grid-column: 1 / 5;
+            grid-row: 3;
+        }
+    </style>
+    <div class="container container-15">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3 >16. Auto-fill with named grid lines.</h3>
+    <style>
+        .container-16{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fill, [col] 60px ) ;
+            grid-template-rows: repeat(auto-fill, [row] auto  );
+        }
+
+        .container-16 .a {
+            grid-column: col / span 2;
+            grid-row: row ;
+        }
+        .container-16 .b {
+            grid-column: col 3 / span 2 ;
+            grid-row: row ;
+        }
+        .container-16 .c {
+            grid-column: col ;
+            grid-row: row 2 ;
+        }
+        .container-16 .d {
+            grid-column: col 2 / span  3 ;
+            grid-row: row 2 ;
+        }
+
+        .container-16 .e {
+            grid-column: col / span 4;
+            grid-row: row 3;
+        }
+    </style>
+    <div class="container container-16">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3 >17. Aligning the grid.</h3>
+    <style>
+        .container-17{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(4, 50px);
+            grid-template-rows: repeat(3, 50px);
+            justify-content: right;
+            align-content: center;
+            width: 300px;
+            height: 400px;
+            break-inside: avoid;
+        }
+
+        .container-17 .a {
+            grid-column: 1 / 5;
+        }
+        .container-17 .b {
+            grid-column: 1 / 3;
+            grid-row: 2 / 4;
+        }
+        .container-17 .c {
+            grid-column: 3 / 5;
+        }
+        
+    </style>
+    <div class="container container-17">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3>18. Multiple tracks in a track-list with auto-fill.</h3>
+    <style>
+        .container-18{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fill, 50px 100px);
+        }
+        
+    </style>
+    <div class="container container-18">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+    </div>
+    <hr/>
+    <h3 >19. Nested Grid.</h3>
+    <style>
+        .container-19{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(4, [col] 50px ) ;
+            grid-template-rows: repeat(2, [row] auto  );
+            justify-content: center;
+        }
+
+        .container-19 .a {
+            grid-column: col / span 2;
+            grid-row: row;
+        }
+        .container-19 .b {
+            grid-column: col 3 / span 2;
+            grid-row: row;
+        }
+        .container-19 .c {
+            grid-column: col / span 2;
+            grid-row: row 2;
+        }
+
+        .container-19 .d{
+            grid-column: col 3 / span 2;
+            grid-row: row 2;
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .container-19 .e {
+            grid-column: 1 / 3;
+            grid-row: 1;
+        }
+
+        .container-19 .f {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .container-19 .g {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .container-19 .item .item{
+            background-color: lime;
+        }
+
+    </style>
+    <div class="container container-19">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">
+            <div class="item e">E</div>
+            <div class="item f">F</div>
+            <div class="item g">G</div>
+        </div>
+    </div>
+    <hr/>
+</main>
+
+</body>
+</html>

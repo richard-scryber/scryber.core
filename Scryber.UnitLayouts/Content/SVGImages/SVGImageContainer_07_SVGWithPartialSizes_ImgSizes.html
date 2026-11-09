@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>SVG 07 - Partial Inner Sizes - and Image Sizes</title>
+        <style>
+            body { padding: 5pt; }
+            img { border: 1px solid black; background-color: lightyellow; }
+            p { margin: 0; margin-bottom: 5pt; }
+        </style>
+    </head>
+    <body>
+        <img src="Sample_NoViewbox_HasWidth_NoHeight.svg" style="width: 150;" />
+        <p>1. SVG 150 wide expects run 150x150</p>
+
+        <img src="Sample_NoViewbox_HasWidth_NoHeight.svg" style="width: 75;" />
+        <p>2. SVG 150 wide expects run 75x150</p>
+
+        <img src="Sample_NoViewbox_HasWidth_NoHeight.svg" style="width: 300;" />
+        <p>3. SVG 150 wide expects run 300x150</p>
+
+        <img src="Sample_NoViewbox_HasWidth_NoHeight_None.svg" style="width: 300;" />
+        <p>4. SVG 150 wide, None Aspect expects run 300x150</p>
+        
+    
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+
+        <img src="Sample_NoViewbox_NoWidth_HasHeight.svg" style="height: 100;" />
+        <p>5. SVG 300x100 expects run 300x100</p>
+
+        <img src="Sample_NoViewbox_NoWidth_HasHeight.svg" style="height: 50;" />
+        <p>6. SVG 300x100 expects run 300x50</p>
+
+        <img src="Sample_NoViewbox_NoWidth_HasHeight.svg" style="height: 200;" />
+        <p>7. SVG 300x100 expects run 300x200</p>
+
+        <img src="Sample_NoViewbox_NoWidth_HasHeight_None.svg" style="height: 200;" />
+        <p>8. SVG Default 300x100 expects run 300x200</p>
+    
+    </body>
+</html>

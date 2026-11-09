@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Scryber.Drawing;
 
 namespace Scryber.Styles
@@ -18,6 +19,10 @@ namespace Scryber.Styles
                 if (dim.IsRelative)
                 {
                     throw new InvalidOperationException("Relative units are not allowed on the style property '" + key.ToString() + "'. The value '" + dim + "' cannot be used");
+                }
+                else
+                {
+                    value.SetValue(dim);
                 }
             }
         }
@@ -42,6 +47,10 @@ namespace Scryber.Styles
                 {
                     result = FlattenHorizontalUnit(dim, pageSize, containerSize, fontSize, rootFontSize);
                     value.SetValue(result);
+                }
+                else
+                {
+                    value.SetValue(dim);
                 }
             }
         }
@@ -110,6 +119,10 @@ namespace Scryber.Styles
                     result = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontSize);
                     value.SetValue(result);
                 }
+                else
+                {
+                    value.SetValue(dim);
+                }
             }
         }
 
@@ -155,6 +168,8 @@ namespace Scryber.Styles
 
             return result;
         }
+        
+
 
 
         public static void FlattenPaddingAllThicknessPositionValue(Style style, StyleKey<Unit> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontHeight)
@@ -171,7 +186,10 @@ namespace Scryber.Styles
                 {
                     Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight);
                     all.SetValue(vert);
-
+                }
+                else
+                {
+                    all.SetValue(dim);
                 }
             }
             
@@ -191,6 +209,10 @@ namespace Scryber.Styles
                     Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight);
                     all.SetValue(vert);
 
+                }
+                else
+                {
+                    all.SetValue(dim);
                 }
             }
         }
@@ -215,6 +237,10 @@ namespace Scryber.Styles
                 {
                     result = FlattenFontUnit(dim, pageSize, fontSize, rootFontSize);
                     value.SetValue(result);
+                }
+                else
+                {
+                    value.SetValue(dim);
                 }
             }
         }
@@ -288,6 +314,10 @@ namespace Scryber.Styles
                     flat.Height = FlattenVerticalUnit(dim.Height, pageSize, containerSize, fontSize, rootFontSize);
 
                     value.SetValue(flat);
+                }
+                else
+                {
+                    value.SetValue(dim);
                 }
             }
 
