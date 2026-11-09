@@ -8,4 +8,4 @@ build:
     python: "3.12"
   commands:
     - mkdir -p $READTHEDOCS_OUTPUT/html
-    - cp docs/redirect/index.html docs/redirect/404.html $READTHEDOCS_OUTPUT/html/
+    - cp docs/index.html docs/404.html $READTHEDOCS_OUTPUT/html/
