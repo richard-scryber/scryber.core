@@ -159,7 +159,7 @@ namespace Scryber.Core.UnitTests.Html
         public void NullSettings_Throws()
         {
             using (var sr = new StringReader(Xhtml))
-                Assert.ThrowsException<ArgumentNullException>(() => Document.ParseDocument(sr, "", ParseSourceType.DynamicContent, (ParserSettings)null));
+                Assert.ThrowsExactly<ArgumentNullException>(() => Document.ParseDocument(sr, "", ParseSourceType.DynamicContent, (ParserSettings)null));
         }
     }
 }

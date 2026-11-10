@@ -118,7 +118,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             var col = new HTMLCol();
             col.Span = 0;
-            Assert.ThrowsException<InvalidOperationException>(() => col.ApplyStyleToColumnCell(0, new TableCell()));
+            Assert.ThrowsExactly<InvalidOperationException>(() => col.ApplyStyleToColumnCell(0, new TableCell()));
         }
 
         #endregion

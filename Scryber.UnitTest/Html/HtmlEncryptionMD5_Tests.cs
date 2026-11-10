@@ -84,8 +84,8 @@ namespace Scryber.Core.UnitTests.Html
                 CollectionAssert.AreEqual(expected, MD5Managed.ComputeHash(data, offset, count), "The hash of " + count + " bytes from " + offset);
             }
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => MD5Managed.ComputeHash(data, 250, 51));
-            Assert.ThrowsException<ArgumentNullException>(() => MD5Managed.ComputeHash(null));
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => MD5Managed.ComputeHash(data, 250, 51));
+            Assert.ThrowsExactly<ArgumentNullException>(() => MD5Managed.ComputeHash(null));
         }
 
         //

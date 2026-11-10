@@ -290,7 +290,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(linkEntry);
 
             Assert.AreEqual(action, linkEntry.Action.ActionType);
-            Assert.ReferenceEquals(link, linkEntry.Component);
+            Assert.AreSame(link, linkEntry.Component.Parent);
 
             var arrange = linkEntry.Component.GetFirstArrangement();
             Assert.IsNotNull(arrange);

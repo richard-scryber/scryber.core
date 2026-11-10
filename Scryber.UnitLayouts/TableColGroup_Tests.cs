@@ -100,23 +100,21 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void HTMLCol_ApplyStyleToColumnCell_ColumnOffsetNotSet_Throws()
         {
             var col = new HTMLCol();
             col.Span = 0;
             // ColumnOffset is still -1 (default) - must throw before matching/applying anything.
-            col.ApplyStyleToColumnCell(0, new TableCell());
+            Assert.ThrowsExactly<InvalidOperationException>(() => col.ApplyStyleToColumnCell(0, new TableCell()));
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void HTMLColGroup_ApplyStyleToColumnCell_ColumnOffsetNotSet_Throws()
         {
             var group = new HTMLColGroup();
             group.Span = 0;
-            group.ApplyStyleToColumnCell(0, new TableCell());
+            Assert.ThrowsExactly<InvalidOperationException>(() => group.ApplyStyleToColumnCell(0, new TableCell()));
         }
 
         #endregion

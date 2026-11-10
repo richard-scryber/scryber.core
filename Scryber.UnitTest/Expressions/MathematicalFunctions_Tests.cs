@@ -724,10 +724,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Mathematical")]
-        [ExpectedException(typeof(ExpressiveException))]
         public void Log_NegativeNumber_ThrowsException()
         {
-            EvaluateExpression<double>("log(-1)");
+            Assert.ThrowsExactly<ExpressiveException>(() => EvaluateExpression<double>("log(-1)"));
         }
 
         #endregion
