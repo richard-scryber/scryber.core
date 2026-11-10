@@ -748,6 +748,7 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestCategory("String")]
         public void Format_Currency_FormatsCorrectly()
         {
+            using var culture = new CultureScope("en-US");
             var result = EvaluateExpression<string>("format(1234.56, 'C2')");
             Assert.IsTrue(result.Contains("1,234.56") || result.Contains("1234.56"));
         }
@@ -757,6 +758,7 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestCategory("String")]
         public void Format_Number_FormatsWithDecimals()
         {
+            using var culture = new CultureScope("en-US");
             var result = EvaluateExpression<string>("format(1234.5678, 'N2')");
             Assert.IsTrue(result.Contains("1,234.57") || result.Contains("1234.57"));
         }

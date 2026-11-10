@@ -437,6 +437,7 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestCategory("Conversion")]
         public void String_Double_ConvertsToString()
         {
+            using var culture = new CultureScope("en-US");
             var result = EvaluateExpression<string>("string(3.14)");
             Assert.IsTrue(result.StartsWith("3.14"));
         }
@@ -555,6 +556,7 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestCategory("Conversion")]
         public void Date_WithFormat_MonthName_ParsesCorrectly()
         {
+            using var culture = new CultureScope("en-US");
             // Date with month name
             var result = EvaluateExpression<DateTime>("date('January 15, 2024', 'MMMM dd, yyyy')");
             Assert.AreEqual(new DateTime(2024, 1, 15), result.Date);
@@ -575,6 +577,7 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestCategory("Conversion")]
         public void Date_WithFormat_12HourClock_ParsesCorrectly()
         {
+            using var culture = new CultureScope("en-US");
             // 12-hour clock format with AM/PM
             var result = EvaluateExpression<DateTime>("date('01/15/2024 02:30:00 PM', 'MM/dd/yyyy hh:mm:ss tt')");
             Assert.AreEqual(new DateTime(2024, 1, 15, 14, 30, 0), result);
