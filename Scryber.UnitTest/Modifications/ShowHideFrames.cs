@@ -321,7 +321,7 @@ public class ShowHideFrames
     {
         
         const string ExpressionsPDFPath =
-            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/Scryber.UnitTest/Content/PDFs/Crib%20Sheet%20-%20Expressions.pdf";
         const string TemplateContent = "<html id='inner'>\n" +
                                              "<head>\n    " +
                                              "<title>{@:title}</title>\n" +
@@ -430,7 +430,7 @@ public class ShowHideFrames
     {
         
         const string ExpressionsPDFPath =
-            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/Scryber.UnitTest/Content/PDFs/Crib%20Sheet%20-%20Expressions.pdf";
         const string TemplateContent = "<html id='inner'>\n" +
                                              "<head>\n    " +
                                              "<title>{@:title}</title>\n" +

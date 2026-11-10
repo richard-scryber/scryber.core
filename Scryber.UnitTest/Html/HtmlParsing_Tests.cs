@@ -410,7 +410,7 @@ namespace Scryber.Core.UnitTests.Html
         public void RemoteCssFileLoadingCustomImageHandlerAsync()
         {
             var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
-            var imgsrc = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png"; //parameter for uniqueness
+            var imgsrc = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png"; //parameter for uniqueness
 
             var src = @"<?scryber append-log='true' log-level='Verbose' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
@@ -942,7 +942,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestCategory("Multithreading")]
         public void LocalAndRemoteImages()
         {
-            var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png";
             var client = new System.Net.Http.HttpClient();
             var data = client.GetByteArrayAsync(imagepath).Result;
             
@@ -976,11 +976,11 @@ namespace Scryber.Core.UnitTests.Html
                 var one = doc.SharedResources[img1Index] as PDFImageXObject; //Should be the local image;
                 Assert.IsNotNull(one, "Not an image for the second resouce");
                 Assert.IsTrue(one.Registered);
-                Assert.IsTrue(one.Source.EndsWith("/HTML/images/ScyberLogo2_alpha_small.png"), "Source one '" + one.Source + "' was not correct for the image");
+                Assert.IsTrue(one.Source.EndsWith("/HTML/Images/ScyberLogo2_alpha_small.png"), "Source one '" + one.Source + "' was not correct for the image");
 
                 var two = doc.SharedResources[img2Index] as PDFImageXObject;
                 Assert.IsNotNull(two, "Not an image for the third resource");
-                Assert.IsTrue(two.Source.EndsWith("/docs/images/ScyberLogo2_alpha_small.png"), "Source two '" + two.Source + "' was not correct for the second image");
+                Assert.IsTrue(two.Source.EndsWith("/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png"), "Source two '" + two.Source + "' was not correct for the second image");
 
 
             }
@@ -991,7 +991,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestCategory("Multithreading")]
         public void LocalAndRemoteImagesAsync()
         {
-            var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png";
             var client = new System.Net.Http.HttpClient();
             var data = client.GetByteArrayAsync(imagepath).Result;
 
@@ -1030,11 +1030,11 @@ namespace Scryber.Core.UnitTests.Html
                 var one = doc.SharedResources[img1Index] as PDFImageXObject; //Should be the local image;
                 Assert.IsNotNull(one, "Not an image for the second resouce");
                 Assert.IsTrue(one.Registered);
-                Assert.IsTrue(one.Source.EndsWith("/HTML/images/ScyberLogo2_alpha_small.png"), "Source was not correct for the image");
+                Assert.IsTrue(one.Source.EndsWith("/HTML/Images/ScyberLogo2_alpha_small.png"), "Source was not correct for the image");
 
                 var two = doc.SharedResources[img2Index] as PDFImageXObject;
                 Assert.IsNotNull(two,"Not an image for the third resource");
-                Assert.IsTrue(two.Source.EndsWith("docs/images/ScyberLogo2_alpha_small.png"), "Source was not correct for the second image");
+                Assert.IsTrue(two.Source.EndsWith("/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png"), "Source was not correct for the second image");
 
 
 

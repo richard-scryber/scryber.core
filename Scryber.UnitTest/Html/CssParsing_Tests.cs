@@ -1230,7 +1230,7 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithContentApplied()
         {
-            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png";
 
             var src = @"<?scryber append-log=true ?>
                 <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
@@ -1312,7 +1312,7 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithContentBefore()
         {
-            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png";
             var src = @"<?scryber append-log='false' ?>
                 <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
                     <head>
@@ -1468,7 +1468,7 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithContentAfter()
         {
-            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var imgPath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png";
             var src = @"<!DOCTYPE HTML >
                 <html lang='en' xmlns='http://www.w3.org/1999/xhtml' >
                     <head>
