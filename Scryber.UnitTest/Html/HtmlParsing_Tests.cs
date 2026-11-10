@@ -976,7 +976,7 @@ namespace Scryber.Core.UnitTests.Html
                 var one = doc.SharedResources[img1Index] as PDFImageXObject; //Should be the local image;
                 Assert.IsNotNull(one, "Not an image for the second resouce");
                 Assert.IsTrue(one.Registered);
-                Assert.IsTrue(one.Source.EndsWith("/HTML/Images/ScyberLogo2_alpha_small.png"), "Source one '" + one.Source + "' was not correct for the image");
+                Assert.AreEqual(DocStreams.AssertGetTemplatePath("HTML/Images/ScyberLogo2_alpha_small.png"), one.Source, "Source one was not correct for the image");
 
                 var two = doc.SharedResources[img2Index] as PDFImageXObject;
                 Assert.IsNotNull(two, "Not an image for the third resource");
@@ -1030,7 +1030,7 @@ namespace Scryber.Core.UnitTests.Html
                 var one = doc.SharedResources[img1Index] as PDFImageXObject; //Should be the local image;
                 Assert.IsNotNull(one, "Not an image for the second resouce");
                 Assert.IsTrue(one.Registered);
-                Assert.IsTrue(one.Source.EndsWith("/HTML/Images/ScyberLogo2_alpha_small.png"), "Source was not correct for the image");
+                Assert.AreEqual(DocStreams.AssertGetTemplatePath("HTML/Images/ScyberLogo2_alpha_small.png"), one.Source, "Source was not correct for the image");
 
                 var two = doc.SharedResources[img2Index] as PDFImageXObject;
                 Assert.IsNotNull(two,"Not an image for the third resource");

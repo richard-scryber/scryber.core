@@ -242,7 +242,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual( (project + path).ToLower(), img.Source.ToLower(), "Image source was expected to be " + path);
+                        Assert.AreEqual( System.IO.Path.GetFullPath(project + path).ToLower(), img.Source.ToLower(), "Image source was expected to be " + path);
                         AssertPngImage(img, true, true);
                     }
 
@@ -280,7 +280,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual(System.IO.Path.GetFullPath(project + path), img.Source, "Image source was expected to be " + path);
                         AssertJpgImage(img);
                     }
 
@@ -318,7 +318,7 @@ namespace Scryber.Core.UnitTests.Html
                         
                         var img = (PDFImageXObject) one;
                         AssertGroupImage(img);
-                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual(System.IO.Path.GetFullPath(project + path), img.Source, "Image source was expected to be " + path);
                         AssertPngImage(img, false, true);
                     }
 
@@ -360,7 +360,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual( (project + path).ToLower(), img.Source.ToLower(), "Image source was expected to be " + path);
+                        Assert.AreEqual( System.IO.Path.GetFullPath(project + path).ToLower(), img.Source.ToLower(), "Image source was expected to be " + path);
                         AssertPngImage(img, true, true);
                     }
 
@@ -402,7 +402,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject) one;
                         
                         AssertGroupImage(img);
-                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual(System.IO.Path.GetFullPath(project + path), img.Source, "Image source was expected to be " + path);
                         AssertJpgImage(img);
                     }
 
@@ -493,7 +493,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject)one;
 
                         AssertGroupImage(img);
-                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual(System.IO.Path.GetFullPath(project + path), img.Source, "Image source was expected to be " + path);
                         AssertJpgImage(img);
 
                         var page = _layout.AllPages[0];
@@ -545,7 +545,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject)one;
 
                         AssertGroupImage(img);
-                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual(System.IO.Path.GetFullPath(project + path), img.Source, "Image source was expected to be " + path);
                         AssertJpgImage(img);
 
                         var page = _layout.AllPages[0];
@@ -598,7 +598,7 @@ namespace Scryber.Core.UnitTests.Html
                         var img = (PDFImageXObject)one;
 
                         AssertGroupImage(img);
-                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        Assert.AreEqual(System.IO.Path.GetFullPath(project + path), img.Source, "Image source was expected to be " + path);
                         AssertJpgImage(img);
 
                         var page = _layout.AllPages[0];
