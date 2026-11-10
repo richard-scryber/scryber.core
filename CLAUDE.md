@@ -990,7 +990,7 @@ Complete reference for the template expression system:
 ### Further Reading
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Deep dive into internal architecture, pipeline stages, and component system
-- **[Scryber Documentation](https://scrybercore.readthedocs.io/)** - Official documentation with examples
+- **[Scryber Documentation](https://paperwork.help/paperwork.core)** - Official documentation with examples
 - **[GitHub Samples](https://github.com/richard-scryber/scryber.core.samples)** - Working examples and templates
 - **[Learning Documentation](./docs/learning/)** - Tutorials and conceptual articles
 - **[Reference Documentation](./docs/reference/)** - Complete technical reference:
