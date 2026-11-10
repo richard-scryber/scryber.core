@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.9.0
+    <PackageReleaseNotes>Next release (not yet versioned)
+Fixed: an image or inline block with vertical-align: baseline after one with another alignment (e.g. top) on the same line moved the text of the line down to the bottom of the line. Baseline items no longer change the alignment of the line.
+
+9.9.0
 Breaking change: a css transform no longer changes the layout. A transformed element keeps its place and space in the flow (it was taken out as position: absolute, and its space was resized to the transformed bounds), and is drawn transformed around the centre of its own border box. Before, the centre was worked out from the wrong place, so a rotated element (e.g. rotate(-90deg)) was drawn away from where it should be. A relative element is moved by its left and top, then transformed around its moved centre. An absolute or fixed element stays absolute or fixed.
 New: the transform-origin css property, with keywords (left, center, right, top, bottom), lengths and percentages. Percentages are of the element's own border box.
 Breaking change: translate() percentages are of the element's own border box (they were of the containing block), so translate(-50%, -50%) centres an element on its position.

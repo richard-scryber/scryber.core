@@ -444,7 +444,9 @@ namespace Scryber.PDF.Layout
                     rect.X = currWidth;
                     blockRun.Region.TotalBounds = rect;
 
-                    if (blockRun.PositionOptions.VAlign.HasValue)
+                    //baseline is the default for the line, so only another alignment changes it
+                    //(otherwise a baseline item after a top aligned one moves the line content down)
+                    if (blockRun.PositionOptions.VAlign.HasValue && blockRun.PositionOptions.VAlign.Value != VerticalAlignment.Baseline)
                         valign = blockRun.PositionOptions.VAlign.Value;
 
                     //pick the first vertical alignment for the line.
@@ -468,7 +470,8 @@ namespace Scryber.PDF.Layout
                     isComplex = true;
 
                     //any component valign is for the component, not the outer line.
-                    if (compRun.PositionOptions.VAlign.HasValue) // && !valign.HasValue)
+                    //baseline is the default, so only another alignment changes the line
+                    if (compRun.PositionOptions.VAlign.HasValue && compRun.PositionOptions.VAlign.Value != VerticalAlignment.Baseline)
                         valign = compRun.PositionOptions.VAlign.Value;
 
                     if (!compRun.PositionOptions.VAlign.HasValue ||
@@ -488,7 +491,8 @@ namespace Scryber.PDF.Layout
                 {
                     isComplex = true;
 
-                    if (xobjRun.PositionOptions.VAlign.HasValue) // && !valign.HasValue)
+                    //baseline is the default, so only another alignment changes the line
+                    if (xobjRun.PositionOptions.VAlign.HasValue && xobjRun.PositionOptions.VAlign.Value != VerticalAlignment.Baseline)
                         valign = xobjRun.PositionOptions.VAlign.Value;
                 }
                 else if (run is PDFLayoutPositionedRegionRun posRun)
