@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>Next release (not yet versioned)
 Fixed: text that carries on from the line before onto a line with a taller image or inline block on the baseline was drawn too high - above the baseline of the image, and the text after it. It is now on the same baseline.
+Fixed: fonts whose licence flags combine restricted with preview and print or editable embedding (e.g. 0x0006, as many system fonts like Gill Sans) were not embedded, so a viewer drew another font. The least restrictive flag is used, as the OpenType specification says. With Scryber.Core.OpenType 9.7.5 a font from a collection (.ttc) is embedded as a valid font of its own.
 
 9.9.1
 Fixed: an image or inline block with vertical-align: baseline after one with another alignment (e.g. top) on the same line moved the text of the line down to the bottom of the line. Baseline items no longer change the alignment of the line.

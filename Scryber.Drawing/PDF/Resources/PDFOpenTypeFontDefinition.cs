@@ -1004,19 +1004,33 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         private static bool IsEmbeddable(OpenType.SubTables.OS2Table os2)
         {
-            
-            if (os2.FSType == Scryber.OpenType.FontRestrictions.InstallableEmbedding)
-                return true;
-            else if ((os2.FSType & Scryber.OpenType.FontRestrictions.NoEmbedding) > 0)
-                return false;
-            else if ((os2.FSType & Scryber.OpenType.FontRestrictions.PreviewPrintEmbedding) > 0 ||
-                     (os2.FSType & Scryber.OpenType.FontRestrictions.EditableEmbedding) > 0)
-                return true;
-            else
-                return false;
+            return IsEmbeddable(os2.FSType);
 
         }
         
+        #endregion
+
+        #region internal static bool IsEmbeddable(FontRestrictions fsType)
+
+        /// <summary>
+        /// Returns true if the os2 fsType flags allow the font outlines to be embedded in a document.
+        /// The usage permission bits (0-3) can be combined, and the least restrictive one applies
+        /// (e.g. 0x0006, restricted and preview and print, is preview and print - as many system fonts).
+        /// A font that only allows its bitmaps to be embedded cannot have the outlines embedded.
+        /// </summary>
+        internal static bool IsEmbeddable(Scryber.OpenType.FontRestrictions fsType)
+        {
+            if ((fsType & Scryber.OpenType.FontRestrictions.BitmapEmbedding) > 0)
+                return false;
+
+            if ((fsType & Scryber.OpenType.FontRestrictions.EditableEmbedding) > 0 ||
+                (fsType & Scryber.OpenType.FontRestrictions.PreviewPrintEmbedding) > 0)
+                return true;
+
+            //installable (no usage bits) is the least restrictive, only restricted licence embedding is not allowed
+            return (fsType & Scryber.OpenType.FontRestrictions.NoEmbedding) == 0;
+        }
+
         #endregion
         
     }

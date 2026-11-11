@@ -835,16 +835,7 @@ namespace Scryber.PDF.Resources
         private static bool IsEmbeddable(Scryber.OpenType.TTFFile ttf)
         {
             Scryber.OpenType.SubTables.OS2Table os2 = ttf.Tables.WindowsMetrics;
-
-            if (os2.FSType == Scryber.OpenType.FontRestrictions.InstallableEmbedding)
-                return true;
-            else if ((os2.FSType & Scryber.OpenType.FontRestrictions.NoEmbedding) > 0)
-                return false;
-            else if ((os2.FSType & Scryber.OpenType.FontRestrictions.PreviewPrintEmbedding) > 0 ||
-                     (os2.FSType & Scryber.OpenType.FontRestrictions.EditableEmbedding) > 0)
-                return true;
-            else
-                return false;
+            return PDFOpenTypeFontDefinition.IsEmbeddable(os2.FSType);
 
         }
 
