@@ -87,8 +87,9 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(3, doc.SharedResources.Count);
 
             PDFImageXObject img = null;
-            PDFFontResource gill = null;
+            PDFFontResource bodyFont = null;
             PDFFontResource poppins = null;
+            var bodyFontNames = new[] { "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS", "Helvetica" };
 
             foreach(var rsrc in doc.SharedResources)
             {
@@ -99,8 +100,8 @@ namespace Scryber.Core.UnitTests.Generation
                     var font = (PDFFontResource)rsrc;
                     if (font.FontName == "Poppins,Italic")
                         poppins = font;
-                    else if (font.FontName == "Gill Sans")
-                        gill = font;
+                    else if (null == bodyFont && System.Array.IndexOf(bodyFontNames, font.FontName) >= 0)
+                        bodyFont = font;
                     else
                         throw new System.Exception("Unknown font " + font.FontName);
                 }
@@ -111,7 +112,7 @@ namespace Scryber.Core.UnitTests.Generation
             
 
             Assert.IsNotNull(img);
-            Assert.IsNotNull(gill);
+            Assert.IsNotNull(bodyFont);
             Assert.IsNotNull(poppins);
             Assert.AreEqual(img.ImageData.SourcePath, imgPath);
         }

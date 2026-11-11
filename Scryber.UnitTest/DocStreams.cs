@@ -69,7 +69,7 @@ namespace Scryber.Core.UnitTests
         public static string GetTemplatePath(string relativePath)
         {
             var projectDir = GetTestProjectDirectory();
-            var contentPath = Path.Combine(projectDir, "Content", relativePath);
+            var contentPath = Path.GetFullPath(Path.Combine(projectDir, "Content", relativePath));
             
             if (!File.Exists(contentPath))
                 throw new FileNotFoundException($"Template file not found: {contentPath}", contentPath);
@@ -100,7 +100,7 @@ namespace Scryber.Core.UnitTests
         public static string GetTemplateDirectory(string relativePath)
         {
             var projectDir = GetTestProjectDirectory();
-            var contentPath = Path.Combine(projectDir, "Content", relativePath);
+            var contentPath = Path.GetFullPath(Path.Combine(projectDir, "Content", relativePath));
             
             if (!Directory.Exists(contentPath))
                 throw new DirectoryNotFoundException($"Template directory not found: {contentPath}");
