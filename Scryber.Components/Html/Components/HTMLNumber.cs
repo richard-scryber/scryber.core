@@ -67,6 +67,17 @@ namespace Scryber.Html.Components
             set=> base.Value = value; 
         }
 
+        /// <summary>
+        /// The value attribute is the same as data-value (as the html data, meter and progress elements),
+        /// so &lt;num value='12.5' /&gt; is not read as zero.
+        /// </summary>
+        [PDFAttribute("value")]
+        public double ValueAttribute
+        {
+            get => this.Value;
+            set => this.Value = value;
+        }
+
 
         public HTMLNumber() : this(HTMLObjectTypes.Number)
         {

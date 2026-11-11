@@ -62,6 +62,33 @@ namespace Scryber.Core.UnitTests.Html
             _layoutcontext = (PDFLayoutContext)args.Context;
         }
 
+        /// <summary>
+        /// Saves the document to the named output file, and returns the pdf data to check
+        /// </summary>
+        private static byte[] SaveAndGetData(Document doc, string outputName)
+        {
+            byte[] data;
+            using (var ms = new MemoryStream())
+            {
+                doc.SaveAsPDF(ms);
+                data = ms.ToArray();
+            }
+            using (var stream = DocStreams.GetOutputStream(outputName))
+                stream.Write(data, 0, data.Length);
+            return data;
+        }
+
+        private static string TextOf(byte[] data)
+        {
+            return Scryber.Core.UnitTests.Generation.PanelContent_Tests.TextOf(data);
+        }
+
+        private static int PageCountOf(byte[] data)
+        {
+            var all = System.Text.Encoding.Latin1.GetString(data);
+            return Regex.Matches(all, @"/Type\s*/Page[^s]").Count;
+        }
+
         
 
         
@@ -172,13 +199,17 @@ namespace Scryber.Core.UnitTests.Html
 
                 doc.Styles.Add(defn);
 
-                using (var stream = DocStreams.GetOutputStream("HtmlFromSource.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
+                var data = SaveAndGetData(doc, "HtmlFromSource.pdf");
 
-            Assert.Inconclusive();
+                //the font family is a system font list (Gill Sans, Calibri, Trebuchet MS ...), whichever is found
+                //must be embedded - a true type font without its font program is drawn as another font
+                var all = System.Text.Encoding.Latin1.GetString(data);
+                var descriptors = Regex.Matches(all, @"/Type\s*/FontDescriptor[^>]*>>");
+                Assert.IsTrue(descriptors.Count > 0, "No font descriptors");
+                foreach (Match m in descriptors)
+                    Assert.IsTrue(m.Value.Contains("/FontFile2"), "Font not embedded: " + m.Value);
+                Assert.AreEqual(1, PageCountOf(data));
+            }
         }
 
         [TestMethod()]
@@ -188,13 +219,15 @@ namespace Scryber.Core.UnitTests.Html
             using (var doc = Document.ParseDocument(path))
             {
                 
-                using (var stream = DocStreams.GetOutputStream("HelloWorld.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
+                var data = SaveAndGetData(doc, "HelloWorld.pdf");
+                var text = TextOf(data);
 
-            Assert.Inconclusive();
+                //the entities are written out, and the append-log instruction adds the trace log pages
+                Assert.IsTrue(text.Contains("<\u2018Inside\u2019>") || text.Contains("<\x91Inside\x92>"), text);
+                Assert.IsTrue(text.Contains("Trace Output"), "No trace log appended");
+                Assert.IsTrue(PageCountOf(data) > 1, "No trace log pages");
+                Assert.IsTrue(System.Text.Encoding.Latin1.GetString(data).Contains("/Subtype /Image"), "No image");
+            }
         }
 
 
@@ -1862,16 +1895,16 @@ namespace Scryber.Core.UnitTests.Html
                 };
                 doc.Params["model"] = model;
 
-                using (var stream = DocStreams.GetOutputStream("Html5AllTags.pdf"))
-                {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
+                doc.LayoutComplete += DocumentParsing_Layout;
+                var data = SaveAndGetData(doc, "Html5AllTags.pdf");
+                var text = TextOf(data);
 
-                }
-
+                //header and footer on both pages, the section starts a new page
+                Assert.AreEqual(2, PageCountOf(data));
+                Assert.AreEqual(2, Regex.Matches(text, "This is the footer").Count, text);
+                Assert.IsTrue(text.Contains("This is the headerMain content headerMain content areaMain content footerThis is the footer"), text);
+                Assert.IsTrue(text.Contains("This is the headerMain section headerThis is the headerThis is the body This is after the imagesThis is the footer"), text);
             }
-
-            Assert.Inconclusive();
 
         }
 
@@ -2998,10 +3031,34 @@ namespace Scryber.Core.UnitTests.Html
                 currencyFormat = "£##0.00"
             };
             
+            byte[] data;
+            using (var ms = new MemoryStream())
+            {
+                doc.SaveAsPDF(ms);
+                data = ms.ToArray();
+            }
             using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
-                doc.SaveAsPDF(stream);
+                stream.Write(data, 0, data.Length);
 
-            Assert.Inconclusive();
+            //the template uses <num value='...' /> - the value attribute is the same as data-value
+            var text = Scryber.Core.UnitTests.Generation.PanelContent_Tests.TextOf(data);
+            var fmt = "£##0.00";
+
+            Assert.IsTrue(text.Contains("3 items for Mr Richard Smith"), text);
+            Assert.IsTrue(text.Contains("Dear Mr Smith,"), text);
+
+            //unit prices and line totals
+            Assert.IsTrue(text.Contains(12.5.ToString(fmt)), "Widget price: " + text);
+            Assert.IsTrue(text.Contains(25.0.ToString(fmt)), "Widget total: " + text);
+            Assert.IsTrue(text.Contains(1.5.ToString(fmt)), "Sprogget price: " + text);
+            Assert.IsTrue(text.Contains(6.0.ToString(fmt)), "Sprogget total: " + text);
+            Assert.IsTrue(text.Contains(8.0.ToString(fmt)), "Bolts total: " + text);
+
+            //total, vat at 20% and grand total
+            Assert.IsTrue(text.Contains("Total (ex VAT)" + 39.0.ToString(fmt)), "Total: " + text);
+            Assert.IsTrue(text.Contains("VAT" + 7.8.ToString(fmt)), "VAT: " + text);
+            Assert.IsTrue(text.Contains("Grand Total" + 46.8.ToString(fmt)), "Grand total: " + text);
+            Assert.IsFalse(text.Contains(0.0.ToString(fmt)), "A zero price: " + text);
         }
 
         
@@ -3174,15 +3231,10 @@ namespace Scryber.Core.UnitTests.Html
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
                     doc.Params["model"] = data;
-                    using (var stream = DocStreams.GetOutputStream("PageNumbers.pdf"))
-                    {
-                        doc.SaveAsPDF(stream);
-                    }
-
+                    var pdf = SaveAndGetData(doc, "PageNumbers.pdf");
+                    Assert.AreEqual("Page 1 of 1.", TextOf(pdf).Trim());
                 }
             }
-
-            Assert.Inconclusive();
         }
 
         private PDFLayoutDocument _layout;
@@ -3217,14 +3269,14 @@ namespace Scryber.Core.UnitTests.Html
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
                     doc.Params["model"] = model;
-                    using (var stream = DocStreams.GetOutputStream("JeroemTest2.pdf"))
-                    {
-                        doc.SaveAsPDF(stream);
-                    }
+                    var data = SaveAndGetData(doc, "JeroemTest2.pdf");
+                    var text = TextOf(data);
+
+                    //the code behind events, then the bound items repeated in both columns
+                    Assert.IsTrue(text.Contains("We are initializedWe have loadedWe are bindingWe have boundWe are laying out"), text);
+                    Assert.IsTrue(text.Contains("PlanePlaneShipShipCarCar"), text);
                 }
             }
-
-            Assert.Inconclusive();
         }
 
 
@@ -3249,7 +3301,10 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            //Compared with Chrome (November 2026) this bootstrap style invoice is not right yet - part of the layout review:
+            //the first page is empty, the seller and buyer columns are missing, the polish characters from the
+            //google font (latin-ext unicode-range) are left out, the h2 is drawn in courier, and the totals overlap the account number.
+            Assert.Inconclusive("The bootstrap style invoice does not match the browser layout yet - see the comments");
         }
 
     }
