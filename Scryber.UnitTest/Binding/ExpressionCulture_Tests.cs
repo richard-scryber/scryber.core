@@ -76,5 +76,38 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.AreEqual("1,50 ", Render("<p>{{string(1.5, 'N2')}}</p>", Model, Dutch));
             Assert.AreEqual("1.50 ", Render("<p>{{string(1.5, 'N2')}}</p>", Model, "en-GB"));
         }
+
+        private const string German = "de-DE";
+
+        [TestMethod]
+        public void ExpressionCulture_05_DateWithFormat_ReadsTheCurrentCultureThenInvariant()
+        {
+            const string iso = "<p>{{string(date(model.d, model.f), 'yyyy-MM-dd HH:mm')}}</p>";
+
+            //the current culture first
+            Assert.AreEqual("2024-01-15 00:00 ", Render(iso, new { d = "15. Januar 2024", f = "dd. MMMM yyyy" }, German), "German month name");
+
+            //then invariant - English month names and AM/PM are read on any machine
+            Assert.AreEqual("2024-01-15 00:00 ", Render(iso, new { d = "January 15, 2024", f = "MMMM dd, yyyy" }, German), "English month name");
+            Assert.AreEqual("2024-01-15 14:30 ", Render(iso, new { d = "01/15/2024 02:30:00 PM", f = "MM/dd/yyyy hh:mm:ss tt" }, German), "AM/PM");
+            Assert.AreEqual("2024-01-15 00:00 ", Render(iso, new { d = "January 15, 2024", f = "MMMM dd, yyyy" }, "en-US"), "English in English");
+
+            //the current culture is not changed for the invariant one, a German name is not read in English
+            Assert.AreEqual("", Render("<p>{{ifError(string(date(model.d, model.f), 'yyyy'), '')}}</p>", new { d = "15. Januar 2024", f = "dd. MMMM yyyy" }, "en-US").Trim(), "German in English");
+        }
+
+        [TestMethod]
+        public void ExpressionCulture_06_DateWithoutFormat_ReadsTheCurrentCultureThenInvariant()
+        {
+            const string iso = "<p>{{string(date(model.d), 'yyyy-MM-dd')}}</p>";
+
+            Assert.AreEqual("2024-03-15 ", Render(iso, new { d = "2024-03-15T00:00:00" }, German), "ISO in German");
+            Assert.AreEqual("2024-03-15 ", Render(iso, new { d = "15.03.2024" }, German), "German short date");
+            Assert.AreEqual("2024-01-15 ", Render(iso, new { d = "January 15, 2024" }, German), "English text in German");
+
+            //a date that reads in the current culture is not changed (day first in German)
+            Assert.AreEqual("2024-02-01 ", Render(iso, new { d = "01/02/2024" }, German), "day first in German");
+            Assert.AreEqual("2024-01-02 ", Render(iso, new { d = "01/02/2024" }, "en-US"), "month first in English");
+        }
     }
 }

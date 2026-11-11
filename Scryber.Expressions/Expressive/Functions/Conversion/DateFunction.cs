@@ -32,6 +32,14 @@ namespace Scryber.Expressive.Functions.Conversion
 
                 if (format is string formatString)
                 {
+                    //read in the current culture (e.g. 'Januar' for de-DE), then the invariant culture
+                    //so English month and day names and AM/PM are still read on any machine or browser.
+                    if (DateTime.TryParseExact(dateString, formatString, context.CurrentCulture, DateTimeStyles.None, out var parsed))
+                        return parsed;
+                    if (DateTime.TryParseExact(dateString, formatString, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                        return parsed;
+
+                    //neither, so fail with the error for the current culture
                     return DateTime.ParseExact(dateString, formatString, context.CurrentCulture);
                 }
             }
@@ -55,6 +63,15 @@ namespace Scryber.Expressive.Functions.Conversion
                 var date = EpochDate;
                 date = date.Add(timespan);
                 return date;
+            }
+
+            //text without a format is read in the current culture, then the invariant culture
+            if (objectToConvert is string text)
+            {
+                if (DateTime.TryParse(text, context.CurrentCulture, DateTimeStyles.None, out var parsed))
+                    return parsed;
+                if (DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                    return parsed;
             }
 
             return Convert.ToDateTime(objectToConvert, context.CurrentCulture);

@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>Next release (not yet versioned)
 Fixed: an image or inline block with vertical-align: baseline after one with another alignment (e.g. top) on the same line moved the text of the line down to the bottom of the line. Baseline items no longer change the alignment of the line.
+Changed: date() reads text in the current culture first, then the invariant culture, so English month and day names and AM/PM are read on any machine or browser (e.g. date('January 15, 2024', 'MMMM dd, yyyy') under de-DE). Text that reads in the current culture is read the same as before.
 
 9.9.0
 Breaking change: a css transform no longer changes the layout. A transformed element keeps its place and space in the flow (it was taken out as position: absolute, and its space was resized to the transformed bounds), and is drawn transformed around the centre of its own border box. Before, the centre was worked out from the wrong place, so a rotated element (e.g. rotate(-90deg)) was drawn away from where it should be. A relative element is moved by its left and top, then transformed around its moved centre. An absolute or fixed element stays absolute or fixed.
