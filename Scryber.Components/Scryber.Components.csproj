@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.9.1
+    <PackageReleaseNotes>Next release (not yet versioned)
+Fixed: text that carries on from the line before onto a line with a taller image or inline block on the baseline was drawn too high - above the baseline of the image, and the text after it. It is now on the same baseline.
+
+9.9.1
 Fixed: an image or inline block with vertical-align: baseline after one with another alignment (e.g. top) on the same line moved the text of the line down to the bottom of the line. Baseline items no longer change the alignment of the line.
 Changed: date() reads text in the current culture first, then the invariant culture, so English month and day names and AM/PM are read on any machine or browser (e.g. date('January 15, 2024', 'MMMM dd, yyyy') under de-DE). Text that reads in the current culture is read the same as before.
 

@@ -2880,7 +2880,11 @@ namespace Scryber.UnitLayouts
             
             newLine = line.Runs[2] as PDFTextRunNewLine;
             Assert.IsNotNull(newLine);
-            Assert.AreEqual(100, newLine.NewLineOffset.Height); // - goes to the taller line with the images on. Currently a fail for the offset
+            //goes from the baseline of this line to the baseline of the taller line with the images on (the bottom of the large image)
+            //so the space below this baseline (half the leading and the descender) plus the 100pt image
+            var textOpts = begin.TextRenderOptions;
+            var belowBaseline = (textOpts.GetLineHeight() - (textOpts.GetAscent() + textOpts.GetDescender())) / 2 + textOpts.GetDescender();
+            Assert.AreEqual(100 + belowBaseline, newLine.NewLineOffset.Height);
             Assert.AreEqual(0, newLine.NewLineOffset.Width);
 
             top += 50;
@@ -2909,7 +2913,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             
 
-            top += 100; //line offset - needs adjustment
+            top += 100 + belowBaseline; //the text is on the baseline of the large image, as the text after it
             //Third arrangement 
             CheckRenderBounds(begin.Owner, 3, 30, top, chars.Width, height, ensureIsLast : true);
 
@@ -2989,9 +2993,6 @@ namespace Scryber.UnitLayouts
             width = chars.Width;
             height = begin.TextRenderOptions.GetSize() * 1.2;
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
-            
-            
-            Assert.Inconclusive("Need to fix the vertical offset of the 4th line to the baseline of the large image");
             
         }
         

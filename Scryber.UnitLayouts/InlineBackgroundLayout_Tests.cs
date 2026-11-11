@@ -1028,7 +1028,19 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
 
 
-            Assert.Inconclusive("There is an offset on the left for returns with the padding - this should be pushed right.");
+            //the line after the double return has no inset from the span padding (that is only before the first line)
+            //and, as right aligned, ends at the right of the block
+            var afterBlank = lcontent.Columns[0].Contents[4] as PDFLayoutLine;
+            Assert.IsNotNull(afterBlank);
+            var afterSpacer = afterBlank.Runs[0] as PDFTextRunSpacer;
+            Assert.IsNotNull(afterSpacer);
+            Assert.AreEqual(Unit.Zero, afterSpacer.Width, "inset after the double return");
+            var afterChars = afterBlank.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(afterChars);
+            Assert.IsTrue(afterChars.Characters.StartsWith("and will show"), afterChars.Characters);
+            //(a right aligned line is pushed across by its RightInset)
+            Assert.AreEqual(HorizontalAlignment.Right, afterBlank.HAlignment);
+            Assert.AreEqual(lcontent.Width.PointsValue, (afterBlank.RightInset + afterBlank.Width).PointsValue, 0.001, "right of the line after the double return");
         }
 
         
@@ -1309,7 +1321,16 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
 
 
-            Assert.Inconclusive("With a single return the output is OK. With a double return the offset is not reset.");
+            //the line after the double return starts at the left of the block, the offset is reset
+            var afterBlank = lcontent.Columns[0].Contents[4] as PDFLayoutLine;
+            Assert.IsNotNull(afterBlank);
+            var afterSpacer = afterBlank.Runs[0] as PDFTextRunSpacer;
+            Assert.IsNotNull(afterSpacer);
+            Assert.AreEqual(Unit.Zero, afterSpacer.Width, "inset after the double return");
+            var afterChars = afterBlank.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(afterChars);
+            Assert.IsTrue(afterChars.Characters.StartsWith("and will show"), afterChars.Characters);
+            Assert.AreEqual(Unit.Zero, afterBlank.OffsetX, "left of the line after the double return");
         }
 
     }

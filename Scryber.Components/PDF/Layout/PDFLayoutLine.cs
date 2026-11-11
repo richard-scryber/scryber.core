@@ -701,7 +701,7 @@ namespace Scryber.PDF.Layout
                     {
                         var prev = spacer.PreviousNewLine;
                         var offset = prev.NewLineOffset;
-                        var btob = prev.Line.BaseLineToBottom;
+                        var btob = GetBaseLineToBottom(prev);
 
                         // if (hasBaseLineComponents)
                         //     btob += ((prev.TextOptions.GetLineHeight() - prev.TextOptions.GetSize()) / 2) +
@@ -797,6 +797,25 @@ namespace Scryber.PDF.Layout
                 }
                 
             }
+        }
+
+        /// <summary>
+        /// Gets the space below the baseline of the line a new line run ends.
+        /// A line that only carries on text from an earlier line (it starts with the spacer after a return and
+        /// has no text begin or end) never sets its BaseLineToBottom, so this is worked out from the text options
+        /// of the return - half the leading plus the descender - as AddRun does for a text begin.
+        /// </summary>
+        private static Unit GetBaseLineToBottom(PDFTextRunNewLine newLine)
+        {
+            var line = newLine.Line;
+            if (line.BaseLineToBottom > Unit.Zero || null == newLine.TextOptions)
+                return line.BaseLineToBottom;
+
+            var options = newLine.TextOptions;
+            var ascent = options.GetAscent();
+            var descent = options.GetDescender();
+            var halfLead = (options.GetLineHeight() - (ascent + descent)) / 2;
+            return halfLead + descent;
         }
 
         private bool PrevLineIsTextReturn(out PDFTextRunNewLine prev)
