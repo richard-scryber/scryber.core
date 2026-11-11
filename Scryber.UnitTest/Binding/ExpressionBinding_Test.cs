@@ -705,6 +705,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindHtmlWithEscapes()
         {
+            using var culture = new CultureScope("en-US");
             var withEscapes = @"<html>
   <body>
     <table id='tbl' class='expressions escaped'>

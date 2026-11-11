@@ -64,6 +64,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void Constants_StillWork_WhenNotAfterADot()
         {
+            using var culture = new CultureScope("en-US");
             var text = Render("<p>{{round(pi, 2)}}</p><p>{{round(e, 2)}}</p><p>{{if(true, 'yes', 'no')}}</p><p>{{null ?? 'default'}}</p>", new { });
             Assert.AreEqual("3.142.72yesdefault ", text);
         }

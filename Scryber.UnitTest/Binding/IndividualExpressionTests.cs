@@ -263,6 +263,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void IfErrorFunctionTest()
         {
+            using var culture = new CultureScope("en-US");
             
             var content = GetContent("iferror(model['notset'], model.number)");
             using var stream = new System.IO.StringReader(content);
@@ -317,6 +318,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void AverageOfArrayFunctionTest()
         {
+            using var culture = new CultureScope("en-US");
             
             var content = GetContent("averageof(model.days, length(.))");
             using var stream = new System.IO.StringReader(content);
@@ -371,6 +373,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void MaxItemsFunctionTest()
         {
+            using var culture = new CultureScope("en-US");
             
             var content = GetContent("max(10, 13.4, null, 12, 11)");
             using var stream = new System.IO.StringReader(content);
@@ -425,6 +428,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void MedianMixedArrayFunctionTest()
         {
+            using var culture = new CultureScope("en-US");
             
             var content = GetContent("median(9, model.array, 13, 101)");
             using var stream = new System.IO.StringReader(content);
