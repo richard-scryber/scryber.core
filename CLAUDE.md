@@ -1715,7 +1715,7 @@ Expression types:
 - Array indexing: `{{model.items[0]}}`
 - Functions: `{{concat(model.first, ' ', model.last)}}`
 - Math: `{{model.price * 1.1}}`
-- Conditionals: `{{model.age > 18 ? 'Adult' : 'Minor'}}`
+- Conditionals: `{{if(model.age > 18, 'Adult', 'Minor')}}` (the `? :` ternary operator is not supported - use `if()`)
 
 ### Handlebars Helper Implementation
 
