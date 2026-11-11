@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.9.0</PackageVersion>
+    <PackageVersion>9.9.1</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,7 @@
     <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>Next release (not yet versioned)
+    <PackageReleaseNotes>9.9.1
 Fixed: an image or inline block with vertical-align: baseline after one with another alignment (e.g. top) on the same line moved the text of the line down to the bottom of the line. Baseline items no longer change the alignment of the line.
 Changed: date() reads text in the current culture first, then the invariant culture, so English month and day names and AM/PM are read on any machine or browser (e.g. date('January 15, 2024', 'MMMM dd, yyyy') under de-DE). Text that reads in the current culture is read the same as before.
 
@@ -294,7 +294,7 @@ Paperwork.Core is its successor and the recommended package for new projects. It
 Scryber.Core still works as it always has, and will continue to be maintained and supported. It is released under the LGPL licence, so you can use it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.9.0.0</Version>
+    <Version>9.9.1.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
