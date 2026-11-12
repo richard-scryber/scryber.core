@@ -785,6 +785,7 @@ namespace Scryber.Expressive.Tokenisation
                 case ('/'):
                 case ('%'):
                 case ('^'):
+                case (':'): // the false part of the conditional a ? b : c
                     length = 1;
                     return true;
                 case ('&'):
@@ -796,7 +797,12 @@ namespace Scryber.Expressive.Tokenisation
                 case ('!'):
                     if(IsAllowedSecondOperatorChar(expression, index +1, expression[index]))
                     {
-                        length = 2;
+                        // === and !== are read as == and != (the strict forms from javascript)
+                        if ((expression[index] == '=' || expression[index] == '!') && expression[index + 1] == '='
+                            && index + 2 < expression.Length && expression[index + 2] == '=')
+                            length = 3;
+                        else
+                            length = 2;
                         return true;
                     }
                     else

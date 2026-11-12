@@ -8,7 +8,7 @@ namespace Scryber.Expressive.Operators.Relational
     {
         #region OperatorBase Members
 
-        public override IEnumerable<string> Tags => new[] { "!=", "<>" };
+        public override IEnumerable<string> Tags => new[] { "!=", "<>", "!==" };
 
         public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {

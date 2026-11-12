@@ -85,7 +85,18 @@ namespace Scryber.Expressive
             {
                 throw new ArgumentNullException(nameof(tokens), "You must call Tokenise before compiling");
             }
-            
+
+            // The conditional (ternary) operator has the lowest precedence of all, so a whole expression
+            // (or a whole parenthesised group or function parameter) is split on its first top level '?'
+            if (minimumPrecedence == OperatorPrecedence.Minimum
+                && TrySplitConditional(tokens, out var condition, out var whenTrue, out var whenFalse))
+            {
+                return new ConditionalExpression(
+                    this.CompileExpression(condition, OperatorPrecedence.Minimum, variables, isWithinFunction),
+                    this.CompileExpression(whenTrue, OperatorPrecedence.Minimum, variables, isWithinFunction),
+                    this.CompileExpression(whenFalse, OperatorPrecedence.Minimum, variables, isWithinFunction));
+            }
+
             IExpression leftHandSide = null;
             var currentToken = tokens.PeekOrDefault();
             Token previousToken = null;
@@ -343,6 +354,115 @@ namespace Scryber.Expressive
             }
 
             return leftHandSide;
+        }
+
+        private const string ConditionalTrueToken = "?";
+        private const string ConditionalFalseToken = ":";
+
+        /// <summary>
+        /// If the tokens contain a '?' outside any brackets, then all the tokens are taken from the queue and split
+        /// into the condition, the true part (up to the matching ':') and the false part (the rest).
+        /// A conditional in the true part must have its own ':' (a ? b ? c : d : e), and one in the false part is
+        /// compiled from the false part, so a chain (a ? b : c ? d : e) reads from the right.
+        /// </summary>
+        private static bool TrySplitConditional(Queue<Token> tokens, out Queue<Token> condition, out Queue<Token> whenTrue, out Queue<Token> whenFalse)
+        {
+            condition = null;
+            whenTrue = null;
+            whenFalse = null;
+
+            var depth = 0;
+            var found = false;
+            foreach (var token in tokens)
+            {
+                if (IsOpenBracket(token))
+                    depth++;
+                else if (IsCloseBracket(token))
+                    depth--;
+                else if (depth == 0 && token.CurrentToken == ConditionalTrueToken)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                return false;
+
+            var all = tokens.ToArray();
+            tokens.Clear();
+
+            condition = new Queue<Token>();
+            whenTrue = new Queue<Token>();
+            whenFalse = new Queue<Token>();
+
+            var index = 0;
+            depth = 0;
+            Token question = null;
+            for (; index < all.Length; index++)
+            {
+                var token = all[index];
+                if (IsOpenBracket(token))
+                    depth++;
+                else if (IsCloseBracket(token))
+                    depth--;
+                else if (depth == 0 && token.CurrentToken == ConditionalTrueToken)
+                {
+                    question = token;
+                    index++;
+                    break;
+                }
+                condition.Enqueue(token);
+            }
+
+            var nested = 0;
+            Token colon = null;
+            for (; index < all.Length; index++)
+            {
+                var token = all[index];
+                if (IsOpenBracket(token))
+                    depth++;
+                else if (IsCloseBracket(token))
+                    depth--;
+                else if (depth == 0 && token.CurrentToken == ConditionalTrueToken)
+                    nested++;
+                else if (depth == 0 && token.CurrentToken == ConditionalFalseToken)
+                {
+                    if (nested == 0)
+                    {
+                        colon = token;
+                        index++;
+                        break;
+                    }
+                    nested--;
+                }
+                whenTrue.Enqueue(token);
+            }
+
+            if (null == colon)
+                throw new MissingTokenException("Missing token, expecting ':' after the '?' at index " + question.StartIndex + ".", ':');
+
+            for (; index < all.Length; index++)
+                whenFalse.Enqueue(all[index]);
+
+            if (condition.Count == 0)
+                throw new MissingParticipantException("The condition before the '?' at index " + question.StartIndex + " is missing.");
+            if (whenTrue.Count == 0)
+                throw new MissingParticipantException("The value between the '?' at index " + question.StartIndex + " and the ':' is missing.");
+            if (whenFalse.Count == 0 || (whenFalse.Count == 1 && whenFalse.Peek().CurrentToken == ExpressionContext.ParameterSeparator.ToString()))
+                throw new MissingParticipantException("The value after the ':' at index " + colon.StartIndex + " is missing.");
+
+            return true;
+        }
+
+        private static bool IsOpenBracket(Token token)
+        {
+            return token.CurrentToken == "(" || token.CurrentToken == "[";
+        }
+
+        private static bool IsCloseBracket(Token token)
+        {
+            return token.CurrentToken == ")" || token.CurrentToken == "]";
         }
 
         private bool IsFollowedBy(string expression, Token token, char character)

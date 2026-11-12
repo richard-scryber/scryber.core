@@ -321,6 +321,8 @@ Operators work in expressions with proper precedence levels:
 - `&&` Logical AND (precedence 9)
 - `||` Logical OR (precedence 10)
 - `??` Null coalescing (precedence 8)
+- `? :` Conditional (ternary) - lowest precedence, chains read from the right: `{{model.count == 1 ? 'item' : 'items'}}`
+- `===` and `!==` are read as `==` and `!=`
 
 **Example with precedence**:
 ```html
@@ -1715,7 +1717,7 @@ Expression types:
 - Array indexing: `{{model.items[0]}}`
 - Functions: `{{concat(model.first, ' ', model.last)}}`
 - Math: `{{model.price * 1.1}}`
-- Conditionals: `{{if(model.age > 18, 'Adult', 'Minor')}}` (the `? :` ternary operator is not supported - use `if()`)
+- Conditionals: `{{model.age > 18 ? 'Adult' : 'Minor'}}` or `{{if(model.age > 18, 'Adult', 'Minor')}}` - only the chosen value is evaluated; in a `? :` condition null, false, 0, '' and 'false' are false
 
 ### Handlebars Helper Implementation
 
