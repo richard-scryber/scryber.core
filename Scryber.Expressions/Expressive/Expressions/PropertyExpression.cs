@@ -8,11 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Scryber.Expressive.Exceptions;
 
-#if NET6_0_OR_GREATER
-
 using System.Text.Json;
-
-#endif
 
 namespace Scryber.Expressive.Expressions
 {
@@ -115,13 +111,7 @@ namespace Scryber.Expressive.Expressions
         // identically to a JObject/JsonElement's properties.
         private static object NormalizeDictionaryValue(object value)
         {
-            if (value is Newtonsoft.Json.Linq.JToken jtoken)
-                return GetJTokenValue(jtoken);
-#if NET6_0_OR_GREATER
-            if (value is JsonElement jelement)
-                return GetJsonElementValue(jelement);
-#endif
-            return value;
+            return Helpers.JsonValues.ToNative(value);
         }
         
         public static object GetPropertyValue(object parent, string name, bool caseInSensitive)
@@ -133,34 +123,10 @@ namespace Scryber.Expressive.Expressions
             }
 
             //Do the JSON object checks first
-
-            if (parent is Newtonsoft.Json.Linq.JObject jobject)
+            if (Helpers.JsonValues.TryGetProperty(parent, name, out var jsonValue))
             {
-                if (jobject.ContainsKey(name) == false)
-                {
-                    return null;
-                }
-
-                var result = jobject.GetValue(name);
-                return GetJTokenValue(result);
+                return jsonValue;
             }
-
-#if NET6_0_OR_GREATER
-
-            //New to .net 6
-            else if (parent is JsonElement jelement)
-            {
-                JsonElement result;
-                if (!jelement.TryGetProperty(name, out result))
-                {
-                    return null;
-                }
-                else
-                    return GetJsonElementValue(result);
-                
-            }
-
-#endif
             //check for dynamic type
             else if (parent is System.Dynamic.ExpandoObject)
             {
@@ -218,70 +184,20 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
-#if NET6_0_OR_GREATER
-
+        /// <summary>
+        /// Returns the native value of a System.Text.Json element (objects and arrays are returned as they are)
+        /// </summary>
         public static object GetJsonElementValue(JsonElement result)
         {
-            switch (result.ValueKind)
-            {
-                case JsonValueKind.Array:
-                case JsonValueKind.Object:
-                    return result;
-                case JsonValueKind.Null:
-                    return null;
-                case JsonValueKind.False:
-                case JsonValueKind.True:
-                    return result.GetBoolean();
-                case JsonValueKind.Number:
-                    return result.GetDouble();
-                default:
-                    return result.GetString();
-            }
+            return Helpers.JsonValues.ToNative(result);
         }
 
-#endif
-
+        /// <summary>
+        /// Returns the native value of a Newtonsoft token (objects and arrays are returned as they are)
+        /// </summary>
         public static object GetJTokenValue(Newtonsoft.Json.Linq.JToken result)
         {
-            object value;
-            switch (result.Type)
-            {
-                case Newtonsoft.Json.Linq.JTokenType.Array:
-                case Newtonsoft.Json.Linq.JTokenType.Object:
-                    value = result;
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.Null:
-                case Newtonsoft.Json.Linq.JTokenType.None:
-                    value = null;
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.Integer:
-                case Newtonsoft.Json.Linq.JTokenType.Float:
-                    value = ((double)result);
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.Boolean:
-                    value = ((bool)result);
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.String:
-                case Newtonsoft.Json.Linq.JTokenType.Uri:
-                    value = ((string)result);
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.Guid:
-                    value = ((Guid)result);
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.Date:
-                    value = ((DateTime)result);
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.Bytes:
-                    value = ((byte[])result);
-                    break;
-                case Newtonsoft.Json.Linq.JTokenType.TimeSpan:
-                    value = ((TimeSpan)result);
-                    break;
-                default:
-                    value = result.ToString(Newtonsoft.Json.Formatting.None);
-                    break;
-            }
-            return value;
+            return Helpers.JsonValues.ToNative(result);
         }
 
         private static bool TryGetProperty(Type fortype, string name, bool ignoreCase, out PropertyInfo found)

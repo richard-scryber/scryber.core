@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 
 namespace Scryber.Expressive.Helpers
 {
@@ -17,64 +16,13 @@ namespace Scryber.Expressive.Helpers
         };
 
         /// <summary>
-        /// If the value is a System.Text.Json.JsonElement or a NewtonSoft.Hson.Linq.JToken, then a native value will be extracted where possible.
+        /// If the value is a System.Text.Json.JsonElement or a Newtonsoft.Json.Linq.JToken, then a native value will be extracted where possible.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         internal static object ExtractAnyJsonValue(object value)
         {
-            if (value is Newtonsoft.Json.Linq.JToken atoken)
-            {
-                switch (atoken.Type)
-                {
-                    case(JTokenType.Boolean):
-                        value = atoken.Value<bool>();
-                        break;
-                    case(JTokenType.Bytes):
-                        value = atoken.Value<long>();
-                        break;
-                    case(JTokenType.Date):
-                        value = atoken.Value<DateTime>();
-                        break;
-                    case(JTokenType.Array):
-                        break;
-                    case(JTokenType.Float):
-                        value = atoken.Value<double>();
-                        break;
-                    case(JTokenType.Integer):
-                        value = atoken.Value<int>();
-                        break;
-                    case(JTokenType.Null):
-                        value = null;
-                        break;
-                    case(JTokenType.String):
-                        value = atoken.Value<string>();
-                        break;
-                }
-            }
-#if NET6_0_OR_GREATER
-            else if (value is System.Text.Json.JsonElement jele)
-            {
-                switch (jele.ValueKind)
-                {
-                    case(System.Text.Json.JsonValueKind.False):
-                    case(System.Text.Json.JsonValueKind.True):
-                        value = jele.GetBoolean(); 
-                        break;
-                    case(System.Text.Json.JsonValueKind.Null):
-                        value = null;
-                        break;
-                    case(System.Text.Json.JsonValueKind.Number):
-                        value = jele.GetDouble();
-                        break;
-                    case(System.Text.Json.JsonValueKind.String):
-                        value = jele.GetString();
-                        break;
-                    default:
-                        break;
-                }
-            }
-#endif
+            value = JsonValues.ToNative(value);
             return value;
         }
 

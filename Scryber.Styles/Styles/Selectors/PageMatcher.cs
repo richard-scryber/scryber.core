@@ -1,5 +1,4 @@
 using System;
-using Newtonsoft.Json;
 using Scryber.Styles;
 
 namespace Scryber.Styles.Selectors

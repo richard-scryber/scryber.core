@@ -15,30 +15,10 @@ namespace Scryber.Expressive.Helpers
 				collection = null;
 				return false;
 			}
-#if NET6_0_OR_GREATER
-			//TODO: Change this to a wrapping ICollection class, rather than creating a new array list (as could be exhaustive)
-			else if (value is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
+			else if (JsonValues.IsJson(value))
 			{
-				//var all = new ArrayList(jele.GetArrayLength());
-				collection = jele.EnumerateArray();
-				// foreach (var inner in jele.EnumerateArray())
-				// {
-				// 	all.Add(inner);
-				// }
-				// collection = all;
-				return true;
-			}
-
-#endif
-			else if (value is Newtonsoft.Json.Linq.JToken jt && jt.Type == Newtonsoft.Json.Linq.JTokenType.Array)
-			{
-				collection = (IEnumerable)value;
-				return true;
-			}
-			else if(value is Newtonsoft.Json.Linq.JToken)
-			{
-				collection = null;
-				return false;
+				//only a JSON array is a collection (a JObject or JValue is also enumerable)
+				return JsonValues.TryGetArray(value, out collection);
 			}
 			else if (value is IEnumerable enumerable)
 			{
@@ -68,40 +48,18 @@ namespace Scryber.Expressive.Helpers
 				{
 					count += callback(item, variables, context);
 				}
-				else if(item is Newtonsoft.Json.Linq.JToken token)
+				else if (JsonValues.TryGetArray(item, out var jsonItems))
 				{
-					if (token.Type == Newtonsoft.Json.Linq.JTokenType.Array)
+					//the entries of a JSON array, as JSON values
+					foreach (var inner in jsonItems)
 					{
-						var all = ((Newtonsoft.Json.Linq.JArray)token);
-						foreach (var inner in all)
-						{
-							count += callback(inner, variables, context);
-						}
-					}
-					else
-					{
-						object value = PropertyExpression.GetJTokenValue(token);
-						count += callback(value, variables, context);
-					}
-                }
-#if NET6_0_OR_GREATER
-
-				else if(item is System.Text.Json.JsonElement element)
-				{
-					if (element.ValueKind == System.Text.Json.JsonValueKind.Array)
-					{
-						foreach (var inner in element.EnumerateArray())
-						{
-							count += callback(inner, variables, context);
-						}
-					}
-					else
-					{
-						count += callback(element, variables, context);
+						count += callback(inner, variables, context);
 					}
 				}
-#endif
-
+				else if (JsonValues.IsJson(item))
+				{
+					count += callback(JsonValues.ToNative(item), variables, context);
+				}
 				else if(item is IEnumerable enumerate)
 				{
 					foreach (var inner in enumerate)
@@ -127,46 +85,18 @@ namespace Scryber.Expressive.Helpers
             {
                 count += callback(item, variables, context);
             }
-            else if (item is Newtonsoft.Json.Linq.JToken token)
+            else if (JsonValues.TryGetArray(item, out var jsonItems))
             {
-                if (token.Type == Newtonsoft.Json.Linq.JTokenType.Array)
+                //the native values of a JSON array
+                foreach (var inner in jsonItems)
                 {
-                    var all = ((Newtonsoft.Json.Linq.JArray)token);
-                    foreach (var inner in all)
-                    {
-						var one = PropertyExpression.GetJTokenValue(inner);
-                        count += callback(one, variables, context);
-                    }
-                }
-                else
-                {
-                    object value = PropertyExpression.GetJTokenValue(token);
-                    count += callback(value, variables, context);
+                    count += callback(JsonValues.ToNative(inner), variables, context);
                 }
             }
-#if NET6_0_OR_GREATER
-
-            else if (item is System.Text.Json.JsonElement element)
+            else if (JsonValues.IsJson(item))
             {
-				if (element.ValueKind == System.Text.Json.JsonValueKind.Array)
-				{
-					int entries = element.GetArrayLength();
-					for (var i = 0; i < entries; i++)
-					{
-						var one = element[i];
-						object value = PropertyExpression.GetJsonElementValue(one);
-						count += callback(value, variables, context);
-					}
-				}
-				else
-				{
-					object value = PropertyExpression.GetJsonElementValue(element);
-					count += callback(value, variables, context);
-				}
-
+                count += callback(JsonValues.ToNative(item), variables, context);
             }
-#endif
-
             else if (item is IEnumerable enumerate)
             {
                 foreach (var inner in enumerate)

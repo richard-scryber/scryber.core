@@ -41,23 +41,18 @@ namespace Scryber.Expressive.Functions.Coalesce
             {
                 //nothing
             }
+            else if (Helpers.JsonValues.TryGetKeys(value, out var jsonKeys))
+            {
+                keys.AddRange(jsonKeys);
+            }
+            else if (Helpers.JsonValues.IsJson(value))
+            {
+                //a JSON array or value has no keys
+            }
             else if (value is IDictionary dict)
             {
                 foreach (var key in dict.Keys)
                     keys.Add(ToKeyString(key));
-            }
-            else if (value is Newtonsoft.Json.Linq.JObject jobj)
-            {
-                foreach (var prop in jobj.Properties())
-                    keys.Add(prop.Name);
-            }
-            else if (value is System.Text.Json.JsonElement jele)
-            {
-                if (jele.ValueKind == System.Text.Json.JsonValueKind.Object)
-                {
-                    foreach (var prop in jele.EnumerateObject())
-                        keys.Add(prop.Name);
-                }
             }
             else if (value is IEnumerable<KeyValuePair<string, object>> pairs)
             {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using Scryber.Drawing;
 using Scryber.OpenType;
 using Scryber.OpenType.SubTables;

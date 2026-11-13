@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
     <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" />
   </ItemGroup>

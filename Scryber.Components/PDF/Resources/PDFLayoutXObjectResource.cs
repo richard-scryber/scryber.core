@@ -1,5 +1,4 @@
 using System;
-using Newtonsoft.Json.Linq;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Native;
 using Scryber.Drawing;

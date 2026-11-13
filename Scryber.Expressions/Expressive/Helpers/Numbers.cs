@@ -119,28 +119,7 @@ namespace Scryber.Expressive.Helpers
 
         private static object EnsureJsonExpanded(object value)
         {
-            if (value is Newtonsoft.Json.Linq.JToken token)
-            {
-                if (token.Type == Newtonsoft.Json.Linq.JTokenType.Integer
-                    || token.Type == Newtonsoft.Json.Linq.JTokenType.Float
-                    || token.Type == Newtonsoft.Json.Linq.JTokenType.String)
-                {
-                    value = (token as Newtonsoft.Json.Linq.JValue).Value;
-                }
-            }
-#if NET6_0_OR_GREATER
-            else if (value is System.Text.Json.JsonElement element)
-            {
-                if (element.ValueKind == System.Text.Json.JsonValueKind.Number)
-                {
-                    value = element.GetDouble();
-                }
-                else if (element.ValueKind == System.Text.Json.JsonValueKind.String)
-                {
-                    value = element.GetString();
-                }
-            }
-#endif
+            value = JsonValues.ToNative(value);
             return value;
         }
 

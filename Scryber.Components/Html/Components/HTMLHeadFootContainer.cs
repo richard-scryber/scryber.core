@@ -2,7 +2,6 @@
 using Scryber.Components;
 using Scryber.Styles;
 using System.Collections.Generic;
-using Newtonsoft.Json.Serialization;
 using Scryber.Drawing;
 using Scryber.PDF;
 
