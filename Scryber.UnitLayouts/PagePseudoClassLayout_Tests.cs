@@ -595,5 +595,40 @@ body { border: solid 1pt black;}</style></head>
             Assert.AreEqual(Unit.Mm(30), layoutDoc.AllPages[2].PositionOptions.Margins.Right.ToMillimeters(), "Page 2 (index 2, :right) should have 30mm right margin");
             Assert.AreEqual(Unit.Mm(10), layoutDoc.AllPages[3].PositionOptions.Margins.Right.ToMillimeters(), "Page 3 (index 3, :left)  should have 10mm right margin");
         }
+
+        [TestMethod("19. @page applies when the style block is large enough to use the style index")]
+        [DataRow(0)]
+        [DataRow(29)]
+        [DataRow(30)]
+        [DataRow(60)]
+        public void PageRule_AppliesWithManyRulesInBlock(int fillerCount)
+        {
+            var filler = new System.Text.StringBuilder();
+            for (var i = 0; i < fillerCount; i++)
+                filler.AppendLine(".x" + i + " { color: #000; }");
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head><style>
+    @page { size: A4; margin: 16mm; }
+" + filler + @"
+</style></head>
+<body>
+    <p>Page 1</p>
+    <div style='page-break-before:always'><p>Page 2</p></div>
+</body></html>";
+
+            using var reader = new StringReader(src);
+            var doc = Document.ParseDocument(reader);
+
+            using (var ms = DocStreams.GetOutputStream("PagePseudo_ManyRules_" + fillerCount + ".pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutDocument;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(2, layoutDoc.AllPages.Count, "Expected 2 pages");
+            Assert.AreEqual(Unit.Mm(16), layoutDoc.AllPages[0].PositionOptions.Margins.Left.ToMillimeters(), "Plain @page margin should apply with " + fillerCount + " filler rules");
+            Assert.AreEqual(Unit.Mm(16), layoutDoc.AllPages[1].PositionOptions.Margins.Left.ToMillimeters(), "Plain @page margin should apply to later pages with " + fillerCount + " filler rules");
+        }
     }
 }
