@@ -1267,22 +1267,54 @@ namespace Scryber.Core.UnitTests.Html
             {
                 doc.Params["title"] = "Title in code";
 
-                using (var stream = DocStreams.GetOutputStream("textdecoration.pdf"))
-                {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
+                doc.LayoutComplete += DocumentParsing_Layout;
+                var data = SaveAndGetData(doc, "textdecoration.pdf");
 
-                }
-
-                var pg = doc.Pages[0] as Section;
                 var body = _layoutcontext.DocumentLayout.AllPages[0];
 
-                Assert.Inconclusive("There are no specific tests written for the text decoration");
+                Assert.AreEqual(1, _layoutcontext.DocumentLayout.AllPages.Count);
+
+                //u and ins are underlined, s and del are struck through
+                AssertDecoration(doc, "under", Scryber.Text.TextDecoration.Underline);
+                AssertDecoration(doc, "insert", Scryber.Text.TextDecoration.Underline);
+                AssertDecoration(doc, "strike", Scryber.Text.TextDecoration.StrikeThrough);
+                AssertDecoration(doc, "delete", Scryber.Text.TextDecoration.StrikeThrough);
+
+                //mark has the mark background, and the style of the document (border and padding)
+                var mark = doc.FindAComponentById("marked") as Component;
+                Assert.IsNotNull(mark);
+                var markStyle = mark.GetAppliedStyle();
+                Assert.AreEqual((Color)Scryber.Html.CSSColors.Names2Colors["mark"], markStyle.GetValue(StyleKeys.BgColorKey, StandardColors.Transparent), "Mark background");
+                Assert.AreEqual(Scryber.Text.TextDecoration.None, markStyle.GetValue(StyleKeys.TextDecorationKey, Scryber.Text.TextDecoration.None), "Mark decoration");
+                Assert.AreEqual((Unit)10, markStyle.GetValue(StyleKeys.PaddingLeftKey, Unit.Zero), "Mark padding from the style block");
+
+                //and the marked text flows over more than one line of its paragraph
+                var text = TextOf(data);
+                Assert.IsTrue(text.Contains("The mark(ing) element that can flow"), "The start of the mark");
+                Assert.IsTrue(text.Contains("After the inline mark going onto further lines in the"), "The text after the mark");
+
+                var highlight = doc.FindAComponentById("highlight") as Component;
+                PDFLayoutBlock highlightBlock = null;
+                foreach (var line in body.ContentBlock.Columns[0].Contents)
+                {
+                    if (line is PDFLayoutBlock block && block.Owner == highlight)
+                        highlightBlock = block;
+                }
+                Assert.IsNotNull(highlightBlock, "The layout of the highlight paragraph");
+                Assert.IsTrue(highlightBlock.Columns[0].Contents.Count >= 3, "The marked paragraph should be at least 3 lines, not " + highlightBlock.Columns[0].Contents.Count);
 
             }
 
         }
         
+        private static void AssertDecoration(Document doc, string id, Scryber.Text.TextDecoration expected)
+        {
+            var comp = doc.FindAComponentById(id) as Component;
+            Assert.IsNotNull(comp, "No component with id " + id);
+            var style = comp.GetAppliedStyle();
+            Assert.AreEqual(expected, style.GetValue(StyleKeys.TextDecorationKey, Scryber.Text.TextDecoration.None), "Decoration of " + id);
+        }
+
         [TestMethod]
         public void CSSTransformParsing()
         {
