@@ -6545,9 +6545,39 @@ namespace Scryber.UnitLayouts
             //just test the inner blocks compared to their RenderBounds
             //tests above check their Total bounds and hierarchy.
 
-            var comp = doc.FindAComponentById("deepnest1");
-            
-            Assert.Inconclusive("Need to text the fixed positioning");
+            //Checked against Chrome (in points, x within 2pt allowing for the border widths)
+            Rect BoundsOf(string id)
+            {
+                var c = doc.FindAComponentById(id) as Component;
+                Assert.IsNotNull(c, "No component " + id);
+                var arrange = c.GetFirstArrangement();
+                Assert.IsNotNull(arrange, "No arrangement for " + id);
+                return arrange.RenderBounds;
+            }
+
+            //deep1 is absolute with right: 30pt in the relative block that is 200pt wide at left: 20pt,
+            //so it is the width of its text and its right is 30pt from the right of that block (Chrome x 154)
+            var deep1Parent = BoundsOf("deep1parent");
+            var deep1 = BoundsOf("deep1");
+            Assert.AreEqual(154.0, deep1.X.PointsValue, 2.0, "deep1 x");
+            Assert.AreEqual((deep1Parent.X + deep1Parent.Width - 30).PointsValue, (deep1.X + deep1.Width).PointsValue, 1.0, "deep1 is 30pt from the right of its relative parent");
+            Assert.IsTrue(deep1.Width < 60, "deep1 is the width of its text, not " + deep1.Width);
+
+            //the fixed block is at left: 100pt
+            var fix = BoundsOf("fix");
+            Assert.AreEqual(100.0, fix.X.PointsValue, 0.5, "The fixed block is at left 100pt");
+
+            //deep2 is absolute without a position in the padded block in the fixed block, so at its static position
+            //in the padded block, and the width of its text (Chrome x 115, width 131)
+            var deep2 = BoundsOf("deep2");
+            Assert.AreEqual(115.0, deep2.X.PointsValue, 1.0, "deep2 x");
+            Assert.AreEqual(131.0, deep2.Width.PointsValue, 3.0, "deep2 is the width of its text");
+            var deep2Parent = BoundsOf("deep2parent");
+            Assert.IsTrue(deep2.Y > deep2Parent.Y, "deep2 is after the text of the padded block");
+
+            //In Chrome the fixed block (no width) shrinks to fit its content (193pt), but in scryber a positioned block that
+            //contains a block (the padded div) fills the space to the right of the page (495pt).
+            Assert.Inconclusive("A fixed block without a width, containing a block, fills the space rather than shrinking to its content (Chrome 193pt, scryber " + fix.Width + ")");
         }
         
     }

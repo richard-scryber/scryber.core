@@ -48,16 +48,16 @@
 <body>
     <header>This is the page header</header>
     <h5>Blocks below are fixed, relative and absoutely positioned.</h5>
-    <div class="position">
+    <div class="position" id="pos">
         Below are the nested positioned blocks
         <div class="rel" style="" >
             <div class="padd">This is content within the block</div>
-            <div class="rel" style="left: 20pt; top: 10pt; height: 100pt; width: 200pt;" >After another relative block
+            <div id="deep1parent" class="rel" style="left: 20pt; top: 10pt; height: 100pt; width: 200pt;" >After another relative block
                 <div id="deep1" class="abs" style="right: 30pt;">Absolute</div>
             </div>
         </div>
-        <div class="fix" >
-            <div class="padd" >
+        <div class="fix" id="fix">
+            <div id="deep2parent" class="padd" >
                 This is content within the block
                 <div id="deep2" class="abs">Absolute within the fixed</div>
             </div>
