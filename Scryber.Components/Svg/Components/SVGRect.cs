@@ -150,6 +150,23 @@ namespace Scryber.Svg.Components
         [PDFAttribute("stroke-dasharray")]
         public override Dash StrokeDashPattern { get => base.StrokeDashPattern; set => base.StrokeDashPattern = value; }
 
+        [PDFAttribute("stroke-linejoin")]
+        public LineJoin StrokeLineJoin
+        {
+            get { return this.Style.Stroke.LineJoin; }
+            set { this.Style.Stroke.LineJoin = value; }
+        }
+
+        [PDFAttribute("stroke-opacity")]
+        public override double StrokeOpacity { get => base.StrokeOpacity; set => base.StrokeOpacity = value; }
+
+        [PDFAttribute("stroke-dashoffset")]
+        public Unit StrokeDashOffset
+        {
+            get => this.HasStyle ? this.Style.GetValue(StyleKeys.StrokeDashOffsetKey, Unit.Zero) : Unit.Zero;
+            set => this.Style.SetValue(StyleKeys.StrokeDashOffsetKey, value);
+        }
+
 
 
         // fill

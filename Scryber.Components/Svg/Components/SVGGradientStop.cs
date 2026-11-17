@@ -25,6 +25,12 @@ public class SVGGradientStop : Component, IStyledComponent, ICloneable
                 _style = new Style();
             return _style;
         }
+        set
+        {
+            //the style attribute of a stop (e.g. style='stop-color: red') - it could not be set
+            _style = value;
+            _cachedFullStyle = null;
+        }
     }
     
 

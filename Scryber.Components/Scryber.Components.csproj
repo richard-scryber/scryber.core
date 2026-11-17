@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>Next release (not yet versioned)
 Breaking change: an svg image (img src='image.svg') with a percentage width or height on its svg root (e.g. width='100%' viewBox='0 0 24 24') is sized as a browser - a percentage is not a size of its own, so the image fills the width available with the ratio of the viewBox (or uses the other, absolute, dimension with that ratio). It was sized as the percentage of the viewBox. Give the img a width or height to size it.
+Fixed: a style attribute on an svg gradient stop (e.g. style='stop-color: red') stopped the whole document from parsing. The stroke-dashoffset attribute was only read from css, and a rect did not read its stroke-opacity or stroke-linejoin attributes - they are now read on svg shapes, as their css properties are.
 Fixed: mode() only took numbers - text (e.g. mode(model.choices) of 'A', 'B', 'A') raised an error. Text is now compared as text, and numbers (or text that is a number) as numbers.
 Fixed: an empty string with &amp;&amp; || ! or the if() function raised an error (e.g. '' &amp;&amp; true). These now use the same truth as the ? : operator - null, false, 0, '' and 'false' are false, and other values are true.
 Fixed: string() of a collection gave the name of its type (System.Object[]). It is now its items in square brackets, e.g. [1, 2, 3].

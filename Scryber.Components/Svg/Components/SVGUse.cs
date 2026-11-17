@@ -358,6 +358,13 @@ namespace Scryber.Svg.Components
             }
         }
 
+        [PDFAttribute("stroke-dashoffset")]
+        public Unit StrokeDashOffset
+        {
+            get => this.HasStyle ? this.Style.GetValue(StyleKeys.StrokeDashOffsetKey, Unit.Zero) : Unit.Zero;
+            set => this.Style.SetValue(StyleKeys.StrokeDashOffsetKey, value);
+        }
+
         [PDFAttribute("stroke-dasharray")]
         public Dash StrokeDashPattern
         {
