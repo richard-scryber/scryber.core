@@ -189,5 +189,46 @@ p { color: var(--brand); }",
 
             Assert.AreEqual(new Color(255, 0, 0), ColorOf(doc, "grouped"), "Grouped style with " + fillers + " extra rules");
         }
+
+        [TestMethod()]
+        [DataRow(0)]
+        [DataRow(40)]
+        public void StyleIndexParity_09_SameSelectorLaterInTheCss(int fillers)
+        {
+            //the second .a is after all the other rules, and only replaces the color
+            var css = ".a { color: #FF0000; font-weight: bold; }\n" + Filler(fillers) + ".a { color: #0000FF; }";
+            var doc = Layout(css, "<p id='para' class='a'>para</p>", "SameSelector", 0);
+
+            var comp = doc.FindAComponentById("para") as Component;
+            var style = comp.GetAppliedStyle();
+            Assert.AreEqual(new Color(0, 0, 255), style.GetValue(StyleKeys.FillColorKey, StandardColors.Transparent), "Later .a color with " + fillers + " extra rules");
+            Assert.AreEqual(700, style.GetValue(StyleKeys.FontWeightKey, 400), "Earlier .a weight with " + fillers + " extra rules");
+        }
+
+        [TestMethod()]
+        [DataRow(1)]
+        [DataRow(35)]
+        public void StyleIndexParity_10_ManyStyleBlocks(int blocks)
+        {
+            //each style block is a group in the document styles, so more than 30 blocks use the index
+            var head = new System.Text.StringBuilder();
+            for (var i = 0; i < blocks; i++)
+                head.AppendLine("<style>.block" + i + " { color: #000000; } .a { color: #FF0000; }</style>");
+            head.AppendLine("<style>.a { color: #0000FF; } @page { margin: 12mm; }</style>");
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>" + head + @"</head>
+<body><p id='para' class='a'>para</p></body></html>";
+
+            var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent);
+            doc.LayoutComplete += Doc_LayoutComplete;
+            using (var ms = DocStreams.GetOutputStream("StyleIndexParity_Blocks_" + blocks + ".pdf"))
+            {
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(new Color(0, 0, 255), ColorOf(doc, "para"), "Last block wins with " + blocks + " blocks");
+            Assert.AreEqual(12.0, layoutDoc.AllPages[0].PositionOptions.Margins.Left.ToMillimeters().Value, 0.01, "@page in the last block with " + blocks + " blocks");
+        }
     }
 }
