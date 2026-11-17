@@ -246,16 +246,35 @@ namespace Scryber.Core.UnitTests.Generation
 
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
 
-                using (var stream = DocStreams.GetOutputStream("HTMLFileLoadingDirect.pdf"))
+                //only the station wagons are bound into the table
+                doc.Params["items"] = new[]
+                {
+                    new { type = "station wagon", color = "Crimson", capacity = 7 },
+                    new { type = "saloon", color = "Emerald", capacity = 5 },
+                    new { type = "station wagon", color = "Cobalt", capacity = 6 }
+                };
+
+                byte[] data;
+                using (var ms = new System.IO.MemoryStream())
                 {
                     doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
-
+                    doc.SaveAsPDF(ms);
+                    data = ms.ToArray();
                 }
+                using (var stream = DocStreams.GetOutputStream("HTMLFileLoadingDirect.pdf"))
+                    stream.Write(data, 0, data.Length);
 
+                Assert.IsNotNull(_layoutcontext);
+                Assert.AreEqual(1, _layoutcontext.DocumentLayout.AllPages.Count);
+
+                var text = PanelContent_Tests.TextOf(data);
+                //the title is in a light italic font, that may be a system font with its glyphs encoded by index, so it is not checked in the text
+                Assert.IsTrue(text.Contains("ColorCapacity"), "The header row");
+                Assert.IsTrue(text.Contains("Crimson7"), "The first station wagon");
+                Assert.IsTrue(text.Contains("Cobalt6"), "The second station wagon");
+                Assert.IsFalse(text.Contains("Emerald"), "The saloon should not be in the table");
+                Assert.IsTrue(text.IndexOf("Crimson") < text.IndexOf("Cobalt"), "The rows in the order of the data");
             }
-            
-            Assert.Inconclusive("No checking");
         }
     }
 }
