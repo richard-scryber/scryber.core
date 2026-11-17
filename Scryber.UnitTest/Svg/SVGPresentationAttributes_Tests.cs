@@ -96,5 +96,36 @@ namespace Scryber.Core.UnitTests.Svg
             var stop2 = gradient.Stops[1];
             Assert.AreEqual(new Color(0, 0, 255), stop2.StopColor, "stop-color attribute");
         }
+
+        [TestMethod()]
+        public void SVGAttributes_03_OpacityAttributeAndPathDashOffsetStyle()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<body>
+<svg xmlns='http://www.w3.org/2000/svg' width='300' height='120'>
+  <rect id='rect' x='10' y='10' width='80' height='80' fill='red' opacity='0.4' />
+  <circle id='circle' cx='150' cy='50' r='40' fill='blue' opacity='0.6' />
+  <path id='path' d='M 200 10 L 290 90' stroke='black' stroke-width='4' style='stroke-dasharray: 7 2; stroke-dashoffset: 1' />
+</svg>
+</body>
+</html>";
+            var doc = Document.ParseDocument(new StringReader(html), ParseSourceType.DynamicContent);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            string pdf;
+            using (var ms = new MemoryStream())
+            {
+                doc.SaveAsPDF(ms);
+                pdf = Encoding.Latin1.GetString(ms.ToArray());
+            }
+
+            //the opacity attribute is the fill opacity, as the css opacity property
+            Assert.AreEqual(0.4, (doc.FindAComponentById("rect") as Component).GetAppliedStyle().GetValue(StyleKeys.FillOpacityKey, 1.0), 0.0001, "rect opacity attribute");
+            Assert.AreEqual(0.6, (doc.FindAComponentById("circle") as Component).GetAppliedStyle().GetValue(StyleKeys.FillOpacityKey, 1.0), 0.0001, "circle opacity attribute");
+            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(pdf, @"/ca\s+0?\.40*\s"), "The rect fill opacity");
+            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(pdf, @"/ca\s+0?\.60*\s"), "The circle fill opacity");
+
+            //a dash offset in the style of a path is drawn
+            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(pdf, @"\[\s*7(\.0+)?\s+2(\.0+)?\s*\]\s*1(\.0+)?\s+d"), "The path dash with its offset from the style");
+        }
     }
 }

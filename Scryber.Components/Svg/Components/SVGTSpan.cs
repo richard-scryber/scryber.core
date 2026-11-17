@@ -215,6 +215,16 @@ namespace Scryber.Svg.Components
             }
         }
 
+        /// <summary>
+        /// The opacity attribute - as the css opacity property, the opacity of the fill
+        /// </summary>
+        [PDFAttribute("opacity")]
+        public double Opacity
+        {
+            get => this.HasStyle ? this.Style.GetValue(StyleKeys.FillOpacityKey, 1.0) : 1.0;
+            set => this.Style.SetValue(StyleKeys.FillOpacityKey, value);
+        }
+
         [PDFAttribute("stroke-dashoffset")]
         public Unit StrokeDashOffset
         {

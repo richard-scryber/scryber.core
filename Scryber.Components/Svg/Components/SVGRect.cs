@@ -160,6 +160,16 @@ namespace Scryber.Svg.Components
         [PDFAttribute("stroke-opacity")]
         public override double StrokeOpacity { get => base.StrokeOpacity; set => base.StrokeOpacity = value; }
 
+        /// <summary>
+        /// The opacity attribute - as the css opacity property, the opacity of the fill
+        /// </summary>
+        [PDFAttribute("opacity")]
+        public double Opacity
+        {
+            get => this.HasStyle ? this.Style.GetValue(StyleKeys.FillOpacityKey, 1.0) : 1.0;
+            set => this.Style.SetValue(StyleKeys.FillOpacityKey, value);
+        }
+
         [PDFAttribute("stroke-dashoffset")]
         public Unit StrokeDashOffset
         {
