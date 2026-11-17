@@ -314,6 +314,7 @@ namespace Scryber.Styles
             }
             else
             {
+                if (null == this._catchAlls) { this._catchAlls = new List<StyleBase>(); }
                 this._catchAlls.Add(style);
                 return false;
             }
@@ -480,7 +481,10 @@ namespace Scryber.Styles
                     yield return root;
                 }
             }
-            else if(null != _pages && _pages.Count > 0 && component is IDocumentPage)
+
+            // @page rules are matched against the document's internal "@page" matcher component,
+            // which is not an IDocumentPage. StylePageGroup.MergeInto checks the match itself.
+            if(null != _pages && _pages.Count > 0)
             {
                 foreach(var pg in _pages)
                 {
