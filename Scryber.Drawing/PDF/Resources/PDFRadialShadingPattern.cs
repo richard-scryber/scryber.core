@@ -42,6 +42,7 @@ namespace Scryber.PDF.Resources
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Type", "Pattern");
             writer.WriteDictionaryNumberEntry("PatternType", (int)this.PatternType);
+            this.WriteMatrix(writer);
             //Actual shading dictionary
             var shading = this.RenderShadingDictionary(context, writer);
             if (null != shading)

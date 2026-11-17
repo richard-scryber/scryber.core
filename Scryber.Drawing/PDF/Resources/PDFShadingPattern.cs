@@ -32,6 +32,25 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the matrix from the pattern space to the default space of the content it is used in
+        /// - the transformation of the shape it fills, as the pattern does not follow the transformation of the drawing.
+        /// </summary>
+        public Scryber.PDF.Graphics.PDFTransformationMatrix Matrix { get; set; }
+
+        /// <summary>
+        /// Writes the /Matrix entry of the pattern dictionary, if there is a matrix that is not the identity
+        /// </summary>
+        protected void WriteMatrix(PDFWriter writer)
+        {
+            if (null != this.Matrix && !this.Matrix.IsIdentity)
+            {
+                writer.BeginDictionaryEntry("Matrix");
+                writer.WriteArrayRealEntries(true, this.Matrix.Components, "F4");
+                writer.EndDictionaryEntry();
+            }
+        }
+
         public PDFShadingPattern(IComponent owner, string key, Rect bounds, PatternType type = PatternType.ShadingPattern)
             : base(owner, type, key)
         {

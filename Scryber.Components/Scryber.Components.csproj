@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>Next release (not yet versioned)
 Breaking change: an svg image (img src='image.svg') with a percentage width or height on its svg root (e.g. width='100%' viewBox='0 0 24 24') is sized as a browser - a percentage is not a size of its own, so the image fills the width available with the ratio of the viewBox (or uses the other, absolute, dimension with that ratio). It was sized as the percentage of the viewBox. Give the img a width or height to size it.
+Fixed: a gradient (linear or radial) on a transformed shape or element - an svg shape with a transform, or a block with a css transform such as rotate - stayed where the shape was before it was transformed, so it was not rotated or moved with the shape, and clipped it (a moved svg shape could disappear). The gradient now has the transformation of its shape.
 Fixed: an svg image larger than the space available was drawn at 300 x 150, as its size was read before the svg was laid out. It is now reduced to fit, keeping its ratio, as other images.
 Fixed: an svg image with only a viewBox, reduced to fit the height left on a page, kept the full width and lost its ratio. It now keeps the ratio of the viewBox.
 

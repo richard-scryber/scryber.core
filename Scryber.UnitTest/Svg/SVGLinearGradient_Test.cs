@@ -1,4 +1,5 @@
-﻿using Scryber.Drawing;
+﻿using System.Linq;
+using Scryber.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
@@ -211,7 +212,34 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
             
-            Assert.Inconclusive("Need to add a test where a transformation is applied to a shape and the gradient is also transformed");
+            //A pattern in a pdf is not moved by the transformation of the drawing, so each gradient pattern has the
+            //transformation of its shape (translate 50, 0) as its own matrix, and its bounds are those of the shape before
+            //it is transformed. Without the matrix the gradient stays where the shape was, and clips the moved shape.
+            var xObj = doc.SharedResources.OfType<PDFLayoutXObjectResource>().FirstOrDefault(x => x.Renderer != null && x.Renderer.Resources != null);
+            Assert.IsNotNull(xObj, "No canvas resource in " + string.Join(", ", doc.SharedResources.Select(r => r.GetType().Name)));
+            var patterns = xObj.Renderer.Resources.Types.First(t => t.Type == PDFResource.PatternResourceType);
+            Assert.AreEqual(2, patterns.Count);
+
+            for (var i = 0; i < patterns.Count; i++)
+            {
+                var pattern = patterns[i] as PDFLinearShadingPattern;
+                Assert.IsNotNull(pattern);
+                AssertPattern(pattern, i == 0 ? "text" : "rect");
+
+                Assert.IsNotNull(pattern.Matrix, "The pattern has the transformation of its shape");
+                var components = pattern.Matrix.Components;
+                Assert.AreEqual(1.0, components[0], 0.0001);
+                Assert.AreEqual(0.0, components[1], 0.0001);
+                Assert.AreEqual(0.0, components[2], 0.0001);
+                Assert.AreEqual(1.0, components[3], 0.0001);
+                Assert.AreEqual(50.0, components[4], 0.0001, "Translated 50 across");
+                Assert.AreEqual(0.0, components[5], 0.0001, "Not translated down");
+            }
+
+            //the rect pattern is at the shape position before it is transformed
+            var rectPattern = patterns[1] as PDFLinearShadingPattern;
+            Assert.AreEqual(110.0, rectPattern.Start.X.PointsValue, 0.01, "The pattern starts at the x of the rect");
+            Assert.AreEqual(70.0, rectPattern.Size.Width.PointsValue, 0.01, "The pattern is the width of the rect");
         }
 
         /// <summary>

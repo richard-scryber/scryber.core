@@ -162,8 +162,21 @@ namespace Scryber.PDF.Graphics
 
         #region SaveGraphicsState() + RestoreGraphicsState()
 
+        /// <summary>
+        /// Gets the current transformation matrix of the drawing in this graphics stream (all the transformations set since the start
+        /// of the stream, within the current graphics state), or null if there are none. Patterns are not affected by the
+        /// transformation of the drawing in a pdf, so a pattern for a transformed shape uses this as its own matrix.
+        /// </summary>
+        public PDFTransformationMatrix CurrentTransformationMatrix { get; private set; }
+
+        private System.Collections.Generic.Stack<PDFTransformationMatrix> _savedTransformationMatrices;
+
         public void SaveGraphicsState()
         {
+            if (null == _savedTransformationMatrices)
+                _savedTransformationMatrices = new System.Collections.Generic.Stack<PDFTransformationMatrix>();
+            _savedTransformationMatrices.Push(this.CurrentTransformationMatrix);
+
             //_opacities.Push(_currentOpacity);
             //Opacities newValues = new Opacities() { Fill = _currentOpacity.Fill, Stroke = _currentOpacity.Stroke };
             //_currentOpacity = newValues;
@@ -174,6 +187,11 @@ namespace Scryber.PDF.Graphics
         public void RestoreGraphicsState()
         {
             // _currState = null;
+            if (null != _savedTransformationMatrices && _savedTransformationMatrices.Count > 0)
+                this.CurrentTransformationMatrix = _savedTransformationMatrices.Pop();
+            else
+                this.CurrentTransformationMatrix = null;
+
             this.ExternalState.RestoreState();
             this.Writer.WriteOpCodeS(PDFOpCode.RestoreState);
             //_currentOpacity = _opacities.Pop();
@@ -338,6 +356,11 @@ namespace Scryber.PDF.Graphics
                 }
 
                 this.Writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix);
+
+                //cm applies the matrix before the current one
+                this.CurrentTransformationMatrix = null == this.CurrentTransformationMatrix
+                    ? matrix.Clone()
+                    : PDFTransformationMatrix.Multiply(this.CurrentTransformationMatrix, matrix);
             }
 
             if(appliesToText)

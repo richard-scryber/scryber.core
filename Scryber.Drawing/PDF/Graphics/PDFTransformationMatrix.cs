@@ -191,10 +191,8 @@ namespace Scryber.PDF.Graphics
             if (null == two)
                 throw new ArgumentNullException("two");
 
-            one = new PDFTransformationMatrix(one._matrix.Clone());
-            one._matrix.Multiply(two._matrix);
-            
-            return one;
+            //The result applies two, then one (Matrix2D.Multiply returns a new value, so it is used)
+            return new PDFTransformationMatrix(Matrix2D.Multiply(one._matrix, two._matrix));
         }
 
         public static PDFTransformationMatrix operator *(PDFTransformationMatrix one, PDFTransformationMatrix two)

@@ -53,10 +53,10 @@ namespace Scryber.PDF.Graphics
         public PDFResource GetLinearShadingPattern(PDFGraphics g, string key, GradientLinearDescriptor descriptor, Rect bounds)
         {
             PDFLinearShadingPattern pattern = new PDFLinearShadingPattern(g.Container.Document, key, descriptor, bounds);
-            
-            //Implement and add to the 
-            // if(g.CurrentTransformationMatrix != null)
-            //     pattern.TransformationMatrix = g.CurrentTransformationMatrix;
+
+            //the pattern is in the default space of the content, so it follows the transformation of the shape it fills.
+            if (g.CurrentTransformationMatrix != null)
+                pattern.Matrix = g.CurrentTransformationMatrix.Clone();
             
             return pattern;
         }
@@ -64,9 +64,10 @@ namespace Scryber.PDF.Graphics
         public PDFResource GetRadialShadingPattern(PDFGraphics g, string key, GradientRadialDescriptor descriptor, Rect bounds)
         {
             PDFRadialShadingPattern pattern = new PDFRadialShadingPattern(g.Container.Document, key, descriptor, bounds);
-            
-            // if(g.CurrentTransformationMatrix != null)
-            //     pattern.TransformationMatrix = g.CurrentTransformationMatrix;
+
+            //the pattern is in the default space of the content, so it follows the transformation of the shape it fills.
+            if (g.CurrentTransformationMatrix != null)
+                pattern.Matrix = g.CurrentTransformationMatrix.Clone();
 
             return pattern;
         }
