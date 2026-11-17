@@ -33,6 +33,11 @@ namespace Scryber.Expressive.Functions.Conversion
                 return (long)(dt.Ticks / TimeSpan.TicksPerMillisecond);
 
             
+            //text with a fraction (e.g. '10.6' from json) is read as a number (invariant), then rounded as a number is
+            if (objectToConvert is string text && !long.TryParse(text, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out _)
+                && double.TryParse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number))
+                return Convert.ToInt64(number);
+
             return Convert.ToInt64(objectToConvert, context.CurrentCulture);
         }
 

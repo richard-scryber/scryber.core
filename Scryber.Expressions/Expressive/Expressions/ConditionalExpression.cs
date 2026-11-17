@@ -35,41 +35,9 @@ namespace Scryber.Expressive.Expressions
                 : this.whenFalse.Evaluate(variables);
         }
 
-        /// <summary>
-        /// The truth of a condition value: null, false, zero and an empty string are false.
-        /// A string is true unless it is empty or reads as 'false'. Any other value is converted as a boolean if it can be,
-        /// otherwise it is true.
-        /// </summary>
         internal static bool IsTrue(object value)
         {
-            switch (value)
-            {
-                case null:
-                    return false;
-                case bool b:
-                    return b;
-                case string s:
-                    if (s.Length == 0)
-                        return false;
-                    if (bool.TryParse(s, out var parsed))
-                        return parsed;
-                    return true;
-                case IConvertible convertible:
-                    try
-                    {
-                        return convertible.ToBoolean(System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    catch (InvalidCastException)
-                    {
-                        return true;
-                    }
-                    catch (FormatException)
-                    {
-                        return true;
-                    }
-                default:
-                    return true;
-            }
+            return Helpers.Truth.IsTrue(value);
         }
     }
 }

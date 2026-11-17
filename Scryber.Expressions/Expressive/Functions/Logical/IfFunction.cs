@@ -14,7 +14,7 @@ namespace Scryber.Expressive.Functions.Logical
         {
             this.ValidateParameterCount(parameters, 3, 3);
 
-            bool condition = Convert.ToBoolean(parameters[0].Evaluate(variables));
+            bool condition = Helpers.Truth.IsTrue(parameters[0].Evaluate(variables));
 
             return condition ? parameters[1].Evaluate(variables) : parameters[2].Evaluate(variables);
         }

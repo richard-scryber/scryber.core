@@ -26,7 +26,7 @@ namespace Scryber.Expressive.Expressions.Unary.Logical
                 case bool boolValue:
                     return !boolValue;
                 default:
-                    return !Convert.ToBoolean(value);
+                    return !Helpers.Truth.IsTrue(value);
             }
         }
 

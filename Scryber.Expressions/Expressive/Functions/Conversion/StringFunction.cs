@@ -71,7 +71,38 @@ namespace Scryber.Expressive.Functions.Conversion
                 return converted;
             }
 
-            return objectToConvert.ToString();
+            return ToDefaultString(objectToConvert);
+        }
+
+        /// <summary>
+        /// The text of a value with no format. A collection (other than a string) is its items in square brackets,
+        /// separated by a comma and space, e.g. [1, 2, 3], rather than the name of its type.
+        /// </summary>
+        public static string ToDefaultString(object value)
+        {
+            value = Helpers.JsonValues.ToNative(value);
+
+            if (value is null)
+                return string.Empty;
+            if (value is string str)
+                return str;
+
+            if (Helpers.Collections.TryIsCollection(value, out var items))
+            {
+                var all = new System.Text.StringBuilder("[");
+                var first = true;
+                foreach (var item in items)
+                {
+                    if (!first)
+                        all.Append(", ");
+                    all.Append(ToDefaultString(item));
+                    first = false;
+                }
+                all.Append(']');
+                return all.ToString();
+            }
+
+            return value.ToString();
         }
 
         #endregion

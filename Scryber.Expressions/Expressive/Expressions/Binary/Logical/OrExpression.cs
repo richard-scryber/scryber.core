@@ -16,8 +16,8 @@ namespace Scryber.Expressive.Expressions.Binary.Logical
         #region BinaryExpressionBase Members
 
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            Convert.ToBoolean(lhsResult) ||
-            Convert.ToBoolean(rightHandSide.Evaluate(variables));
+            Helpers.Truth.IsTrue(lhsResult) ||
+            Helpers.Truth.IsTrue(rightHandSide.Evaluate(variables));
 
         #endregion
     }
