@@ -268,12 +268,43 @@ namespace Scryber.Styles
         private List<StylePageGroup> _pages;
 
         /// <summary>
-        /// Returns an enumerable set of style definitions that match the last (top) selector only of the definition against the component
+        /// The position of each style in the order they were added (the order of the css), so that the matched styles
+        /// can be merged in that order - a later rule wins over an earlier rule with the same specificity, as in the loop.
+        /// </summary>
+        private Dictionary<StyleBase, int> _order;
+
+        /// <summary>
+        /// Returns the style definitions that match the last (top) selector only of the definition against the component,
+        /// once each, in the order they were added
         /// </summary>
         /// <param name="component"></param>
-        /// <param name="state"></param>
         /// <returns></returns>
         public IEnumerable<StyleBase> GetTopMatched(IComponent component)
+        {
+            var matched = new List<StyleBase>();
+            var unique = new HashSet<StyleBase>();
+
+            foreach (var style in this.GetTopCandidates(component))
+            {
+                //a definition with more than one selector can be found more than once
+                if (unique.Add(style))
+                    matched.Add(style);
+            }
+
+            if (matched.Count > 1 && null != _order)
+                matched.Sort(this.CompareOrder);
+
+            return matched;
+        }
+
+        private int CompareOrder(StyleBase one, StyleBase two)
+        {
+            int first = _order.TryGetValue(one, out var o1) ? o1 : int.MaxValue;
+            int second = _order.TryGetValue(two, out var o2) ? o2 : int.MaxValue;
+            return first.CompareTo(second);
+        }
+
+        private IEnumerable<StyleBase> GetTopCandidates(IComponent component)
         {
             var id = component.ID;
             var ele = component.ElementName;
@@ -296,6 +327,11 @@ namespace Scryber.Styles
 
         public bool AddStyle(StyleBase style)
         {
+            if (null == _order)
+                _order = new Dictionary<StyleBase, int>();
+            if (!_order.ContainsKey(style))
+                _order.Add(style, _order.Count);
+
             if (style is StyleDefn defn)
             {
                 return this.AddDefinition(defn);
@@ -314,6 +350,7 @@ namespace Scryber.Styles
             }
             else
             {
+                if (null == this._catchAlls) { this._catchAlls = new List<StyleBase>(); }
                 this._catchAlls.Add(style);
                 return false;
             }
@@ -480,7 +517,10 @@ namespace Scryber.Styles
                     yield return root;
                 }
             }
-            else if(null != _pages && _pages.Count > 0 && component is IDocumentPage)
+
+            //@page rules are matched against the document's own '@page' component (not an IDocumentPage),
+            //and each page group checks its own match - as in the loop over all the styles
+            if(null != _pages && _pages.Count > 0)
             {
                 foreach(var pg in _pages)
                 {
