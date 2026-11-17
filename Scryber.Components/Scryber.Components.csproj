@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.9.1</PackageVersion>
+    <PackageVersion>9.10.0</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,7 @@
     <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>Next release (not yet versioned)
+    <PackageReleaseNotes>9.10.0
 New: the conditional (ternary) operator in expressions - condition ? whenTrue : whenFalse, e.g. {{model.count == 1 ? 'item' : 'items'}}. It has the lowest precedence, a chain reads from the right (a ? b : c ? d : e), and only the chosen value is evaluated. A condition is false when it is null, false, zero, an empty string or the text 'false'. The javascript forms === and !== are also read as == and !=.
 Fixed: a style block (or the document styles) with more than 30 rules ignored @page rules - including :first, named pages and @page inside @media - so the page size and margins were not set (issue #200, found by Matthias Voigt). With more than 30 rules the later of two rules with the same specificity also did not always win (e.g. .a and .b on class='b a'), and a document with more than 30 style or link elements failed with an error. A large block now gives the same result as a small one.
 Fixed: Newtonsoft (JObject) and System.Text.Json models now bind the same way in expressions - all JSON values are read in one place. An item from a Newtonsoft array (e.g. model.tags[1]) is now its value (a string, number or bool), not a JValue; a JObject can be indexed by key (model.nested['p1']); and a missing key on a System.Text.Json object is null, as with property access, rather than an error.
@@ -302,12 +302,12 @@ Paperwork.Core is its successor and the recommended package for new projects. It
 Scryber.Core still works as it always has, and will continue to be maintained and supported. It is released under the LGPL licence, so you can use it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.9.1.0</Version>
+    <Version>9.10.0.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.8.0.0</FileVersion>
+    <FileVersion>9.10.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
