@@ -2677,14 +2677,34 @@ namespace Scryber.Core.UnitTests.Html
                 doc.RenderOptions.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password");
                 doc.Params["title"] = "Hello World";
 
-                using (var stream = DocStreams.GetOutputStream("RestrictedHtml.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
+                var data = SaveAndGetData(doc, "RestrictedHtml.pdf");
+                var security = AssertRestricted(data);
 
+                //opens without a password, and Password is the owner password
+                Assert.IsTrue(security.IsUserPassword(""), "The document should open without a password");
+                Assert.IsTrue(security.IsOwnerPassword("Password"), "Password should be the owner password");
+                Assert.IsFalse(security.IsOwnerPassword("Wrong"), "Wrong should not be the owner password");
             }
+        }
 
-            Assert.Inconclusive("Can only check by opening the document");
+        /// <summary>
+        /// Checks the document is encrypted with 128 bit RC4 (revision 3), and only allows filling in forms (the print-restrictions meta of the template)
+        /// </summary>
+        private static PdfStandardSecurity AssertRestricted(byte[] data)
+        {
+            var security = PdfStandardSecurity.Read(data);
+            Assert.IsNotNull(security, "The document is not encrypted");
+            Assert.AreEqual(2, security.Version);
+            Assert.AreEqual(3, security.Revision);
+            Assert.AreEqual(128, security.KeyLengthBits);
+
+            Assert.IsFalse(security.IsAllowed(3), "Printing should not be allowed");
+            Assert.IsFalse(security.IsAllowed(4), "Modifying should not be allowed");
+            Assert.IsFalse(security.IsAllowed(5), "Copying should not be allowed");
+            Assert.IsFalse(security.IsAllowed(6), "Annotating should not be allowed");
+            Assert.IsTrue(security.IsAllowed(9), "Filling in forms should be allowed");
+            Assert.IsFalse(security.IsAllowed(12), "High quality printing should not be allowed");
+            return security;
         }
 
         [TestMethod()]
@@ -2698,14 +2718,13 @@ namespace Scryber.Core.UnitTests.Html
                 doc.ConformanceMode = ParserConformanceMode.Lax;
                 doc.Params["title"] = "Hello World";
 
-                using (var stream = DocStreams.GetOutputStream("RestrictedNoPasswordHtml.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
+                var data = SaveAndGetData(doc, "RestrictedNoPasswordHtml.pdf");
+                var security = AssertRestricted(data);
 
+                //opens without a password, and the owner password is not empty (or known)
+                Assert.IsTrue(security.IsUserPassword(""), "The document should open without a password");
+                Assert.IsFalse(security.IsOwnerPassword(""), "The owner password should not be empty");
             }
-
-            Assert.Inconclusive("Can only check by opening the document");
         }
 
         [TestMethod()]
@@ -2717,26 +2736,27 @@ namespace Scryber.Core.UnitTests.Html
             {
                 doc.RenderOptions.PasswordProvider = new Scryber.PDF.Secure.DocumentPasswordProvider("Password", "Password");
                 doc.Params["title"] = "Hello World";
-                using (var stream = DocStreams.GetOutputStream("ProtectedHtml.pdf"))
+                doc.PreRender += delegate(object sender, RenderEventArgs args)
                 {
-                    doc.PreRender += delegate(object sender, RenderEventArgs args)
-                    {
-                        var provider = doc.RenderOptions.PasswordProvider;
-                        var perms = doc.RenderOptions.Permissions;
-                        var writer = doc.RenderOptions.WriterFactory;
-                        Assert.IsNotNull(provider, "Password provider was null");
-                        Assert.IsTrue(perms.HasRestrictions);
-                        Assert.IsTrue(perms.AllowFormFilling);
-                        Assert.IsFalse(perms.AllowCopying);
-                        Assert.IsInstanceOfType(writer, typeof(PDFSecureWrite14Factory));
-                    };
-                    
-                    doc.SaveAsPDF(stream);
-                }
+                    var provider = doc.RenderOptions.PasswordProvider;
+                    var perms = doc.RenderOptions.Permissions;
+                    var writer = doc.RenderOptions.WriterFactory;
+                    Assert.IsNotNull(provider, "Password provider was null");
+                    Assert.IsTrue(perms.HasRestrictions);
+                    Assert.IsTrue(perms.AllowFormFilling);
+                    Assert.IsFalse(perms.AllowCopying);
+                    Assert.IsInstanceOfType(writer, typeof(PDFSecureWrite14Factory));
+                };
 
+                var data = SaveAndGetData(doc, "ProtectedHtml.pdf");
+                var security = AssertRestricted(data);
+
+                //needs the password to open
+                Assert.IsFalse(security.IsUserPassword(""), "The document should not open without a password");
+                Assert.IsFalse(security.IsUserPassword("Wrong"), "The document should not open with the wrong password");
+                Assert.IsTrue(security.IsUserPassword("Password"), "The document should open with the password");
+                Assert.IsTrue(security.IsOwnerPassword("Password"), "Password should be the owner password");
             }
-
-            Assert.Inconclusive("Can only check by opening the document");
         }
 
 
