@@ -1790,43 +1790,41 @@ namespace Scryber.UnitLayouts
             var svgs = GetSVGImageData(this.layout);
             Assert.AreEqual(4, svgs.Count, "Expected 4 SVG images");
             
-            const double Delta = 0.1;
-            // 1. width=50% → intrinsic width=100 (50% of vb 200), height=75 (proportional from vb AR)
-            //    No img override → run matches intrinsic.
+            // As a browser (checked against Chrome), a percentage width or height on the svg root is not a size of its own,
+            // so each of these is sized as a viewBox only svg (200 x 150): it fills the width (595 - 10pt body padding)
+            // with the 4:3 ratio of the viewBox, unless the img has a size.
+            const double Delta = 0.5;
+            const double FullWidth = 585.28;
+            const double FullHeight = FullWidth * 150.0 / 200.0;
 
-            var size0 = svgs[0].Sizer.GetLayoutSize();
-            Assert.AreEqual(300.0, size0.Width.PointsValue,  Delta, "1. Sizer width: 50% of viewBox W=200");
-            Assert.AreEqual(225.0,  size0.Height.PointsValue, Delta, "1. Sizer height: proportional 100*(150/200)");
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.IsInstanceOfType(svgs[i].Sizer, typeof(Scryber.Svg.Imaging.SVGImageDataViewBoxSizer), (i + 1) + ". Sized as a viewBox only svg");
+                var size = svgs[i].Sizer.GetLayoutSize();
+                Assert.AreEqual(200.0, size.Width.PointsValue, Delta, (i + 1) + ". Sizer width is the viewBox width");
+                Assert.AreEqual(150.0, size.Height.PointsValue, Delta, (i + 1) + ". Sizer height is the viewBox height");
+            }
+
+            // 1. width=150% - fills the width
             var run0 = GetImageRunFromBody(0);
-            Assert.AreEqual(300.0, run0.Width.PointsValue,  Delta, "1. Run width matches intrinsic");
-            Assert.AreEqual(225.0,  run0.Height.PointsValue, Delta, "1. Run height matches intrinsic");
-            
-            // 2. height=50% → intrinsic height=75 (50% of vb 150), width=100 (proportional from vb AR)
-            //    No img override → run matches intrinsic.
-            var size1 = svgs[1].Sizer.GetLayoutSize();
-            Assert.AreEqual(100.0, size1.Width.PointsValue,  Delta, "2. Sizer width: proportional 75*(200/150)");
-            Assert.AreEqual(75.0,  size1.Height.PointsValue, Delta, "2. Sizer height: 50% of viewBox H=150");
+            Assert.AreEqual(FullWidth, run0.Width.PointsValue, Delta, "1. Run fills the width");
+            Assert.AreEqual(FullHeight, run0.Height.PointsValue, Delta, "1. Run height from the viewBox ratio");
+
+            // 2. height=50% - would fill the width, but there is only 363pt left on the page, so (as any image in scryber,
+            //    where a browser would move it to the next page) it is reduced to fit, keeping the viewBox ratio.
             var run1 = GetImageRunFromBody(1);
-            Assert.AreEqual(100.0, run1.Width.PointsValue,  Delta, "2. Run width matches intrinsic");
-            Assert.AreEqual(75.0,  run1.Height.PointsValue, Delta, "2. Run height matches intrinsic");
-            
-            // 3. width=75%, height=100% → intrinsic 150×150 (non-square)
-            //    No img override → run matches intrinsic.
-            var size2 = svgs[2].Sizer.GetLayoutSize();
-            Assert.AreEqual(150.0, size2.Width.PointsValue,  Delta, "3. Sizer width: 75% of viewBox W=200");
-            Assert.AreEqual(150.0, size2.Height.PointsValue, Delta, "3. Sizer height: 100% of viewBox H=150");
+            Assert.IsTrue(run1.Height.PointsValue < FullHeight, "2. Run is reduced to fit the rest of the page");
+            Assert.AreEqual(run1.Height.PointsValue * 200.0 / 150.0, run1.Width.PointsValue, Delta, "2. Run keeps the viewBox ratio");
+
+            // 3. width=75%, height=100% - fills the width, keeping the viewBox ratio (not 75 x 100 of it)
             var run2 = GetImageRunFromBody(2);
-            Assert.AreEqual(150.0, run2.Width.PointsValue,  Delta, "3. Run width matches intrinsic");
-            Assert.AreEqual(150.0, run2.Height.PointsValue, Delta, "3. Run height matches intrinsic");
-            
-            // 4. width=50% → intrinsic 100×75; img override width=200pt → run 200×150 (proportional from intrinsic AR)
-            var size3 = svgs[3].Sizer.GetLayoutSize();
-            Assert.AreEqual(100.0, size3.Width.PointsValue,  Delta, "4. Sizer width: 50% of viewBox W=200 (intrinsic)");
-            Assert.AreEqual(75.0,  size3.Height.PointsValue, Delta, "4. Sizer height: proportional (intrinsic)");
+            Assert.AreEqual(FullWidth, run2.Width.PointsValue, Delta, "3. Run fills the width");
+            Assert.AreEqual(FullHeight, run2.Height.PointsValue, Delta, "3. Run height from the viewBox ratio");
+
+            // 4. width=50%, with an img width of 400pt - height from the viewBox ratio
             var run3 = GetImageRunFromBody(3);
-            Assert.AreEqual(400.0, run3.Width.PointsValue,  Delta, "4. Run width from img override");
-            Assert.AreEqual(200.0, run3.Height.PointsValue, Delta, "4. Run height proportional from intrinsic: 200*(75/100)");
-            
+            Assert.AreEqual(400.0, run3.Width.PointsValue, Delta, "4. Run width from the img");
+            Assert.AreEqual(300.0, run3.Height.PointsValue, Delta, "4. Run height from the viewBox ratio");
         }
         
         // -----------------------------------------------------------------------

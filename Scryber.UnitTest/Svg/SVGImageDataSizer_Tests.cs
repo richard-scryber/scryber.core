@@ -445,77 +445,112 @@ namespace Scryber.Core.UnitTests.Svg
 
         // ---------------------------------------------------------------
         // 2.4  Percentage width / height on the SVG element itself
+        //
+        // As a browser (checked against Chrome), a percentage on the root of an svg image is not a size of its own.
+        // With a viewBox the image is sized as a viewBox only svg (it fills the space available with the viewBox ratio),
+        // without one it has the default 300 x 150, and an absolute size on the other side is used with the viewBox ratio.
         // ---------------------------------------------------------------
 
         [TestMethod]
-        [Description("width='50%' with viewBox 200x150 → intrinsic width=100, height proportional from viewBox AR")]
-        public void Size_PercentWidth_WithViewBox_ResolvesAndProportional()
+        [Description("width='50%' with viewBox 200x150 → sized as viewBox only (fills the available width in Chrome)")]
+        public void Size_PercentWidth_WithViewBox_IsViewBoxOnly()
         {
-            // viewBox: 0 0 200 150, width=50% → width=100pt, height=100*(150/200)=75pt
             var canvas = MakeCanvas(width: Unit.Percent(50), viewBox: new Rect(0, 0, 200, 150));
             var sizer = MakeSizer(canvas);
-            var size = sizer.GetLayoutSize();
+            Assert.IsInstanceOfType(sizer, typeof(SVGImageDataViewBoxSizer));
 
-            Assert.AreEqual(100.0, size.Width.PointsValue, Delta, "50% of viewBox width 200");
-            Assert.AreEqual(75.0,  size.Height.PointsValue, Delta, "Height proportional: 100*(150/200)");
+            var size = sizer.GetLayoutSize();
+            Assert.AreEqual(200.0, size.Width.PointsValue, Delta, "viewBox width");
+            Assert.AreEqual(150.0, size.Height.PointsValue, Delta, "viewBox height");
         }
 
         [TestMethod]
-        [Description("height='50%' with viewBox 200x150 → intrinsic height=75, width proportional from viewBox AR")]
-        public void Size_PercentHeight_WithViewBox_ResolvesAndProportional()
+        [Description("height='50%' with viewBox 200x150 → sized as viewBox only")]
+        public void Size_PercentHeight_WithViewBox_IsViewBoxOnly()
         {
-            // viewBox: 0 0 200 150, height=50% → height=75pt, width=75*(200/150)=100pt
             var canvas = MakeCanvas(height: Unit.Percent(50), viewBox: new Rect(0, 0, 200, 150));
             var sizer = MakeSizer(canvas);
-            var size = sizer.GetLayoutSize();
+            Assert.IsInstanceOfType(sizer, typeof(SVGImageDataViewBoxSizer));
 
-            Assert.AreEqual(100.0, size.Width.PointsValue, Delta, "Width proportional: 75*(200/150)");
-            Assert.AreEqual(75.0,  size.Height.PointsValue, Delta, "50% of viewBox height 150");
+            var size = sizer.GetLayoutSize();
+            Assert.AreEqual(200.0, size.Width.PointsValue, Delta, "viewBox width");
+            Assert.AreEqual(150.0, size.Height.PointsValue, Delta, "viewBox height");
         }
 
         [TestMethod]
-        [Description("width='50%' + height='50%' with viewBox 200x150 → intrinsic 100x75")]
-        public void Size_PercentBothDims_WithViewBox_BothResolved()
+        [Description("width='50%' + height='50%' with viewBox 200x150 → sized as viewBox only")]
+        public void Size_PercentBothDims_WithViewBox_IsViewBoxOnly()
         {
             var canvas = MakeCanvas(width: Unit.Percent(50), height: Unit.Percent(50),
                 viewBox: new Rect(0, 0, 200, 150));
             var sizer = MakeSizer(canvas);
-            var size = sizer.GetLayoutSize();
+            Assert.IsInstanceOfType(sizer, typeof(SVGImageDataViewBoxSizer));
 
-            Assert.AreEqual(100.0, size.Width.PointsValue, Delta, "50% of viewBox width 200");
-            Assert.AreEqual(75.0,  size.Height.PointsValue, Delta, "50% of viewBox height 150");
+            var size = sizer.GetLayoutSize();
+            Assert.AreEqual(200.0, size.Width.PointsValue, Delta, "viewBox width");
+            Assert.AreEqual(150.0, size.Height.PointsValue, Delta, "viewBox height");
         }
 
         [TestMethod]
-        [Description("width='75%' + height='100%' with viewBox 200x150 → non-square result")]
-        public void Size_PercentDims_NonSquare_WithViewBox()
+        [Description("width='75%' + height='100%' with viewBox 200x150 → sized as viewBox only, keeping the viewBox ratio")]
+        public void Size_PercentDims_NonSquare_WithViewBox_KeepsViewBoxRatio()
         {
-            // width=75% of 200=150, height=100% of 150=150
             var canvas = MakeCanvas(width: Unit.Percent(75), height: Unit.Percent(100),
                 viewBox: new Rect(0, 0, 200, 150));
             var sizer = MakeSizer(canvas);
-            var size = sizer.GetLayoutSize();
+            Assert.IsInstanceOfType(sizer, typeof(SVGImageDataViewBoxSizer));
 
-            Assert.AreEqual(150.0, size.Width.PointsValue, Delta, "75% of viewBox width 200");
-            Assert.AreEqual(150.0, size.Height.PointsValue, Delta, "100% of viewBox height 150");
+            var size = sizer.GetLayoutSize();
+            Assert.AreEqual(200.0, size.Width.PointsValue, Delta, "viewBox width");
+            Assert.AreEqual(150.0, size.Height.PointsValue, Delta, "viewBox height");
         }
 
         [TestMethod]
-        [Description("width='50%' without viewBox → throws InvalidOperationException")]
-        public void Size_PercentWidth_NoViewBox_Throws()
+        [Description("width='50%' without viewBox → no size and no ratio, so the 300x150 default (Chrome)")]
+        public void Size_PercentWidth_NoViewBox_Defaults()
         {
             var canvas = MakeCanvas(width: Unit.Percent(50));
             var sizer = MakeSizer(canvas);
-            Assert.ThrowsExactly<InvalidOperationException>(() => sizer.GetLayoutSize());
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(SVGCanvas.DefaultWidth.PointsValue, size.Width.PointsValue, Delta, "Default width");
+            Assert.AreEqual(SVGCanvas.DefaultHeight.PointsValue, size.Height.PointsValue, Delta, "Default height");
         }
 
         [TestMethod]
-        [Description("height='50%' without viewBox → throws InvalidOperationException")]
-        public void Size_PercentHeight_NoViewBox_Throws()
+        [Description("height='50%' without viewBox → no size and no ratio, so the 300x150 default (Chrome)")]
+        public void Size_PercentHeight_NoViewBox_Defaults()
         {
             var canvas = MakeCanvas(height: Unit.Percent(50));
             var sizer = MakeSizer(canvas);
-            Assert.ThrowsExactly<InvalidOperationException>(() => sizer.GetLayoutSize());
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(SVGCanvas.DefaultWidth.PointsValue, size.Width.PointsValue, Delta, "Default width");
+            Assert.AreEqual(SVGCanvas.DefaultHeight.PointsValue, size.Height.PointsValue, Delta, "Default height");
+        }
+
+        [TestMethod]
+        [Description("width='50%' + height='100' with viewBox 200x150 → 133.3 x 100, the width from the viewBox ratio (Chrome)")]
+        public void Size_PercentWidth_AbsoluteHeight_WithViewBox_WidthFromRatio()
+        {
+            var canvas = MakeCanvas(width: Unit.Percent(50), height: 100, viewBox: new Rect(0, 0, 200, 150));
+            var sizer = MakeSizer(canvas);
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(133.33, size.Width.PointsValue, Delta, "Width from the height and the viewBox ratio");
+            Assert.AreEqual(100.0, size.Height.PointsValue, Delta, "The absolute height");
+        }
+
+        [TestMethod]
+        [Description("width='120' + height='100%' with viewBox 200x150 → 120 x 90, the height from the viewBox ratio (Chrome)")]
+        public void Size_AbsoluteWidth_PercentHeight_WithViewBox_HeightFromRatio()
+        {
+            var canvas = MakeCanvas(width: 120, height: Unit.Percent(100), viewBox: new Rect(0, 0, 200, 150));
+            var sizer = MakeSizer(canvas);
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(120.0, size.Width.PointsValue, Delta, "The absolute width");
+            Assert.AreEqual(90.0, size.Height.PointsValue, Delta, "Height from the width and the viewBox ratio");
         }
     }
 }

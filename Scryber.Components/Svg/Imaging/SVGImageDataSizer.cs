@@ -81,7 +81,11 @@ public class SVGImageDataSizer
 
     public static SVGImageDataSizer CreateSizingStrategy(SVGCanvas forCanvas, Style appliedStyle, LayoutContext context)
     {
-        //return new SVGImageDataSizer(forCanvas, appliedStyle, context);
+        //A percentage width or height on the root of an svg image is not a size of its own (as a browser), so
+        //that dimension comes from the other one and the viewBox ratio, or from the space available.
+        RemovePercentDimension(appliedStyle, StyleKeys.SizeWidthKey);
+        RemovePercentDimension(appliedStyle, StyleKeys.SizeHeightKey);
+
         var w = appliedStyle.GetValue(StyleKeys.SizeWidthKey, Unit.AutoValue);
         var h = appliedStyle.GetValue(StyleKeys.SizeHeightKey, Unit.AutoValue);
         var vp = appliedStyle.IsValueDefined(StyleKeys.PositionViewPort);
@@ -107,6 +111,17 @@ public class SVGImageDataSizer
         }
     }
     
+    private static void RemovePercentDimension(Style style, StyleKey<Unit> key)
+    {
+        if (style.TryGetValue(key, out var value) && IsPercent(value.Value(style)))
+            style.RemoveValue(key);
+    }
+
+    private static bool IsPercent(Unit unit)
+    {
+        return unit.IsRelative && unit.Units == PageUnits.Percent;
+    }
+
     //
     // public methods
     //
@@ -389,6 +404,13 @@ public class SVGImageDataSizer
 
         bool hasWidth  = this.Canvas.Style.TryGetValue(StyleKeys.SizeWidthKey,  out var wValue);
         bool hasHeight = this.Canvas.Style.TryGetValue(StyleKeys.SizeHeightKey, out var hValue);
+
+        // A percentage is not an intrinsic size (as a browser) - the dimension comes from the other one and the viewBox ratio,
+        // or the default.
+        if (hasWidth && IsPercent(wValue.Value(this.Canvas.Style)))
+            hasWidth = false;
+        if (hasHeight && IsPercent(hValue.Value(this.Canvas.Style)))
+            hasHeight = false;
 
         Unit width  = SVGCanvas.DefaultWidth;
         Unit height = SVGCanvas.DefaultHeight;

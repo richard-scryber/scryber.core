@@ -14,7 +14,12 @@
     <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.10.0
+    <PackageReleaseNotes>Next release (not yet versioned)
+Breaking change: an svg image (img src='image.svg') with a percentage width or height on its svg root (e.g. width='100%' viewBox='0 0 24 24') is sized as a browser - a percentage is not a size of its own, so the image fills the width available with the ratio of the viewBox (or uses the other, absolute, dimension with that ratio). It was sized as the percentage of the viewBox. Give the img a width or height to size it.
+Fixed: an svg image larger than the space available was drawn at 300 x 150, as its size was read before the svg was laid out. It is now reduced to fit, keeping its ratio, as other images.
+Fixed: an svg image with only a viewBox, reduced to fit the height left on a page, kept the full width and lost its ratio. It now keeps the ratio of the viewBox.
+
+9.10.0
 New: the conditional (ternary) operator in expressions - condition ? whenTrue : whenFalse, e.g. {{model.count == 1 ? 'item' : 'items'}}. It has the lowest precedence, a chain reads from the right (a ? b : c ? d : e), and only the chosen value is evaluated. A condition is false when it is null, false, zero, an empty string or the text 'false'. The javascript forms === and !== are also read as == and !=.
 Fixed: a style block (or the document styles) with more than 30 rules ignored @page rules - including :first, named pages and @page inside @media - so the page size and margins were not set (issue #200, found by Matthias Voigt). With more than 30 rules the later of two rules with the same specificity also did not always win (e.g. .a and .b on class='b a'), and a document with more than 30 style or link elements failed with an error. A large block now gives the same result as a small one.
 Fixed: Newtonsoft (JObject) and System.Text.Json models now bind the same way in expressions - all JSON values are read in one place. An item from a Newtonsoft array (e.g. model.tags[1]) is now its value (a string, number or bool), not a JValue; a JObject can be indexed by key (model.nested['p1']); and a missing key on a System.Text.Json object is null, as with property access, rather than an error.

@@ -2460,32 +2460,36 @@ namespace Scryber.PDF.Layout
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
             
 
-            Size sz = image.GetRequiredSizeForLayout(avail, this.Context, style);
-            
-            if (null != imgx.ImageData)
+            //Image data that lays out its own content (e.g. an svg) is laid out first, so that its natural size
+            //is known when the size of the image is calculated.
+            Size? dataSize = null;
+            ImageData data = imgx.ImageData;
+            if (data is Scryber.Imaging.ImageDataProxy proxy)
+                data = proxy.ImageData;
+
+            if (null != data && data is ILayoutComponent tolayout)
             {
-                var data = imgx.ImageData;
-                if(data is Scryber.Imaging.ImageDataProxy proxy)
-                    data = proxy.ImageData;
+                if(this.Context.ShouldLogVerbose)
+                    this.Context.TraceLog.Add(TraceLevel.Verbose, "Layout", "Laying out the image content for '" + data.SourcePath + " as it is implemenbting the ILayoutComponent interface");
 
-                if (null != data && data is ILayoutComponent tolayout)
+                dataSize = tolayout.GetRequiredSizeForLayout(avail, this.Context, style);
+            }
+
+            Size sz = image.GetRequiredSizeForLayout(avail, this.Context, style);
+
+            if (dataSize.HasValue)
+            {
+                var imgSz = dataSize.Value;
+
+                if (imgSz.Width > avail.Width || imgSz.Height > avail.Height)
                 {
-                    if(this.Context.ShouldLogVerbose)
-                        this.Context.TraceLog.Add(TraceLevel.Verbose, "Layout", "Laying out the image content for '" + data.SourcePath + " as it is implemenbting the ILayoutComponent interface");
-                    
-                    var imgSz = tolayout.GetRequiredSizeForLayout(avail, this.Context, style);
-
-                    if (imgSz.Width > avail.Width || imgSz.Height > avail.Height)
+                    if (data.AllowLayoutOverflow)
                     {
-                        if (data.AllowLayoutOverflow)
-                        {
-                            imgSz = sz;
-                        }
+                        imgSz = sz;
                     }
-                    
-                    sz = imgSz;
                 }
-                    
+
+                sz = imgSz;
             }
             
             AddComponentRunToLayoutWithSize(sz, image, style, ref linetoAddTo, options);

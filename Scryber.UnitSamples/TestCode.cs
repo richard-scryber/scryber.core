@@ -52,10 +52,50 @@ public class TestCode : SampleBase
             doc.SaveAsPDF(ms);
         }
         
-        //tyre.svg has width="100%" and a viewBox of 1536 x 1024. In Chrome a percentage on the svg root means it has no size
-        //of its own, so it fills the width (595 x 397pt). Scryber reads the percentage of the viewBox (1536 x 1024), and
-        //then uses the 300 x 150 default as the overflow size is read before the svg is laid out (LayoutEngineBase.DoLayoutImageComponent).
-        Assert.Inconclusive("A percentage width on an svg image root does not match the browser (fills the width) - waiting on a decision.");
+        //tyre.svg has width="100%" and a viewBox of 1536 x 1024. As Chrome, a percentage on the svg root is not a size
+        //of its own, so it fills the width with the viewBox ratio, on the line after the text.
+        var arrange = img.GetFirstArrangement();
+        Assert.IsNotNull(arrange);
+        Assert.AreEqual(0, arrange.PageIndex);
+        var bounds = arrange.RenderBounds;
+        Assert.AreEqual(595.28, bounds.Width.PointsValue, 0.5, "The tyre fills the page width");
+        Assert.AreEqual(595.28 * 1024.0 / 1536.0, bounds.Height.PointsValue, 0.5, "The tyre height is from the viewBox ratio");
+        Assert.IsTrue(bounds.Y.PointsValue > 10, "The tyre is on the line after the text");
+    }
+
+    [TestMethod]
+    public void OversizedSVGImage()
+    {
+        //An svg with its own size (1536 x 1024) wider than the page is scaled down to fit the width, keeping its ratio
+        //- the same as any other image in scryber (a browser lets it overflow). The size of the image was read before
+        //the svg was laid out, so it was the 300 x 150 default.
+        var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='1536' height='1024' viewBox='0 0 1536 1024'><rect width='1536' height='1024' fill='red' /></svg>";
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "scryber_oversized_" + System.Guid.NewGuid().ToString("N") + ".svg");
+        System.IO.File.WriteAllText(path, svg);
+
+        try
+        {
+            var doc = new HTMLDocument();
+            doc.Body = new HTMLBody();
+            doc.Body.Contents.Add("All the content goes here.");
+            var img = new Image();
+            img.Source = path;
+            doc.Body.Contents.Add(img);
+
+            using (var ms = DocStreams.GetOutputStream("OversizedSVGImage.pdf"))
+            {
+                doc.SaveAsPDF(ms);
+            }
+
+            var arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(595.28, arrange.RenderBounds.Width.PointsValue, 0.5, "The svg is scaled to the page width");
+            Assert.AreEqual(595.28 * 1024.0 / 1536.0, arrange.RenderBounds.Height.PointsValue, 0.5, "The svg keeps its own ratio");
+        }
+        finally
+        {
+            System.IO.File.Delete(path);
+        }
     }
     
     [TestMethod]

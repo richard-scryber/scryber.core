@@ -49,31 +49,19 @@ public class SVGImageDataViewBoxSizer : SVGImageDataSizer
 
     protected virtual Size DoGetProportionalSize(Size layout, Size available, ContextBase context)
     {
-        var scale = this.GetRenderScaleForContent(Point.Empty, available, context);
-        
-        var min = DoGetMinimumnImageScale();
-        if (scale.Width.PointsValue < min || scale.Height.PointsValue < min)
-        {
-            scale.Width = available.Width.PointsValue / this.ViewBox.Width.PointsValue;
-            scale.Height = scale.Width;
-            //scale = new Size(1, 1);
-        }
+        //The image box keeps the ratio of the viewBox, and is as large as fits in the space available
+        //(the preserveAspectRatio meet or slice is for the content within the box, not the size of the box).
+        var scaleX = available.Width.PointsValue / this.ViewBox.Width.PointsValue;
+        var scaleY = available.Height.PointsValue / this.ViewBox.Height.PointsValue;
+        var scale = Math.Min(scaleX, scaleY);
 
-        var proportional = Size.Empty;
-        
-        //Use the minimum scale to fit
-        if (scale.Width > scale.Height)
-        {
-            scale.Width = this.ViewBox.Width * scale.Height.PointsValue;
-            proportional.Height = available.Height;
-            proportional.Width = this.ViewBox.Width * scale.Height.PointsValue;
-        }
-        else
-        {
-            proportional.Width = available.Width;
-            proportional.Height = this.ViewBox.Height * scale.Width.PointsValue;
-        }
-        return proportional;
+        //If fitting the height would reduce the image too far, fill the width and let the height overflow
+        //(so the image can move on to the next page).
+        var min = DoGetMinimumnImageScale();
+        if (scaleY < scaleX && scaleY < scaleX * min)
+            scale = scaleX;
+
+        return new Size(this.ViewBox.Width * scale, this.ViewBox.Height * scale);
     }
 
     protected virtual double DoGetMinimumnImageScale()

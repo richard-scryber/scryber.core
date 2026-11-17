@@ -8,20 +8,20 @@
         </style>
     </head>
     <body>
-        <!-- vb 0 0 200 150, width=50% → intrinsic 100×75 (height proportional from vb AR) -->
+        <!-- vb 0 0 200 150, width=150% → no size of its own (as a browser), fills the width with the 4:3 viewBox ratio -->
         <img id="pct_width_only" src="Sample_PercentWidth_ViewBox200x150.svg" />
-        <p>width=150% of vb(200) - 300pt, height proportional - 225pt</p>
+        <p>width=150% - fills the width, height from the viewBox ratio</p>
 
-        <!-- vb 0 0 200 150, height=50% → intrinsic 100×75 (width proportional from vb AR) -->
+        <!-- vb 0 0 200 150, height=50% → no size of its own, fills the width (reduced to fit the rest of the page) -->
         <img id="pct_height_only" src="Sample_PercentHeight_ViewBox200x150.svg" />
-        <p>height=50% of vb(150) - 75pt, width proportional - 100pt</p>
+        <p>height=50% - fills the width, reduced to fit the page, keeping the viewBox ratio</p>
 
-<!--        &lt;!&ndash; vb 0 0 200 150, width=75% height=100% → intrinsic 150×150 &ndash;&gt;-->
+<!-- vb 0 0 200 150, width=75% height=100% → fills the width with the viewBox ratio -->
         <img id="pct_both_nonsquare" src="Sample_PercentBoth_ViewBox200x150.svg" />
-        <p>width=75% of vb(200)=150pt, height=100% of vb(150)=150pt</p>
+        <p>width=75%, height=100% - fills the width, height from the viewBox ratio</p>
 
-<!--        &lt;!&ndash; vb 0 0 200 150, width=50% → intrinsic 100×75; img override width=400pt → run 400×150 &ndash;&gt;-->
+<!-- vb 0 0 200 150, width=50%, img width=400pt → 400×300 from the viewBox ratio -->
         <img id="pct_width_img_override" src="Sample_PercentWidth_ImgOverride_ViewBox200x150.svg" style="width:400pt" />
-        <p>SVG width=50% - intrinsic 100×75; img width=200pt - run 400×150 (mid proportional)</p>
+        <p>SVG width=50%, img width=400pt - 400×300</p>
     </body>
 </html>
