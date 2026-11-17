@@ -52,7 +52,10 @@ public class TestCode : SampleBase
             doc.SaveAsPDF(ms);
         }
         
-        Assert.Inconclusive("Need to validate the size and layout.");
+        //tyre.svg has width="100%" and a viewBox of 1536 x 1024. In Chrome a percentage on the svg root means it has no size
+        //of its own, so it fills the width (595 x 397pt). Scryber reads the percentage of the viewBox (1536 x 1024), and
+        //then uses the 300 x 150 default as the overflow size is read before the svg is laid out (LayoutEngineBase.DoLayoutImageComponent).
+        Assert.Inconclusive("A percentage width on an svg image root does not match the browser (fills the width) - waiting on a decision.");
     }
     
     [TestMethod]
@@ -81,7 +84,15 @@ public class TestCode : SampleBase
             doc.SaveAsPDF(ms);
         }
         
-        Assert.Inconclusive("Need to validate the size and layout.");
+        //A viewBox only SVG (318 x 286) has no size of its own, so it fills the width with the ratio of the viewBox
+        //- checked against Chrome, on its own line below the text
+        var arrange = img.GetFirstArrangement();
+        Assert.IsNotNull(arrange);
+        Assert.AreEqual(0, arrange.PageIndex);
+        var bounds = arrange.RenderBounds;
+        Assert.AreEqual(595.28, bounds.Width.PointsValue, 0.5, "The logo fills the page width");
+        Assert.AreEqual(595.28 * 286.0 / 318.0, bounds.Height.PointsValue, 0.5, "The logo height is from the viewBox ratio");
+        Assert.IsTrue(bounds.Y.PointsValue > 10, "The logo is on the line after the text");
     }
     
     
