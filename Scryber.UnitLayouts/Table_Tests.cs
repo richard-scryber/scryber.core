@@ -2416,8 +2416,58 @@ namespace Scryber.UnitLayouts
             var line = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
             Assert.AreEqual(3, line.Runs.Count);
             Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
-            
-            Assert.Inconclusive("Need to test for the right alignment of text");
+
+            //text-align: right on the table (as a browser) aligns the text in its cells to the right,
+            //but does not move the table, or the text after it.
+            //The right alignment is the inset of the start of the text in each cell. The cells in a body row all have
+            //text of the same width (e.g. '1.1 at 25%', '1.2 at 50%', '1.3 at 25%'), so the space left after the inset and the text
+            //(the cell padding) is the same for every cell when the text ends at the right of each cell, whatever its width.
+            foreach (var col in new[] { 0, 1 })
+            {
+                var table = pg.ContentBlock.Columns[col].Contents[0] as PDFLayoutBlock;
+                Assert.AreEqual(Unit.Zero, table.TotalBounds.X, "The table stays at the start of column " + col);
+
+                //the first body row (not the header that is repeated, or the footer)
+                var bodyRow = table.Columns[0].Contents.OfType<PDFLayoutBlock>().First(r =>
+                {
+                    var firstLine = (r.Columns[0].Contents[0] as PDFLayoutBlock).Columns[0].Contents[0] as PDFLayoutLine;
+                    var text = (firstLine.Runs[1] as PDFTextRunCharacter)?.Characters;
+                    return !string.IsNullOrEmpty(text) && char.IsDigit(text[0]);
+                });
+                double? textWidth = null;
+                double? remaining = null;
+                foreach (var cellRegion in bodyRow.Columns)
+                {
+                    var cell = cellRegion.Contents[0] as PDFLayoutBlock;
+                    var cellLine = cell.Columns[0].Contents[0] as PDFLayoutLine;
+                    Assert.IsNotNull(cellLine, "The text line of a cell");
+                    Assert.AreEqual(HorizontalAlignment.Right, cellLine.HAlignment, "Cell text alignment");
+
+                    var begin = cellLine.Runs[0] as PDFTextRunBegin;
+                    var chars = cellLine.Runs[1] as PDFTextRunCharacter;
+                    Assert.IsNotNull(begin);
+                    Assert.IsNotNull(chars);
+                    Assert.IsTrue(begin.LineInset > Unit.Zero, "The cell text is inset from the left of the cell");
+
+                    var space = (cellRegion.Width - begin.LineInset - chars.Width).PointsValue;
+                    if (textWidth.HasValue)
+                    {
+                        Assert.AreEqual(textWidth.Value, chars.Width.PointsValue, 0.5, "The cell texts are the same width");
+                        Assert.AreEqual(remaining.Value, space, 0.5, "The cell text ends at the right of each cell (less the padding)");
+                    }
+                    else
+                    {
+                        textWidth = chars.Width.PointsValue;
+                        remaining = space;
+                        Assert.IsTrue(space >= 0 && space < 10, "Only the cell padding is after the text, not " + space);
+                    }
+                }
+            }
+
+            var afterBegin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(afterBegin);
+            Assert.AreEqual(Unit.Zero, afterBegin.LineInset, "The text after the table is not inset");
+            Assert.AreNotEqual(HorizontalAlignment.Right, line.HAlignment, "The text after the table is not right aligned");
         }
         
          [TestCategory(TestCategoryName)]
