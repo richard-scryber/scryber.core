@@ -49,7 +49,39 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void CSSErrors()
         {
-            Assert.Inconclusive("Add tests for invalid css content. Make sure that the other styles are actually parsed");
+            //Invalid css is skipped, and the valid styles around it are still parsed
+            var css = @"
+.first { color: #FF0000; unknown-property: 12; width: 20pt; }
+.second { color: notacolor; width: 10pt; }
+@supports (display: grid) { .skipped { color: #0000FF; } }
+.third { height: 30pt; }
+.fourth { width: ; height: 40pt; }
+.last { width: 50pt; }";
+
+            var parsed = new List<StyleBase>(new CSSStyleParser(css, null));
+            var defns = parsed.OfType<StyleDefn>().ToList();
+
+            Assert.IsFalse(defns.Any(d => d.Match.ToString().Contains("skipped")), "The style inside the unsupported @supports rule should be skipped");
+            Assert.AreEqual(5, defns.Count, "All the valid style rules should be parsed");
+
+            //an unknown property is ignored, the others are read
+            var first = defns[0];
+            Assert.AreEqual(new Color(255, 0, 0), first.GetValue(StyleKeys.FillColorKey, StandardColors.Transparent));
+            Assert.AreEqual((Unit)20, first.GetValue(StyleKeys.SizeWidthKey, Unit.Zero));
+
+            //an invalid value is ignored, the others are read
+            var second = defns[1];
+            Assert.IsFalse(second.IsValueDefined(StyleKeys.FillColorKey), "An invalid color should not be set");
+            Assert.AreEqual((Unit)10, second.GetValue(StyleKeys.SizeWidthKey, Unit.Zero));
+
+            //after the unsupported at rule
+            Assert.AreEqual((Unit)30, defns[2].GetValue(StyleKeys.SizeHeightKey, Unit.Zero));
+
+            //an empty value
+            Assert.IsFalse(defns[3].IsValueDefined(StyleKeys.SizeWidthKey), "An empty width should not be set");
+            Assert.AreEqual((Unit)40, defns[3].GetValue(StyleKeys.SizeHeightKey, Unit.Zero));
+
+            Assert.AreEqual((Unit)50, defns[4].GetValue(StyleKeys.SizeWidthKey, Unit.Zero));
         }
 
         [TestMethod]

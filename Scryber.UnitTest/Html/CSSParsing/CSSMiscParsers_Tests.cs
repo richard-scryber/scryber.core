@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Styles;
@@ -642,7 +643,29 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsNotNull(content);
             Assert.AreEqual(ContentDescriptorType.Text, content.Type);
             Assert.AreEqual("Chapter", ((ContentTextDescriptor)content).Text); //test for trimmed version
-            Assert.Inconclusive("Need to check this as a single value within a css group, an make sure it is correct.");
+
+            //Within a full style sheet, the space inside the quotes is kept (as a browser), on its own and before a counter
+            var css = @".single::before { content: 'Chapter '; }
+.multiple::before { content: 'Chapter ' counter(chapter) ': '; }";
+            var parsed = new List<StyleBase>(new Scryber.Styles.Parsing.CSSStyleParser(css, null));
+            Assert.AreEqual(2, parsed.Count);
+
+            var single = ((StyleDefn)parsed[0]).GetValue(StyleKeys.ContentTextKey, null);
+            Assert.IsNotNull(single);
+            Assert.AreEqual(ContentDescriptorType.Text, single.Type);
+            Assert.AreEqual("Chapter ", ((ContentTextDescriptor)single).Text, "Single quoted value in a style sheet");
+            Assert.IsNull(single.Next);
+
+            var multiple = ((StyleDefn)parsed[1]).GetValue(StyleKeys.ContentTextKey, null);
+            Assert.IsNotNull(multiple);
+            Assert.AreEqual(ContentDescriptorType.Text, multiple.Type);
+            Assert.AreEqual("Chapter ", ((ContentTextDescriptor)multiple).Text, "First of multiple values");
+            Assert.IsNotNull(multiple.Next);
+            Assert.AreEqual(ContentDescriptorType.Counter, multiple.Next.Type);
+            Assert.AreEqual("chapter", ((ContentCounterDescriptor)multiple.Next).CounterName);
+            Assert.IsNotNull(multiple.Next.Next);
+            Assert.AreEqual(ContentDescriptorType.Text, multiple.Next.Next.Type);
+            Assert.AreEqual(": ", ((ContentTextDescriptor)multiple.Next.Next).Text, "Last of multiple values");
         }
 
         [TestMethod()]
