@@ -89,6 +89,9 @@ Scryber implements most CSS 2.1 properties plus common CSS3 features:
 - `padding`, `padding-top/right/bottom/left`
 - `border`, `border-width`, `border-style`, `border-color`, `border-radius`
 - `width`, `height`, `min-width`, `min-height`, `max-width`, `max-height`
+- `box-sizing` - `border-box` or `content-box`
+
+**Important - Box Sizing**: Scryber's default is `border-box`, where `width` and `height` **include** the padding and border. Browsers default to `content-box`, where they do not. So a `div` with `width: 200pt; padding: 15pt;` is 200pt wide in Scryber and 230pt wide in a browser. A stylesheet written for the browser and reused here will come out narrower than its author expected wherever it relies on that default. Either set `box-sizing: content-box` explicitly to match the browser, or (better) keep the `border-box` default and write the widths to include the padding - it is the behaviour most page layouts want.
 
 **Important - Margin Collapsing**: Unlike browsers, Scryber does NOT collapse adjacent top/bottom margins between sibling elements. If two siblings have `margin-bottom: 20pt` and `margin-top: 20pt`, the total space will be 40pt (not 20pt as in browsers). Plan your spacing accordingly and consider using smaller margins or margin on only one side.
 
@@ -152,7 +155,8 @@ Scryber implements most CSS 2.1 properties plus common CSS3 features:
 - `page-break-before`, `page-break-after`, `page-break-inside`
 
 **Lists**:
-- `list-style-type`, `list-style-position`, `list-style-image`
+- `list-style-type`, `list-style` (shorthand)
+- **Not supported**: there is no parser for `list-style-position` or `list-style-image`, so both are ignored. Markers always sit outside the content (the browser's `outside` default). For a custom marker use `list-style-type`, or `::before` content on the `<li>`.
 - `counter-reset`, `counter-increment`, `content: counter()`
 
 **Advanced**:
@@ -377,18 +381,35 @@ Functions are organized into 8 categories:
 
 **Collection Functions** (13 functions):
 - `count(collection)` - Count items
-- `countOf(collection, .property, value)` - Conditional count
+- `countOf(collection, condition)` - Count the items matching a condition
 - `sum(collection)` - Sum values
 - `sumOf(collection, .property)` - Sum property values
 - `min(collection)`, `max(collection)` - Find extremes
 - `minOf(collection, .property)`, `maxOf(collection, .property)` - Property extremes
 - `collect(collection, .property)` - Extract property array
-- `selectWhere(collection, .property, value)` - Filter collection
-- `firstWhere(collection, .property, value)` - Find first match
+- `selectWhere(collection, condition)` - Filter collection
+- `firstWhere(collection, condition)` - Find first match
 - `sortBy(collection, .property)` - Sort ascending
 - `reverse(collection)` - Reverse order
 
-**Important**: Property parameters use dot notation (`.property`), not strings (`'property'`)
+**Important - two parameters, not three**: `countOf`, `selectWhere` and `firstWhere` each take **exactly two** parameters - the collection and a condition. There is no third `value` parameter; passing one is an error.
+
+The second parameter is evaluated once per item, with the item as the current context, so write the comparison out in full:
+
+```html
+<!-- Count the users whose role is 'admin' -->
+{{countOf(model.users, .role == 'admin')}}
+
+<!-- Items over 100 -->
+{{selectWhere(model.items, .price > 100)}}
+
+<!-- First unpaid invoice -->
+{{firstWhere(model.invoices, .paid == false)}}
+```
+
+A bare property name is also accepted and is read as a **truthiness test**, not an equality test: `countOf(model.users, .verified)` and `countOf(model.users, 'verified')` both count the users whose `verified` property is set and not `false`. That shorthand accepts a path too (`.address.city`, `'address.city'`).
+
+For the functions that read a value rather than test one - `sumOf`, `minOf`, `maxOf`, `collect`, `sortBy`, `averageOf` - the second parameter is the property itself, in dot notation: `sumOf(model.items, .price)`.
 
 **Statistical Functions** (5 functions):
 - `average(collection)`, `averageOf(collection, .property)` - Arithmetic mean
