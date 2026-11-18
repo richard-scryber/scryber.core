@@ -34,7 +34,6 @@ namespace Scryber.PDF.Layout
         //
 
         private const string ListEngineLogCategory = "List Item Layout Engine";
-        private static readonly Unit DefaultListItemAlley = 10;
         public static readonly Unit DefaultNumberWidth = Const.DefaultListNumberInset;
         public const HorizontalAlignment DefaultListItemAlignment = HorizontalAlignment.Right;
 
@@ -131,11 +130,10 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            Thickness margins = Thickness.Empty();
             Unit inset = Unit.Zero;
 
-            //When laying out an item we inset the content by the required amount and then add a
-            //relatively positioned number block to the current child collection.
+            //When laying out an item we add an absolutely positioned number block, before the content of the item,
+            //to the current child collection.
 
             if(this.Component.Document.ListNumbering.HasCurrentGroup && null != this.ParentListEngine)
             {
@@ -144,27 +142,39 @@ namespace Scryber.PDF.Layout
                 var explicitStyle = style.GetValue(StyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.Bullet);
                 if (nums.Style != ListNumberingGroupStyle.None && explicitStyle != ListNumberingGroupStyle.None)
                 {
-                    margins = position.Margins;
-                    var left = margins.Left;
-
+                    //As css, the indent of the items is the padding of the list (30pt by default), and the marker
+                    //is outside the content of the item - the number box (the inset wide) ends the alley before the text.
                     inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
-                    var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
 
-                    //Add the extra space for the list item number
-                    margins.Left += inset + alley;
-                    style.Margins.Left = margins.Left;
-                    position.Margins = margins;
+                    Unit alley;
+                    if (style.IsValueDefined(StyleKeys.ListAlleyKey))
+                        alley = style.GetValue(StyleKeys.ListAlleyKey, Unit.Zero);
+                    else
+                        alley = this.GetDefaultAlley(style);
 
                     var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
                     this.LabelComponent = comp;
-                    
-                    inset += alley;
                 }
             }
 
             base.DoLayoutBlockComponent(position, columnOptions);
 
         }
+
+        /// <summary>
+        /// The default space between the marker and the text, about the width of a space in the font of the item
+        /// (as the space after the marker in a browser).
+        /// </summary>
+        private Unit GetDefaultAlley(Style style)
+        {
+            var size = style.GetValue(StyleKeys.FontSizeKey, new Unit(Font.DefaultFontSize, PageUnits.Points));
+            return new Unit(size.PointsValue * DefaultListItemAlleyFactor, PageUnits.Points);
+        }
+
+        /// <summary>
+        /// The default space between the marker and the text, as a factor of the font size.
+        /// </summary>
+        public const double DefaultListItemAlleyFactor = 0.3;
 
         protected override void DoLayoutChildren()
         {
@@ -249,13 +259,17 @@ namespace Scryber.PDF.Layout
         protected virtual Panel AddLabelToBlock(ListItemLabel label, ListItem item)
         {
             Panel panel = new Panel();
-            panel.Width = label.NumberWidth;
+            //the number is in the space the inset reaches back from the text, and ends the alley before the text
+            var width = label.NumberWidth - label.AlleyWidth;
+            if (width < Unit.Zero)
+                width = Unit.Zero;
+            panel.Width = width;
             panel.TextWrapping = Text.WordWrap.NoWrap;
             panel.OverflowAction = OverflowAction.Clip;
             panel.Padding = new Thickness(0, 2, 0, 0); // add a little padding for space.
             panel.HorizontalAlignment = label.Alignment;
             panel.PositionMode = PositionMode.Absolute;
-            panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
+            panel.X = -label.NumberWidth.PointsValue;
             panel.Y = 0;
             //panel.Height = 20;
             //panel.OverflowSplit = OverflowSplit.Never;

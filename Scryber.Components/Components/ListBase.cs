@@ -192,6 +192,8 @@ namespace Scryber.Components
             Styles.Style style = base.GetBaseStyle();
             style.List.NumberingStyle = ListNumberingGroupStyle.Bullet;
             style.List.NumberAlignment = HorizontalAlignment.Right;
+            //as css, the items are indented by the padding of the list, and the markers are in that padding.
+            style.Padding.Left = Const.DefaultListNumberInset;
             return style;
         }
 

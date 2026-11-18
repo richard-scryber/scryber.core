@@ -88,7 +88,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Margins.Left = 40;
+            style.Margins.Left = 30; //40px in a browser
             return style;
         }
 

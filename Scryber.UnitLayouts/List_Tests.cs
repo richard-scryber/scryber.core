@@ -16,6 +16,17 @@ namespace Scryber.UnitLayouts
     public class List_Tests
     {
         const string TestCategoryName = "Layout";
+
+        /// <summary>
+        /// As css, the items of a list are indented by the padding of the list (30pt by default), and the number is in that padding.
+        /// </summary>
+        const double DefaultListPadding = 30.0;
+
+        /// <summary>
+        /// The default space between the number and the text - 0.3 of the font size (10pt in these tests), as the space after a marker in a browser.
+        /// The number box is the inset less this space.
+        /// </summary>
+        const double DefaultAlley = 3.0;
         const int LabelPadding = 2;
 
         PDFLayoutDocument layout;
@@ -107,7 +118,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
                 var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
@@ -124,7 +135,7 @@ namespace Scryber.UnitLayouts
 
                 
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -145,7 +156,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -221,7 +232,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
                 var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
@@ -236,7 +247,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -257,7 +268,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual("•", chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -339,7 +350,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -356,7 +367,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -377,7 +388,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -460,7 +471,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -477,7 +488,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -498,7 +509,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -582,7 +593,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -600,7 +611,7 @@ namespace Scryber.UnitLayouts
 
                
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -621,7 +632,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -705,7 +716,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -722,7 +733,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -743,7 +754,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -827,7 +838,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -844,7 +855,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -865,7 +876,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -948,7 +959,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -965,7 +976,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -986,7 +997,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + 1).ToString() + ".", chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -1071,7 +1082,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -1088,7 +1099,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(end);
                 
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -1109,7 +1120,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
             }
 
         }
@@ -1138,6 +1149,8 @@ namespace Scryber.UnitLayouts
             ol.NumberPrefix = "1";
             ol.NumberAlignment = HorizontalAlignment.Left;
             ol.NumberInset = DefaultNumberWidth;
+            //the number is in the padding of the list, so the padding makes room for the wide numbers (as css)
+            ol.Style.Padding.Left = DefaultNumberWidth + DefaultGutterWidth;
             section.Contents.Add(ol);
 
 
@@ -1196,7 +1209,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -1220,7 +1233,7 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual(1, numBlock.Columns.Length);
                 Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
 
                 var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
                 Assert.AreEqual(3, numLine.Runs.Count);
@@ -1236,8 +1249,8 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
-                //Make sure we are right aligned by default
-                Assert.AreEqual(0.0, start.StartTextCursor.Width);
+                //Left aligned at the start of the inset - the padding of the list less the inset
+                Assert.AreEqual(DefaultGutterWidth, start.StartTextCursor.Width);
             }
 
         }
@@ -1266,6 +1279,8 @@ namespace Scryber.UnitLayouts
             ol.NumberPrefix = "1...";
             ol.NumberAlignment = HorizontalAlignment.Right;
             ol.NumberInset = DefaultNumberWidth;
+            //the number is in the padding of the list, so the padding makes room for the numbers (as css)
+            ol.Style.Padding.Left = DefaultNumberWidth + DefaultGutterWidth;
             
             section.Contents.Add(ol);
 
@@ -1325,7 +1340,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -1348,7 +1363,7 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual(1, numBlock.Columns.Length);
                 Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
 
                 var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
                 Assert.AreEqual(3, numLine.Runs.Count);
@@ -1366,7 +1381,8 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                var w = DefaultNumberWidth - chars.Width - numBlock.Position.Padding.Right;
+                //the box starts at the padding of the list less the inset, and ends the alley before the text
+                var w = DefaultGutterWidth + DefaultNumberWidth - DefaultAlley - chars.Width - numBlock.Position.Padding.Right;
                 Assert.AreEqual(w, start.StartTextCursor.Width);
             }
 
@@ -1457,7 +1473,7 @@ namespace Scryber.UnitLayouts
                 //No Number to check
                 //But still inset - as per html
 
-                Assert.AreEqual(Unit.Zero, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "Without numbers the list keeps its padding, as css");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
             }
@@ -1589,7 +1605,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
                 var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
@@ -1604,7 +1620,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + i, chars.Characters);
 
                 
@@ -1627,7 +1643,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding); 
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding); 
             }
 
             //var emptyLastBlock = olBlock.Columns[0].Contents[firstPageItemCount] as PDFLayoutBlock;
@@ -1660,7 +1676,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
 
 
                 Assert.AreEqual(4, itemLine.Runs.Count, "Runs did not match for item " + i);
@@ -1677,7 +1693,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                 Assert.AreEqual("Item " + (i + firstPageItemCount), chars.Characters);
                 
 
@@ -1701,7 +1717,7 @@ namespace Scryber.UnitLayouts
 
                 //Make sure we are right aligned by default
                 
-                Assert.AreEqual(30, start.StartTextCursor.Width + chars.Width + LabelPadding, "Failed at index " + i + " on the scond page"); 
+                Assert.AreEqual(30 - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding, "Failed at index " + i + " on the scond page"); 
             }
         }
 
@@ -1780,7 +1796,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
                 var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
@@ -1795,7 +1811,7 @@ namespace Scryber.UnitLayouts
                 var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width); 
+                Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list"); 
                 Assert.AreEqual("Item " + i, chars.Characters);
 
                 
@@ -1818,7 +1834,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding); 
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding); 
             }
 
             
@@ -1848,7 +1864,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
 
                 
 
@@ -1868,7 +1884,7 @@ namespace Scryber.UnitLayouts
 
 
                 //Start text cursor Width is based on the page
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + (i + firstColumnItemCount), chars.Characters);
 
                 Assert.AreEqual(numBlock, posRun.Region.Contents[0]);
@@ -1890,7 +1906,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + firstColumnItemCount + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default - based on the page
-                Assert.AreEqual(DefaultNumberWidth + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width + chars.Width + LabelPadding, "Text start for second column in index " + i + " failed");
+                Assert.AreEqual(DefaultNumberWidth - DefaultAlley + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width + chars.Width + LabelPadding, "Text start for second column in index " + i + " failed");
             }
         }
 
@@ -2020,7 +2036,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsNotNull(numBlock);
                     Assert.IsNotNull(itemLine);
 
-                    Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                     Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -2037,7 +2053,7 @@ namespace Scryber.UnitLayouts
                     var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
 
-                    Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                    Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                     Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -2058,7 +2074,7 @@ namespace Scryber.UnitLayouts
                     Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                     //Make sure we are right aligned by default
-                    Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
                 }
             }
 
@@ -2192,7 +2208,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsNotNull(numBlock);
                     Assert.IsNotNull(itemLine);
 
-                    Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                     Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -2209,7 +2225,7 @@ namespace Scryber.UnitLayouts
                     var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
 
-                    Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                    Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                     Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -2230,7 +2246,7 @@ namespace Scryber.UnitLayouts
                     Assert.AreEqual("•", chars.Characters);
 
                     //Make sure we are right aligned by default
-                    Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
                 }
             }
 
@@ -2244,7 +2260,7 @@ namespace Scryber.UnitLayouts
             const int PageHeight = 500;
             const int ItemCount = 5;
 
-            const double DefaultNumberWidth = 40.0;
+            const double DefaultNumberWidth = 30.0; //a dd is indented 40px in a browser (30pt)
 
             Document doc = new Document();
             Section section = new Section();
@@ -2337,7 +2353,7 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual("Item " + i, chars.Characters);
 
-                //Make sure we are right aligned by default
+                //The definition is indented by its left margin
                 Assert.AreEqual(DefaultNumberWidth, defnBlock.Position.Margins.Left);
             }
 
@@ -2463,7 +2479,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsNotNull(numBlock);
                     Assert.IsNotNull(itemLine);
 
-                    Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                     Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -2480,7 +2496,7 @@ namespace Scryber.UnitLayouts
                     var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
 
-                    Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                    Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                     Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -2501,7 +2517,7 @@ namespace Scryber.UnitLayouts
                     Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                     //Make sure we are right aligned by default
-                    Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
                 }
             }
 
@@ -2773,7 +2789,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsNotNull(numBlock);
                     Assert.IsNotNull(itemLine);
 
-                    Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
                     Assert.AreEqual(4, itemLine.Runs.Count);
 
 
@@ -2790,7 +2806,7 @@ namespace Scryber.UnitLayouts
                     var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
 
-                    Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                    Assert.AreEqual(DefaultListPadding, start.StartTextCursor.Width, "The items are indented by the padding of the list");
                     Assert.AreEqual("Item " + i, chars.Characters);
 
 
@@ -2811,7 +2827,7 @@ namespace Scryber.UnitLayouts
                     Assert.AreEqual((i + 1).ToString(), chars.Characters);
 
                     //Make sure we are right aligned by default
-                    Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
                 }
             }
 
@@ -2906,21 +2922,21 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(1, li1Block.PositionedRegions.Count);
             Assert.AreEqual(2, li1Block.Columns[0].Contents.Count); //line + nested OL
-            Assert.AreEqual(PageWidth - (2* 10), li1Block.Width); //Page - margins
+            Assert.AreEqual(PageWidth - (2* 10) - DefaultListPadding, li1Block.Width); //Page - margins - the padding of the list
 
             var ol2Block = li1Block.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(ol2Block);
-            Assert.AreEqual(PageWidth - DefaultGutterWidth - DefaultNumberWidth - (2 * (10 + 2)), ol2Block.Width);//Page - margins and li padding and inset
+            Assert.AreEqual(PageWidth - DefaultListPadding - (2 * (10 + 2)), ol2Block.Width);//Page - margins and li padding and the padding of the outer list
             Assert.AreEqual(Page1InnerItemCount, ol2Block.Columns[0].Contents.Count);
 
             var li2Block = ol2Block.Columns[0].Contents[Page1InnerItemCount - 1] as PDFLayoutBlock;
             Assert.AreEqual(1, li2Block.PositionedRegions.Count);
             Assert.AreEqual(1, li2Block.Columns[0].Contents.Count);
 
-            Assert.AreEqual(PageWidth - DefaultGutterWidth - DefaultNumberWidth - (2 * (10 + 2)), li2Block.Width);
+            Assert.AreEqual(PageWidth - (2 * DefaultListPadding) - (2 * (10 + 2)), li2Block.Width);
 
             var numBlock = li2Block.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+            Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
             var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(numLine);
             Assert.AreEqual(3, numLine.Runs.Count);
@@ -2930,7 +2946,7 @@ namespace Scryber.UnitLayouts
 
             var labelLine = li2Block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(labelLine);
-            Assert.AreEqual(PageWidth - ((DefaultGutterWidth + DefaultNumberWidth) * 2) - (2 * (10 + 2 + 2)), labelLine.FullWidth); //Page - 2 * (margins and li padding and inset)
+            Assert.AreEqual(PageWidth - (DefaultListPadding * 2) - (2 * (10 + 2 + 2)), labelLine.FullWidth); //Page - 2 * (margins and li padding and the padding of the list)
 
             Assert.AreEqual(4, labelLine.Runs.Count); //3 for text + positioned run
             var labelChars = labelLine.Runs[2] as PDFTextRunCharacter;
@@ -2956,12 +2972,12 @@ namespace Scryber.UnitLayouts
             li1Block = ol1Block.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.AreEqual(1, li1Block.BlockRepeatIndex);
             Assert.AreEqual(liOverflowingOwner, li1Block.Owner);
-            Assert.AreEqual(PageWidth - (2 * 10), li1Block.Width); //Page - margins
+            Assert.AreEqual(PageWidth - (2 * 10) - DefaultListPadding, li1Block.Width); //Page - margins - the padding of the list
             Assert.AreEqual(1, li1Block.Columns[0].Contents.Count);
 
             ol2Block = li1Block.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(ol2Block);
-            Assert.AreEqual(PageWidth - DefaultGutterWidth - DefaultNumberWidth - (2 * (10 + 2)), ol2Block.Width);//Page - margins and li padding and inset
+            Assert.AreEqual(PageWidth - DefaultListPadding - (2 * (10 + 2)), ol2Block.Width);//Page - margins and li padding and the padding of the outer list
             Assert.AreEqual(Page2InnerItemCount, ol2Block.Columns[0].Contents.Count);
             Assert.AreEqual(1, ol2Block.BlockRepeatIndex);
 
@@ -2969,11 +2985,11 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, li2Block.PositionedRegions.Count);
             Assert.AreEqual(1, li2Block.Columns[0].Contents.Count);
 
-            Assert.AreEqual(PageWidth - DefaultGutterWidth - DefaultNumberWidth - (2 * (10 + 2)), li2Block.Width);
+            Assert.AreEqual(PageWidth - (2 * DefaultListPadding) - (2 * (10 + 2)), li2Block.Width);
 
 
             numBlock = li2Block.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
+            Assert.AreEqual(DefaultNumberWidth - DefaultAlley, numBlock.Width);
             numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(numLine);
             Assert.AreEqual(3, numLine.Runs.Count);
@@ -2983,7 +2999,7 @@ namespace Scryber.UnitLayouts
 
             labelLine = li2Block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(labelLine);
-            Assert.AreEqual(PageWidth - ((DefaultGutterWidth + DefaultNumberWidth) * 2) - (2 * (10 + 2 + 2)), labelLine.FullWidth); //Page - 2 * (margins and li padding and inset)
+            Assert.AreEqual(PageWidth - (DefaultListPadding * 2) - (2 * (10 + 2 + 2)), labelLine.FullWidth); //Page - 2 * (margins and li padding and the padding of the list)
 
             Assert.AreEqual(4, labelLine.Runs.Count); //3 for text + positioned run
             labelChars = labelLine.Runs[2] as PDFTextRunCharacter;
@@ -3260,7 +3276,7 @@ namespace Scryber.UnitLayouts
                 Assert.IsNotNull(numBlock);
                 Assert.IsNotNull(itemLine);
 
-                Assert.AreEqual(numWidth, numBlock.Width);
+                Assert.AreEqual(numWidth - DefaultAlley, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
                 var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
@@ -3279,7 +3295,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(itemsPrefix + i.ToString(), chars.Characters);
                 
 
-                Assert.AreEqual((numWidth + gutterWidth) * depth, start.StartTextCursor.Width);
+                Assert.AreEqual(DefaultListPadding * depth, start.StartTextCursor.Width, "Each list is indented by its padding");
 
                 Assert.AreEqual(numBlock, posRun.Region.Contents[0]);
 
