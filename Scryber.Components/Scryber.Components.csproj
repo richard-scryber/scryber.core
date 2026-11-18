@@ -22,6 +22,8 @@ Fixed: an empty string with &amp;&amp; || ! or the if() function raised an error
 Fixed: string() of a collection gave the name of its type (System.Object[]). It is now its items in square brackets, e.g. [1, 2, 3].
 Fixed: integer() and long() of text with a fraction (e.g. integer('10.6'), as json values often are) raised an error. The text is read as a number (invariant), then rounded as a number is - 11.
 Fixed: a gradient (linear or radial) on a transformed shape or element - an svg shape with a transform, or a block with a css transform such as rotate - stayed where the shape was before it was transformed, so it was not rotated or moved with the shape, and clipped it (a moved svg shape could disappear). The gradient now has the transformation of its shape.
+New: paint-order on svg shapes (as an attribute or css) - paint-order: stroke draws the stroke before the fill, so the fill covers the inner half of the stroke. It was only used by html blocks.
+Fixed: a pattern fill on a transformed svg shape (e.g. transform='rotate(20)') stayed where the shape was before it was transformed. The pattern tiles now move, turn and scale with the shape, as gradients.
 Fixed: an svg image larger than the space available was drawn at 300 x 150, as its size was read before the svg was laid out. It is now reduced to fit, keeping its ratio, as other images.
 Fixed: an svg image with only a viewBox, reduced to fit the height left on a page, kept the full width and lost its ratio. It now keeps the ratio of the viewBox.
 

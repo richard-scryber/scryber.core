@@ -36,6 +36,13 @@ namespace Scryber.PDF.Resources
         public Rect TilingBounds { get; protected set; }
 
         /// <summary>
+        /// Gets or sets the transformation of the drawing when the pattern is used (or null for none).
+        /// A pattern is in the default space of the content, so it is combined with the pattern matrix
+        /// for the pattern to follow the transformation of the shape it fills.
+        /// </summary>
+        public PDFTransformationMatrix DrawingMatrix { get; set; }
+
+        /// <summary>
         /// Creates a new graphic tiling pattern for a PDF document.
         /// </summary>
         /// <param name="pattern">The original pattern creating and owning this pattern</param>
@@ -90,7 +97,17 @@ namespace Scryber.PDF.Resources
 
         protected override PDFTransformationMatrix CalculateTransformMatrix(ContextBase context)
         {
-            this._absoluteMatrix = this.PatternDescriptor.CalculatePatternTransformMatrixForShape(this.TilingBounds, context);
+            var matrix = this.PatternDescriptor.CalculatePatternTransformMatrixForShape(this.TilingBounds, context);
+
+            if (null != this.DrawingMatrix && this.DrawingMatrix.IsIdentity == false)
+            {
+                //the pattern matrix is applied first, and then the transformation of the drawing
+                matrix = null == matrix
+                    ? this.DrawingMatrix.Clone()
+                    : PDFTransformationMatrix.Multiply(this.DrawingMatrix, matrix);
+            }
+
+            this._absoluteMatrix = matrix;
             return this._absoluteMatrix;
         }
 

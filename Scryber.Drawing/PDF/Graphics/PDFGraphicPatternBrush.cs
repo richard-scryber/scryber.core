@@ -61,6 +61,10 @@ namespace Scryber.PDF.Graphics
             
             var pattern = new PDFGraphicTilingPattern(this.Owner, key, descriptor, layout, bounds);
 
+            //the pattern is in the default space of the content, so it follows the transformation of the shape it fills.
+            if (null != graphics.CurrentTransformationMatrix)
+                pattern.DrawingMatrix = graphics.CurrentTransformationMatrix.Clone();
+
             //Make sure we register their use
             pattern.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
             descriptor.RegisterUse(graphics.Container.Resources, graphics.Container.Document);

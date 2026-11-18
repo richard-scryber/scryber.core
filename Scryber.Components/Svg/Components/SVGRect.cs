@@ -150,6 +150,13 @@ namespace Scryber.Svg.Components
         [PDFAttribute("stroke-dasharray")]
         public override Dash StrokeDashPattern { get => base.StrokeDashPattern; set => base.StrokeDashPattern = value; }
 
+        [PDFAttribute("paint-order")]
+        public PaintOrder PaintOrder
+        {
+            get => this.HasStyle ? this.Style.GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default) : PaintOrder.Default;
+            set => this.Style.SetValue(StyleKeys.SVGGeometryPaintOrderKey, value);
+        }
+
         [PDFAttribute("stroke-linejoin")]
         public LineJoin StrokeLineJoin
         {

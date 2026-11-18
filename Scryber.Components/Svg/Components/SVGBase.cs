@@ -107,6 +107,13 @@ namespace Scryber.Svg.Components
             set => this.Style.SetValue(StyleKeys.StrokeDashOffsetKey, value);
         }
 
+        [PDFAttribute("paint-order")]
+        public PaintOrder PaintOrder
+        {
+            get => this.HasStyle ? this.Style.GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default) : PaintOrder.Default;
+            set => this.Style.SetValue(StyleKeys.SVGGeometryPaintOrderKey, value);
+        }
+
         [PDFAttribute("fill-opacity")]
         public override double FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
 

@@ -127,5 +127,39 @@ namespace Scryber.Core.UnitTests.Svg
             //a dash offset in the style of a path is drawn
             Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(pdf, @"\[\s*7(\.0+)?\s+2(\.0+)?\s*\]\s*1(\.0+)?\s+d"), "The path dash with its offset from the style");
         }
+
+        [TestMethod()]
+        public void SVGAttributes_04_PaintOrderStrokeBeforeFill()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head><style>.under { paint-order: stroke; }</style></head>
+<body>
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='140'>
+  <circle id='normal' cx='60' cy='70' r='40' fill='#F97316' stroke='#2563EB' stroke-width='16' />
+  <circle id='circle' cx='160' cy='70' r='40' fill='#F97316' stroke='#2563EB' stroke-width='16' paint-order='stroke' />
+  <rect id='rect' x='220' y='30' width='70' height='80' fill='#F97316' stroke='#2563EB' stroke-width='16' paint-order='stroke fill' />
+  <path id='path' class='under' d='M 320 30 L 380 30 L 350 110 Z' fill='#F97316' stroke='#2563EB' stroke-width='16' />
+</svg>
+</body>
+</html>";
+            var doc = Document.ParseDocument(new StringReader(html), ParseSourceType.DynamicContent);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            string pdf;
+            using (var ms = new MemoryStream())
+            {
+                doc.SaveAsPDF(ms);
+                pdf = Encoding.Latin1.GetString(ms.ToArray());
+                using (var output = DocStreams.GetOutputStream("SVGPaintOrder.pdf"))
+                    output.Write(ms.ToArray(), 0, (int)ms.Length);
+            }
+
+            Assert.IsFalse((doc.FindAComponentById("normal") as Component).GetAppliedStyle().GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default).IsStrokeBeforeFill, "The default paints the fill first");
+            foreach (var id in new[] { "circle", "rect", "path" })
+                Assert.IsTrue((doc.FindAComponentById(id) as Component).GetAppliedStyle().GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default).IsStrokeBeforeFill, "The paint-order of " + id);
+
+            //the normal circle is filled and stroked in one (B), the others are stroked (S) and then the same path filled (f)
+            Assert.AreEqual(1, System.Text.RegularExpressions.Regex.Matches(pdf, @"\sh B\s").Count, "One fill and stroke");
+            Assert.AreEqual(3, System.Text.RegularExpressions.Regex.Matches(pdf, @"\sh S\s[^SBQ]+\sh f\s").Count, "Three strokes, each followed by the fill of the same path");
+        }
     }
 }

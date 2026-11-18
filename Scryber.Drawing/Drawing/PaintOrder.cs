@@ -29,6 +29,26 @@ namespace Scryber.Drawing
             this.Third = third;
         }
 
+        /// <summary>
+        /// True if the stroke is painted before the fill
+        /// </summary>
+        public bool IsStrokeBeforeFill
+        {
+            get { return IndexOf(PaintOrders.Stroke) < IndexOf(PaintOrders.Fill); }
+        }
+
+        private int IndexOf(PaintOrders order)
+        {
+            if (this.First == order)
+                return 0;
+            else if (this.Second == order)
+                return 1;
+            else if (this.Third == order)
+                return 2;
+            else
+                return 3;
+        }
+
         public static PaintOrder Default
         {
             get { return new PaintOrder(PaintOrders.Fill, PaintOrders.Markers, PaintOrders.Stroke); }

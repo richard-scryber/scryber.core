@@ -929,8 +929,68 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGTransformedPatterns_Test()
         {
-            //TODO: Implement the inclusion of a second matrix 
-            Assert.Inconclusive();
+            //A pattern is in the default space of the page content, so the transform of the shape
+            //it fills is combined with the pattern matrix, for the tiles to move and turn with the shape.
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head><style>@page { size: 400pt 200pt; margin: 0; } body { margin: 0; }</style></head>
+<body>
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'>
+  <defs>
+    <pattern id='chk' x='0' y='0' width='20' height='20' patternUnits='userSpaceOnUse'>
+      <rect x='0' y='0' width='10' height='10' fill='#2563EB' />
+      <rect x='10' y='10' width='10' height='10' fill='#F97316' />
+    </pattern>
+  </defs>
+  <rect id='plain' x='10' y='10' width='100' height='100' fill='url(#chk)' stroke='black' />
+  <rect id='moved' x='10' y='10' width='100' height='100' fill='url(#chk)' stroke='black' transform='translate(130 0)' />
+  <rect id='turned' x='10' y='10' width='100' height='100' fill='url(#chk)' stroke='black' transform='translate(260 40) rotate(20) scale(0.8)' />
+</svg>
+</body>
+</html>";
+            var doc = Document.ParseDocument(new System.IO.StringReader(html), ParseSourceType.DynamicContent);
+            string pdf;
+            using (var ms = new System.IO.MemoryStream())
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(ms);
+                pdf = System.Text.Encoding.Latin1.GetString(ms.ToArray());
+                using (var stream = DocStreams.GetOutputStream("SVG_TransformedPatterns.pdf"))
+                    stream.Write(ms.ToArray(), 0, (int)ms.Length);
+            }
+
+            var found = System.Text.RegularExpressions.Regex.Matches(pdf, @"/PatternType 1 [^>]*?/Matrix\s*\[(?<m>[^\]]*)\]");
+            Assert.AreEqual(3, found.Count, "One tiling pattern for each rect");
+
+            var plain = ReadMatrix(found[0].Groups["m"].Value);
+            var moved = ReadMatrix(found[1].Groups["m"].Value);
+            var turned = ReadMatrix(found[2].Groups["m"].Value);
+
+            //the plain rect - the tiles start at the shape (pdf y is from the bottom of the 200pt page)
+            AssertMatrix(new double[] { 1, 0, 0, 1, 10, 170 }, plain, "plain");
+
+            //moved 130 to the right, with the shape
+            AssertMatrix(new double[] { 1, 0, 0, 1, 140, 170 }, moved, "moved");
+
+            //turned 20 degrees and scaled by 0.8 with the shape
+            var cos = 0.8 * Math.Cos(20 * Math.PI / 180);
+            var sin = 0.8 * Math.Sin(20 * Math.PI / 180);
+            AssertMatrix(new double[] { cos, -sin, sin, cos, 259.3091, 134.7112 }, turned, "turned");
+        }
+
+        private static double[] ReadMatrix(string value)
+        {
+            var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            Assert.AreEqual(6, parts.Length, "The matrix has 6 components");
+            var result = new double[6];
+            for (var i = 0; i < 6; i++)
+                result[i] = double.Parse(parts[i], System.Globalization.CultureInfo.InvariantCulture);
+            return result;
+        }
+
+        private static void AssertMatrix(double[] expected, double[] actual, string name)
+        {
+            for (var i = 0; i < 6; i++)
+                Assert.AreEqual(expected[i], actual[i], 0.001, "Component " + i + " of the " + name + " pattern matrix");
         }
 
         [TestMethod]

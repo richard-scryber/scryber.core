@@ -71,7 +71,7 @@ namespace Scryber.Components
                 PDFPen pen = fullstyle.CreateStrokePen();
 
                 if (null != pen && null != brush)
-                    graphics.FillAndStrokePath(brush, pen, context.Offset, this.Path);
+                    graphics.FillAndStrokePath(brush, pen, context.Offset, this.Path, fullstyle.GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default));
                 
                 else if (null != brush)
                     graphics.FillPath(brush, context.Offset, this.Path);

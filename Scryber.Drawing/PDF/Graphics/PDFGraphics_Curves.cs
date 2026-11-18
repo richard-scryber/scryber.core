@@ -377,7 +377,24 @@ namespace Scryber.PDF.Graphics
             this.RestoreGraphicsState();
         }
 
-        private void OutputPath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path)
+        /// <summary>
+        /// Fills and strokes the path in the order of the paint-order, so the stroke can be drawn before (under) the fill.
+        /// </summary>
+        public void FillAndStrokePath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path, PaintOrder order)
+        {
+            if (null == path)
+                throw new ArgumentNullException("path");
+            if (null == pen)
+                throw new ArgumentNullException("pen");
+            if (null == brush)
+                throw new ArgumentNullException("brush");
+
+            this.SaveGraphicsState();
+            this.OutputPath(brush, pen, location, path, order.IsStrokeBeforeFill);
+            this.RestoreGraphicsState();
+        }
+
+        private void OutputPath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path, bool strokeFirst = false)
         {
             Rect bounds = new Rect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);
             
@@ -419,7 +436,19 @@ namespace Scryber.PDF.Graphics
                 RenderPathData(location, p, ref cursor);
             }
 
-            if (null != brush && null != pen)
+            if (null != brush && null != pen && strokeFirst)
+            {
+                //paint-order: stroke before the fill, so the fill is drawn over the inner half of the stroke
+                this.RenderStrokePathOp();
+
+                cursor = Point.Empty;
+                foreach (Path p in path.SubPaths)
+                {
+                    RenderPathData(location, p, ref cursor);
+                }
+                this.RenderFillPathOp(path.Mode == GraphicFillMode.EvenOdd);
+            }
+            else if (null != brush && null != pen)
                 this.RenderFillAndStrokePathOp(path.Mode == GraphicFillMode.EvenOdd);
             else if (null != brush)
                 this.RenderFillPathOp(path.Mode == GraphicFillMode.EvenOdd);
