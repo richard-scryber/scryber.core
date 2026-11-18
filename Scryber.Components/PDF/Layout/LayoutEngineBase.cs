@@ -1061,6 +1061,79 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region measuring layout helpers (snapshot and restore)
+
+        /// <summary>
+        /// Takes a copy of the child list of the component and all its descendants, so that any content added in a
+        /// measuring layout (::before and ::after) can be removed afterwards.
+        /// </summary>
+        protected static List<(IContainerComponent container, HashSet<Component> children)> SnapshotChildLists(IComponent root)
+        {
+            var all = new List<(IContainerComponent, HashSet<Component>)>();
+            AddChildLists(root, all);
+            return all;
+        }
+
+        protected static void AddChildLists(IComponent comp, List<(IContainerComponent, HashSet<Component>)> all)
+        {
+            if (comp is IContainerComponent container && container.HasContent)
+            {
+                var children = new HashSet<Component>();
+                foreach (Component child in container.Content)
+                    children.Add(child);
+                all.Add((container, children));
+
+                foreach (Component child in container.Content)
+                    AddChildLists(child, all);
+            }
+        }
+
+        protected static void RestoreChildLists(List<(IContainerComponent container, HashSet<Component> children)> all)
+        {
+            foreach (var (container, children) in all)
+            {
+                if (container.Content.Count == children.Count)
+                    continue;
+
+                for (int i = container.Content.Count - 1; i >= 0; i--)
+                {
+                    if (!children.Contains(container.Content[i]))
+                        container.Content.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Positioned (absolute) content is added to an open block, which may be outside the measuring block,
+        /// so the number of positioned regions on each open block is recorded, so any extra can be removed.
+        /// </summary>
+        protected static List<(PDFLayoutBlock block, int count)> SnapshotPositionedRegions(PDFLayoutBlock from)
+        {
+            var all = new List<(PDFLayoutBlock, int)>();
+            var block = from;
+            while (null != block)
+            {
+                all.Add((block, block.HasPositionedRegions ? block.PositionedRegions.Count : 0));
+                block = block.Parent as PDFLayoutBlock;
+            }
+            return all;
+        }
+
+        protected static void RestorePositionedRegions(List<(PDFLayoutBlock block, int count)> all)
+        {
+            foreach (var (block, count) in all)
+            {
+                if (!block.HasPositionedRegions)
+                    continue;
+
+                var regions = block.PositionedRegions;
+                while (regions.Count > count)
+                    regions.RemoveAt(regions.Count - 1);
+            }
+        }
+
+        #endregion
+
         #region protected virtual Style BuildFullStyle(Component forComponent)
 
         /// <summary>

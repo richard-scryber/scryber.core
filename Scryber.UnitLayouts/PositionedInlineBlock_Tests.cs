@@ -1258,14 +1258,12 @@ namespace Scryber.UnitLayouts
             line = nest.Columns[0].Contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             
-            // inline positioned block , whitespace begin, whitespace chars, whitespace end, inline start, text start, new line = 7 
-            Assert.AreEqual(7, line.Runs.Count);
+            // inline positioned block, text start (of the whitespace that does not fit), new line = 3
+            // the text of the inline block wraps, so (as css) it fills the width of the line, and the content after it is on the next line (as Chrome)
+            Assert.AreEqual(3, line.Runs.Count);
             Assert.AreEqual(60, line.OffsetY);
            
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
-            var ws = line.Runs[2] as PDFTextRunCharacter;
-            
-            Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
             Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
@@ -1276,8 +1274,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, posReg.TotalBounds.X);//moved onto a new line
             Assert.AreEqual(0, posReg.TotalBounds.Y); //offset by the previous line height
 
-            Assert.IsTrue(posReg.Width > 480);
-            Assert.IsTrue(posReg.Width < line.FullWidth);
+            Assert.AreEqual(line.FullWidth, posReg.Width, "The wrapped inline block fills the line");
             
             Assert.AreEqual(30 + 10 + 20, posReg.TotalBounds.Height); //2 lines + 5pt padding + 10pt margins
             Assert.AreEqual(1, posReg.Contents.Count);
@@ -1294,7 +1291,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(2, posBlock.Columns[0].Contents.Count); //on two lines
 
             
-            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            var newLine = line.Runs[2] as PDFTextRunNewLine;
             Assert.IsNotNull(newLine);
             
             
@@ -1305,9 +1302,9 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(60 + 60, line.OffsetY); //The image height + the inline block height (inc. margins)
             
             
-            //spacer, chars, new line
-            Assert.AreEqual(3, line.Runs.Count);
-            var chars2 = line.Runs[1] as PDFTextRunCharacter;
+            //spacer, text end (of the whitespace, which is not carried to the start of the line), inline start, text start, chars, new line
+            Assert.AreEqual(6, line.Runs.Count);
+            var chars2 = line.Runs[4] as PDFTextRunCharacter;
             Assert.IsNotNull(chars2);
             Assert.AreEqual("After the inline block, flowing onto a", chars2.Characters);
 
@@ -1791,9 +1788,9 @@ namespace Scryber.UnitLayouts
             line =nest.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
             
-            //pos run, whitespace begin, whitespace chars, whitespace end, inline begin, text start, new line = 7
-            //no actual text content
-            Assert.AreEqual(7, line.Runs.Count);
+            //pos run, text start (of the whitespace that does not fit), new line = 3
+            //the text of the inline block wraps, so (as css) it fills the width of the line, and the content after it is on the next line
+            Assert.AreEqual(3, line.Runs.Count);
             
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1806,7 +1803,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, posReg.TotalBounds.X);//moved onto a new page
             Assert.AreEqual(0, posReg.TotalBounds.Y); //moved to a new page
 
-            Assert.IsTrue(posReg.Width > 400);
+            Assert.AreEqual(line.FullWidth, posReg.Width, "The wrapped inline block fills the line");
             Assert.AreEqual(60, posReg.Height); //2 lines at 15pt (30) + 2 x 10 margins + 2 x 5 padding = 60pt
             
             
@@ -1831,8 +1828,8 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(posRun.Height, line.BaseLineOffset + line.BaseLineToBottom);
 
             //check the line with the inline-block on, has no actual text, just a new line.
-            Assert.IsInstanceOfType(line.Runs[5], typeof(PDFTextRunBegin));
-            Assert.IsInstanceOfType(line.Runs[6], typeof(PDFTextRunNewLine));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
             
            
             
@@ -1840,12 +1837,12 @@ namespace Scryber.UnitLayouts
             line = nest.Columns[0].Contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             
-            // text spacer, text chars, text new Line = 3
-            Assert.AreEqual(3, line.Runs.Count);
+            // text spacer, text end (of the whitespace, not carried to the start of the line), inline begin, text begin, text chars, text new Line = 6
+            Assert.AreEqual(6, line.Runs.Count);
             Assert.AreEqual(60, line.OffsetY);
             
             
-            var chars2 = line.Runs[1] as PDFTextRunCharacter;
+            var chars2 = line.Runs[4] as PDFTextRunCharacter;
             Assert.IsNotNull(chars2);
             Assert.AreEqual("After the inline block, flowing onto a", chars2.Characters);
 
@@ -2082,12 +2079,12 @@ namespace Scryber.UnitLayouts
             line = nest.Columns[1].Contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             
-            // whitespace 3, inline begin, text start, text chars, text new Line = 7
-            Assert.AreEqual(7, line.Runs.Count);
+            // whitespace (begin and end - the space is not carried to the start of the line), inline begin, text start, text chars, text new Line = 6
+            Assert.AreEqual(6, line.Runs.Count);
             Assert.AreEqual(bottom, line.OffsetY);
             
             
-            var chars2 = line.Runs[5] as PDFTextRunCharacter;
+            var chars2 = line.Runs[4] as PDFTextRunCharacter;
             Assert.IsNotNull(chars2);
             Assert.AreEqual("After the inline", chars2.Characters);
 

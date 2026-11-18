@@ -6575,9 +6575,10 @@ namespace Scryber.UnitLayouts
             var deep2Parent = BoundsOf("deep2parent");
             Assert.IsTrue(deep2.Y > deep2Parent.Y, "deep2 is after the text of the padded block");
 
-            //In Chrome the fixed block (no width) shrinks to fit its content (193pt), but in scryber a positioned block that
-            //contains a block (the padded div) fills the space to the right of the page (495pt).
-            Assert.Inconclusive("A fixed block without a width, containing a block, fills the space rather than shrinking to its content (Chrome 193pt, scryber " + fix.Width + ")");
+            //The fixed block (no width) shrinks to fit its content - the padded div with its margins (Chrome 193pt),
+            //rather than filling the space to the right of the page, and the padded div fills the fixed block.
+            Assert.AreEqual(193.0, fix.Width.PointsValue, 3.0, "The fixed block is the width of its content");
+            Assert.AreEqual((fix.Width - 20).PointsValue, deep2Parent.Width.PointsValue, 1.0, "The padded block fills the fixed block, less its margins");
         }
         
     }

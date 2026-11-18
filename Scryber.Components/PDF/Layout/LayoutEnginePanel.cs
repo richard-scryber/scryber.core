@@ -68,6 +68,10 @@ namespace Scryber.PDF.Layout
 
             if (pos.DisplayMode != Drawing.DisplayMode.Inline)
             {
+                //absolute, fixed, floating and inline-block content without a width is the width of its content
+                if (this.ShouldShrinkToContentWidth(pos))
+                    this.ShrinkToContentWidth(pos, columns);
+
                 this.DoLayoutBlockComponent(pos, columns);
             }
             else
@@ -83,6 +87,177 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.End(TraceLevel.Verbose, "Panel Layout Engine", "Completed layout of component '" + this.Component + "' as a viewport component");
 
         }
+
+        #region shrink to the content width
+
+        /// <summary>
+        /// The space allowed after the measured width, so the rounding of the width can never make the content wrap.
+        /// </summary>
+        private const double ShrinkWidthAllowance = 0.001;
+
+        /// <summary>
+        /// A large height for the measuring layout, so the content always fits.
+        /// </summary>
+        private const double ShrinkMeasuringHeight = 100000.0;
+
+        /// <summary>
+        /// Returns true if this block is absolute, fixed, floating or inline-block, without a width,
+        /// and contains block content - which (laid out on its own) would fill the space available.
+        /// Text and inline content already sets the width of the block to the widest line.
+        /// </summary>
+        protected virtual bool ShouldShrinkToContentWidth(PDFPositionOptions pos)
+        {
+            if (this.Context.IsMeasuring)
+                return false;
+
+            if (pos.Width.HasValue || pos.FillWidth)
+                return false;
+
+            bool shrinks = pos.PositionMode == PositionMode.Absolute
+                           || pos.PositionMode == PositionMode.Fixed
+                           || pos.FloatMode != FloatMode.None
+                           || pos.DisplayMode == DisplayMode.InlineBlock;
+
+            if (!shrinks)
+                return false;
+
+            if (pos.ColumnCount > 1)
+                return false;
+
+            bool hasTable = false;
+            bool hasBlock = HasBlockContent(this.Component, ref hasTable);
+
+            //a table sizes its columns from the space available, so its measured width is not the width of its content.
+            //Content with a table keeps the space available (as before).
+            return hasBlock && !hasTable;
+        }
+
+        /// <summary>
+        /// Returns true if any of the visible content of the component is laid out as a block (rather than inline, or out of the flow).
+        /// </summary>
+        private static bool HasBlockContent(IComponent component, ref bool hasTable)
+        {
+            if (!(component is IContainerComponent container) || !container.HasContent)
+                return false;
+
+            bool hasBlock = false;
+            foreach (Component child in container.Content)
+            {
+                if (null == child || !child.Visible)
+                    continue;
+
+                if (child is ITextComponent || child is ILayoutBreak)
+                    continue;
+
+                if (child is IInvisibleContainer)
+                {
+                    if (HasBlockContent(child, ref hasTable))
+                        hasBlock = true;
+                    continue;
+                }
+
+                if (child is TableGrid)
+                {
+                    hasTable = true;
+                    return true;
+                }
+
+                var applied = child.GetAppliedStyle();
+                if (null == applied)
+                    continue;
+
+                var display = applied.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                if (display == DisplayMode.Inline || display == DisplayMode.InlineBlock || display == DisplayMode.Invisible)
+                    continue;
+
+                var mode = applied.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
+                if (mode == PositionMode.Absolute || mode == PositionMode.Fixed)
+                    continue;
+
+                if (display == DisplayMode.Table)
+                {
+                    hasTable = true;
+                    return true;
+                }
+
+                hasBlock = true;
+
+                //look for a table in the content of the block
+                HasBlockContent(child, ref hasTable);
+                if (hasTable)
+                    return true;
+            }
+            return hasBlock;
+        }
+
+        /// <summary>
+        /// Lays out the block in a measuring layout (where blocks without a width are the width of their content),
+        /// that is then discarded, and sets the width of the position to the width of the measured block.
+        /// So the block is as wide as its widest content, and its blocks fill that width (as css shrink-to-fit).
+        /// </summary>
+        protected virtual void ShrinkToContentWidth(PDFPositionOptions position, PDFColumnOptions columnOptions)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+            var parentBlock = page.LastOpenBlock();
+            var parentRegion = parentBlock?.CurrentRegion;
+            if (null == parentRegion)
+                return;
+
+            int priorCount = parentRegion.Contents.Count;
+            var usedBefore = parentRegion.UsedSize;
+            var childLists = SnapshotChildLists(this.Component);
+            var positioned = SnapshotPositionedRegions(parentBlock);
+
+            var measurePosition = position.Clone();
+            measurePosition.OverflowAction = OverflowAction.Visible;
+            measurePosition.Height = new Unit(ShrinkMeasuringHeight, PageUnits.Points);
+            measurePosition.MinimumHeight = null;
+            measurePosition.MaximumHeight = null;
+
+            this.Context.MeasuringDepth++;
+            try
+            {
+                this.DoLayoutBlockComponent(measurePosition, columnOptions);
+            }
+            finally
+            {
+                this.Context.MeasuringDepth--;
+                this.ContinueLayout = true;
+            }
+
+            double width = -1;
+            bool wrapped = false;
+
+            if (this.DocumentLayout.CurrentPage == page && parentRegion.Contents.Count > priorCount)
+            {
+                if (parentRegion.Contents[priorCount] is PDFLayoutBlock measured)
+                {
+                    width = measured.TotalBounds.Width.PointsValue;
+                    if (null != measured.Position)
+                        width -= (measured.Position.Margins.Left + measured.Position.Margins.Right).PointsValue;
+
+                    wrapped = measured.HasWrappedText(includeBlocks: true);
+                }
+
+                while (parentRegion.Contents.Count > priorCount)
+                    parentRegion.Contents.RemoveAt(parentRegion.Contents.Count - 1);
+
+                parentRegion.UsedSize = usedBefore;
+            }
+
+            RestorePositionedRegions(positioned);
+            RestoreChildLists(childLists);
+
+            if (wrapped)
+            {
+                //the content is wider than the space available (its text wraps), so the block fills the space (limited by any max-width), as css.
+                position.FillWidth = true;
+            }
+            else if (width > 0)
+                position.Width = new Unit(width + ShrinkWidthAllowance, PageUnits.Points);
+        }
+
+        #endregion
 
         private PDFLayoutInlineBegin CreateAndAddInlineBegin(PDFPositionOptions pos)
         {

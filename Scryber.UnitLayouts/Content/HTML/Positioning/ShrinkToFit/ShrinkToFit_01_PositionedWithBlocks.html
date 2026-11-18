@@ -1,0 +1,21 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head><style>
+@page { size: 400pt 400pt; margin: 0; } html{width:400pt} body { margin: 0; font-family: Helvetica, sans-serif; font-size: 12pt; }
+.inner { padding: 4pt; }
+</style></head>
+<body>
+<div style='position: relative; height: 400pt;'>
+  <div id='absText' style='position: absolute; left: 10pt; top: 10pt;'>abs text only</div>
+  <div id='absBlock' style='position: absolute; left: 10pt; top: 40pt;'><div id='absBlockInner' class='inner'>abs with a block</div></div>
+  <div id='absTwo' style='position: absolute; left: 10pt; top: 80pt;'><div id='absTwoA' class='inner'>block one</div><div id='absTwoB' class='inner'>and a second longer block</div></div>
+  <div id='fixBlock' style='position: fixed; left: 10pt; top: 150pt;'><div id='fixBlockInner' class='inner' style='margin: 0 10pt;'>fixed with a block</div></div>
+  <div id='absPad' style='position: absolute; left: 10pt; top: 190pt; padding: 6pt;'><p id='absPadP' style='margin:0'>abs padded with a p</p></div>
+  <div id='absMax' style='position: absolute; left: 10pt; top: 230pt; max-width: 100pt;'><div class='inner'>a block with long text that wraps at the max width</div></div>
+  <div id='absLong' style='position: absolute; left: 200pt; top: 300pt;'><div id='absLongInner' class='inner'>a long block of text that is wider than the space to the right of the box, so it wraps</div></div>
+  <div style='position: absolute; left: 200pt; top: 10pt;'><span id='ib' style='display: inline-block'><div id='ibInner' class='inner'>inline-block with block</div></span></div>
+  <div id='flt' style='float: left; position: absolute; left: 200pt; top: 60pt'><div class='inner'>float+abs</div></div>
+  <div id='absLongText' style='position: absolute; left: 200pt; top: 360pt;'>long text only that is wider than the space to the right, so it wraps</div>
+  <div id='absRight' style='position: absolute; right: 10pt; top: 100pt;'><div class='inner'>abs on the right</div></div>
+</div>
+</body>
+</html>

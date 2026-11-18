@@ -944,7 +944,10 @@ namespace Scryber.PDF.Layout
                     this.AddSoftReturn(0);
                     if (!zeros.AssertIncrement(this.Context))
                         return Unit.Zero;
-                    
+
+                    //a space that did not fit at the end of the line is not carried to the start of the new line (as the space of a word that wraps)
+                    while (offset < chars.Length && char.IsWhiteSpace(chars, offset))
+                        offset++;
                 }
                 else if (fitted + offset == chars.Length) // everything fitted on the line
                 {

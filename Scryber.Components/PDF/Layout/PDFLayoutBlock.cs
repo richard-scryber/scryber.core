@@ -796,6 +796,12 @@ namespace Scryber.PDF.Layout
             {
                 w = this.AvailableBounds.Width;
             }
+            else if (this.IsShrinkToFit() && this.HasWrappedText(includeBlocks: false))
+            {
+                //absolute, fixed, floating or inline-block text that is wider than the space available (it wraps)
+                //fills the space, rather than being the width of its widest line (as css shrink-to-fit).
+                w = this.AvailableBounds.Width;
+            }
             //Added to support clipping on a block with max-width
             if(this.Position.MaximumWidth.HasValue && w > this.Position.MaximumWidth.Value)
             {
@@ -820,6 +826,51 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns true if this block is absolute, fixed, floating or inline-block - so without a width it is the width of its content.
+        /// </summary>
+        private bool IsShrinkToFit()
+        {
+            var pos = this.Position;
+            if (null == pos)
+                return false;
+
+            return pos.PositionMode == PositionMode.Absolute
+                   || pos.PositionMode == PositionMode.Fixed
+                   || pos.FloatMode != FloatMode.None
+                   || pos.DisplayMode == DisplayMode.InlineBlock;
+        }
+
+        /// <summary>
+        /// Returns true if any text in this block (and optionally its nested blocks) was wrapped onto a new line because it did not fit.
+        /// </summary>
+        internal bool HasWrappedText(bool includeBlocks)
+        {
+            if (null == this.Columns)
+                return false;
+
+            foreach (var region in this.Columns)
+            {
+                if (null == region.Contents)
+                    continue;
+
+                foreach (var item in region.Contents)
+                {
+                    if (item is PDFLayoutLine line)
+                    {
+                        foreach (var run in line.Runs)
+                        {
+                            if (run is PDFTextRunNewLine newLine && !newLine.IsHardReturn)
+                                return true;
+                        }
+                    }
+                    else if (includeBlocks && item is PDFLayoutBlock inner && inner.HasWrappedText(true))
+                        return true;
+                }
+            }
+            return false;
+        }
 
         #region private void ShrinkToFit(PDFUnit width, PDFUnit height)
 
