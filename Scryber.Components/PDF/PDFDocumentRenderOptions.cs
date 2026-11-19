@@ -108,6 +108,17 @@ namespace Scryber.PDF
             set;
         }
 
+        /// <summary>
+        /// Gets or sets whether embedded TrueType fonts include only the glyphs used in the document (a subset), to make it smaller.
+        /// The default is from the Scryber:Fonts:SubsetEmbeddedFonts configuration (false).
+        /// </summary>
+        [PDFAttribute("font-subset")]
+        public bool SubsetEmbeddedFonts
+        {
+            get;
+            set;
+        }
+
         public ParserConformanceMode ConformanceMode
         {
             get;
@@ -172,6 +183,7 @@ namespace Scryber.PDF
             var font = config.FontOptions;
 
             this.UseFontSubstitution = font.FontSubstitution;
+            this.SubsetEmbeddedFonts = font.SubsetEmbeddedFonts;
             this.Compression = output.Compression;
             this.ComponentNames = output.NameOutput;
             //this.PDFVersion = section.PDFVersion;

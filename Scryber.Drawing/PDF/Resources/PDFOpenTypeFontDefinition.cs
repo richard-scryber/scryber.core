@@ -370,8 +370,10 @@ namespace Scryber.PDF.Resources
             }
             else if(this.IsUnicode)
             {
+                //the font name always has a tag (e.g. ABCDEF+Roboto), which also keeps the name unique if the font is used more than once
+                byte[] subsetData = this.CreateSubsetFontData(widths, context);
                 string subsetName = PDFFontDescriptor.CreateSubset();
-                return this.RenderCompositeFont(subsetName, widths, context, writer);
+                return this.RenderCompositeFont(subsetName, widths, context, writer, subsetData);
             }
             else
                 return this.RenderAnsiFont(name, widths, context, writer);
@@ -390,6 +392,40 @@ namespace Scryber.PDF.Resources
         /// <param name="writer">The PDF Writer to write to</param>
         /// <returns></returns>
         public virtual PDFObjectRef RenderCompositeFont(string subset, PDFFontWidths widths, ContextBase context, PDFWriter writer)
+        {
+            return this.RenderCompositeFont(subset, widths, context, writer, null);
+        }
+
+        /// <summary>
+        /// Returns the data of a subset of the embedded font with only the glyphs used in the widths (if the context has SubsetEmbeddedFonts set),
+        /// or null if the font is not subset - the option is not set, the font is not embedded, or it cannot be subset (with a warning).
+        /// </summary>
+        protected virtual byte[] CreateSubsetFontData(PDFFontWidths widths, ContextBase context)
+        {
+            if (!context.SubsetEmbeddedFonts || null == this.Descriptor || null == this.Descriptor.FontFile)
+                return null;
+
+            if (!(widths is PDFCompositeFontWidths composite))
+                return null;
+
+            var result = FontSubsetter.Subset(this.Descriptor.FontFile, composite.RegisterdGlyphOffsets);
+            if (!result.Success)
+            {
+                context.TraceLog.Add(TraceLevel.Warning, "Font Definition", "The font " + this.FullName + " is embedded in full, as it could not be subset. " + result.Reason);
+                return null;
+            }
+
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Font Definition", "Embedding a subset of the font " + this.FullName + " with " + result.IncludedGlyphCount + " of " + result.GlyphCount + " glyphs, " + result.Data.Length + " bytes rather than " + this.Descriptor.FontFile.Length);
+
+            return result.Data;
+        }
+
+        /// <summary>
+        /// Renders the font as a composite (Type0) font with a CIDFontType2 descendant, and the font program data given (e.g. a subset),
+        /// or the full font program of the descriptor if the data is null.
+        /// </summary>
+        public virtual PDFObjectRef RenderCompositeFont(string subset, PDFFontWidths widths, ContextBase context, PDFWriter writer, byte[] fontFileData)
         {
             string fullfontname = PDFFontDescriptor.GetSubsetName(subset, this.PostscriptFontName);
 
@@ -426,7 +462,7 @@ namespace Scryber.PDF.Resources
                 writer.EndDictionaryEntry();
             }
 
-            PDFObjectRef descendant = this.WriteDescendantFontInfo(fullfontname, widths, context, writer);
+            PDFObjectRef descendant = this.WriteDescendantFontInfo(fullfontname, widths, context, writer, fontFileData);
             if (null != descendant)
             {
                 writer.BeginDictionaryEntry("DescendantFonts");
@@ -528,7 +564,7 @@ namespace Scryber.PDF.Resources
         
         #region private PDFObjectRef WriteDescendantFontInfo(string fullname, PDFFontWidths widths, ContextBase context, PDFWriter writer)
         
-        private PDFObjectRef WriteDescendantFontInfo(string fullname, PDFFontWidths widths, ContextBase context, PDFWriter writer)
+        private PDFObjectRef WriteDescendantFontInfo(string fullname, PDFFontWidths widths, ContextBase context, PDFWriter writer, byte[] fontFileData)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Add(TraceLevel.Debug, "Font Definition", "Rendering the Descendant font information in Unicode font");
@@ -583,7 +619,7 @@ namespace Scryber.PDF.Resources
             if (null != this.Descriptor)
             {
 
-                PDFObjectRef desc = this.Descriptor.RenderToPDF(fullname, context, writer);
+                PDFObjectRef desc = this.Descriptor.RenderToPDF(fullname, context, writer, fontFileData);
 
                 if (null != desc)
                     writer.WriteDictionaryObjectRefEntry("FontDescriptor", desc);

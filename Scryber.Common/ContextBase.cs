@@ -110,6 +110,11 @@ namespace Scryber
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets whether embedded TrueType fonts are written with only the glyphs used (a subset). Default false.
+        /// </summary>
+        public bool SubsetEmbeddedFonts { get; set; }
+
         public ContextBase(ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
         {
 

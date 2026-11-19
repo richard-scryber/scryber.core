@@ -259,6 +259,15 @@ namespace Scryber.PDF.Resources
 
         public PDFObjectRef RenderToPDF(string fullname, ContextBase context, PDFWriter writer)
         {
+            return this.RenderToPDF(fullname, context, writer, null);
+        }
+
+        /// <summary>
+        /// Renders the font descriptor, with the font program data given (e.g. a subset of the font) rather than the FontFile of this descriptor.
+        /// If the data is null, then the FontFile is used.
+        /// </summary>
+        public PDFObjectRef RenderToPDF(string fullname, ContextBase context, PDFWriter writer, byte[] fontFileData)
+        {
             if (context.ShouldLogDebug)
                 context.TraceLog.Add(TraceLevel.Debug, "Font Descriptor", "Rendering the font descriptor information");
 
@@ -313,32 +322,44 @@ namespace Scryber.PDF.Resources
             if (this.MissingWidth != 0.0)
                 writer.WriteDictionaryNumberEntry("MissingWidth", this.MissingWidth);
 
-            if (this.FontFile != null)
+            var fontFile = fontFileData ?? this.FontFile;
+
+            if (fontFile != null)
             {
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Debug, "Font Descriptor", "Rendering the font descriptor font file");
 
-                byte[] outputdata = this.FontFile;
+                byte[] outputdata = fontFile;
                 string filter = null;
                 if (context.Compression == OutputCompressionType.FlateDecode)
                 {
                     if (context.ShouldLogDebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Font Descriptor", "Ensuring the font data is compressed");
 
-                    outputdata = this.FilteredFontFile;
-                    filter = this.FilterName;
+                    if (null == fontFileData)
+                    {
+                        outputdata = this.FilteredFontFile;
+                        filter = this.FilterName;
+                    }
+                    else
+                    {
+                        //the given data (a subset) is compressed each time, as it is different for each document
+                        IStreamFilter flate = PDFStreamFilters.FlateDecode;
+                        outputdata = flate.FilterStream(fontFileData);
+                        filter = flate.FilterName;
+                    }
                 }
 
                 PDFObjectRef fileref = writer.BeginObject();
                 writer.BeginDictionary();
                 writer.WriteDictionaryNumberEntry("Length", outputdata.Length);
                 if (this.FontType == FontType.TrueType)
-                    writer.WriteDictionaryNumberEntry("Length1", this.FontFile.Length);
+                    writer.WriteDictionaryNumberEntry("Length1", fontFile.Length);
                 else
                     throw new ArgumentOutOfRangeException("FontType");
 
                 if (!string.IsNullOrEmpty(filter))
-                    writer.WriteDictionaryNameEntry("Filter", this.FilterName);
+                    writer.WriteDictionaryNameEntry("Filter", filter);
 
                 writer.EndDictionary();
                 writer.BeginStream(fileref);

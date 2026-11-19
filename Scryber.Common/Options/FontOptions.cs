@@ -11,6 +11,7 @@ namespace Scryber.Options
         public const bool DefaultUseSystemFonts = true;
         public const string DefaultFontName = "Sans-Serif";
         public const bool DefaultUseFontSubstitution = true;
+        public const bool DefaultSubsetEmbeddedFonts = false;
 
         public string DefaultDirectory { get; set; }
 
@@ -22,12 +23,20 @@ namespace Scryber.Options
 
         public List<FontRegistrationOption> Register { get; set; }
 
+        /// <summary>
+        /// If true, embedded TrueType fonts only include the outlines of the glyphs used in the document (a subset),
+        /// so the document is smaller. A font that cannot be subset (CFF outlines, or a licence that does not allow it)
+        /// is embedded in full. Default false.
+        /// </summary>
+        public bool SubsetEmbeddedFonts { get; set; }
+
         public FontOptions()
         {
             DefaultDirectory = string.Empty;
             UseSystemFonts = DefaultUseSystemFonts;
             FontSubstitution = DefaultUseFontSubstitution;
             DefaultFont = DefaultFontName;
+            SubsetEmbeddedFonts = DefaultSubsetEmbeddedFonts;
         }
     }
 

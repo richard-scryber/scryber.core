@@ -2738,6 +2738,7 @@ namespace Scryber.Components
         {
             context.Compression = this.RenderOptions.Compression;
             context.Conformance = this.ConformanceMode;
+            context.SubsetEmbeddedFonts = this.RenderOptions.SubsetEmbeddedFonts;
 
         }
 
