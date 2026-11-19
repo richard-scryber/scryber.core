@@ -190,6 +190,9 @@ namespace Scryber
                     s = Scryber.Utilities.NumberHelper.GetLetterLower(value);
                     break;
                 case ListNumberingGroupStyle.Bullet:
+                case ListNumberingGroupStyle.Disc:
+                case ListNumberingGroupStyle.Circle:
+                case ListNumberingGroupStyle.Square:
                     s = Scryber.Utilities.NumberHelper.GetPointValue(depth);
                     break;
                 case ListNumberingGroupStyle.Labels:

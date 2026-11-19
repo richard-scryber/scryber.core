@@ -74,8 +74,15 @@ namespace Scryber.Styles.Parsing.Typed
             switch (value.ToLower())
             {
                 case ("disc"):
+                    type = ListNumberingGroupStyle.Disc;
+                    return true;
+
                 case ("circle"):
-                    type = ListNumberingGroupStyle.Bullet;
+                    type = ListNumberingGroupStyle.Circle;
+                    return true;
+
+                case ("square"):
+                    type = ListNumberingGroupStyle.Square;
                     return true;
 
                 case ("decimal"):

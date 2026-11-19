@@ -294,7 +294,7 @@ namespace Scryber.PDF.Layout
                 PDFListDefinitionItemLabel defn = new PDFListDefinitionItemLabel();
                 label = defn;
             }
-            else if (type == ListNumberingGroupStyle.Bullet)
+            else if (type.IsBullet())
             {
                 label = new PDFListBulletItemLabel();
             }

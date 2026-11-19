@@ -233,6 +233,9 @@ namespace Scryber
                     return Scryber.Utilities.NumberHelper.GetLetterLower(index);
 
                 case ListNumberingGroupStyle.Bullet:
+                case ListNumberingGroupStyle.Disc:
+                case ListNumberingGroupStyle.Circle:
+                case ListNumberingGroupStyle.Square:
                     return Scryber.Utilities.NumberHelper.GetPointValue(depth);
 
                 //case ListNumberingGroupStyle.Labels:
@@ -277,6 +280,9 @@ namespace Scryber
                     return NumberingOutputType.String;
 
                 case ListNumberingGroupStyle.Bullet:
+                case ListNumberingGroupStyle.Disc:
+                case ListNumberingGroupStyle.Circle:
+                case ListNumberingGroupStyle.Square:
                     postfix = null;
                     return NumberingOutputType.String;
 

@@ -27,7 +27,7 @@ namespace Scryber.UnitLayouts
         /// The number box is the inset less this space.
         /// </summary>
         const double DefaultAlley = 3.0;
-        const int LabelPadding = 2;
+        const int LabelPadding = 0; //the number box has no padding - the space before the text is the alley
 
         PDFLayoutDocument layout;
 
@@ -254,21 +254,9 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(1, numBlock.Columns.Length);
                 Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
                 var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
-                Assert.AreEqual(3, numLine.Runs.Count);
 
-                start = numLine.Runs[0] as PDFTextRunBegin;
-                Assert.IsNotNull(start);
-
-                chars = numLine.Runs[1] as PDFTextRunCharacter;
-                Assert.IsNotNull(chars);
-
-                end = numLine.Runs[2] as PDFTextRunEnd;
-                Assert.IsNotNull(end);
-
-                Assert.AreEqual("•", chars.Characters);
-
-                //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                //the bullet is a disc marker, right aligned in the number box
+                AssertMarker(numLine, ListNumberingGroupStyle.Disc, DefaultNumberWidth - DefaultAlley, 10);
             }
 
         }
@@ -2193,7 +2181,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsNotNull(end);
 
 
-                    AssertOLBlockContent(nestedBlock, DefaultNumberWidth, DefaultGutterWidth, 2, new string[] { "•", "•", "•", "•", "•" }, "Inner Item " + i.ToString() + ".");
+                    AssertOLBlockContent(nestedBlock, DefaultNumberWidth, DefaultGutterWidth, 2, new string[] { "•", "•", "•", "•", "•" }, "Inner Item " + i.ToString() + ".", ListNumberingGroupStyle.Circle); //a nested bullet list is a circle
 
                     Assert.AreEqual(nestedBlock.Height + itemLine.Height, itemBlock.Height);
                 }
@@ -2232,21 +2220,9 @@ namespace Scryber.UnitLayouts
                     Assert.AreEqual(1, numBlock.Columns.Length);
                     Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
                     var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
-                    Assert.AreEqual(3, numLine.Runs.Count);
 
-                    start = numLine.Runs[0] as PDFTextRunBegin;
-                    Assert.IsNotNull(start);
-
-                    chars = numLine.Runs[1] as PDFTextRunCharacter;
-                    Assert.IsNotNull(chars);
-
-                    end = numLine.Runs[2] as PDFTextRunEnd;
-                    Assert.IsNotNull(end);
-
-                    Assert.AreEqual("•", chars.Characters);
-
-                    //Make sure we are right aligned by default
-                    Assert.AreEqual(DefaultNumberWidth - DefaultAlley, start.StartTextCursor.Width + chars.Width + LabelPadding);
+                    //the bullet is a disc marker, right aligned in the number box
+                    AssertMarker(numLine, ListNumberingGroupStyle.Disc, DefaultNumberWidth - DefaultAlley, 10);
                 }
             }
 
@@ -3254,7 +3230,26 @@ namespace Scryber.UnitLayouts
         /// <param name="depth"></param>
         /// <param name="itemNums"></param>
         /// <param name="itemsPrefix"></param>
-        private void AssertOLBlockContent(PDFLayoutBlock olBlock, double numWidth, double gutterWidth, int depth, string[] itemNums, string itemsPrefix)
+        /// <summary>
+        /// Asserts the line of the number box has just a marker of the shape, that ends at the right of the box
+        /// </summary>
+        private static void AssertMarker(PDFLayoutLine numLine, ListNumberingGroupStyle shape, double boxRight, double fontSize)
+        {
+            Assert.IsNotNull(numLine);
+            Assert.AreEqual(1, numLine.Runs.Count, "The number box has just the marker");
+            var run = numLine.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(run, "The marker is a component run");
+            var marker = run.Owner as ListItemMarker;
+            Assert.IsNotNull(marker, "The owner of the run is a marker");
+            Assert.AreEqual(shape, marker.Shape);
+            Assert.AreEqual(fontSize, marker.FontSize.PointsValue, 0.001);
+
+            //the marker (with the space after it) ends at the right of the number box
+            Assert.AreEqual(boxRight, (run.TotalBounds.X + run.TotalBounds.Width).PointsValue, 0.01, "The marker is right aligned");
+            Assert.AreEqual(fontSize * (ListItemMarker.MarkerSizeFactor + ListItemMarker.MarkerSpaceFactor), run.TotalBounds.Width.PointsValue, 0.01, "The size of the marker and the space after it");
+        }
+
+        private void AssertOLBlockContent(PDFLayoutBlock olBlock, double numWidth, double gutterWidth, int depth, string[] itemNums, string itemsPrefix, ListNumberingGroupStyle? marker = null)
         {
             Assert.AreEqual(itemNums.Length, olBlock.Columns[0].Contents.Count);
 
@@ -3303,6 +3298,12 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
 
                 var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                if (marker.HasValue)
+                {
+                    AssertMarker(numLine, marker.Value, numWidth - DefaultAlley, 10);
+                    continue;
+                }
 
                 start = numLine.Runs[0] as PDFTextRunBegin;
                 Assert.IsNotNull(start);

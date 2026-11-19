@@ -144,7 +144,14 @@ namespace Scryber.PDF.Layout
                 {
                     //As css, the indent of the items is the padding of the list (30pt by default), and the marker
                     //is outside the content of the item - the number box (the inset wide) ends the alley before the text.
-                    inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
+                    if (style.IsValueDefined(StyleKeys.ListInsetKey))
+                        inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
+                    else
+                    {
+                        //by default the number box reaches back 30pt, or further for a large font so the number or marker fits
+                        var fontInset = new Unit(this.GetFontSize(style).PointsValue * DefaultNumberWidthFactor, PageUnits.Points);
+                        inset = fontInset > DefaultNumberWidth ? fontInset : DefaultNumberWidth;
+                    }
 
                     Unit alley;
                     if (style.IsValueDefined(StyleKeys.ListAlleyKey))
@@ -161,13 +168,67 @@ namespace Scryber.PDF.Layout
 
         }
 
+        private static bool IsMarkerShape(ListNumberingGroupStyle type)
+        {
+            return type == ListNumberingGroupStyle.Disc
+                   || type == ListNumberingGroupStyle.Circle
+                   || type == ListNumberingGroupStyle.Square;
+        }
+
+        /// <summary>
+        /// Returns the marker for an automatic bullet from the number of lists the list of the item is in -
+        /// a disc, then a circle, then a square (as the browser default style sheet).
+        /// </summary>
+        private static ListNumberingGroupStyle GetBulletForDepth(ListItem item)
+        {
+            int lists = 0;
+            var parent = item.Parent;
+            while (null != parent)
+            {
+                if (parent is ListBase)
+                    lists++;
+                parent = parent.Parent;
+            }
+
+            //the first list is the list of the item
+            if (lists <= 1)
+                return ListNumberingGroupStyle.Disc;
+            else if (lists == 2)
+                return ListNumberingGroupStyle.Circle;
+            else
+                return ListNumberingGroupStyle.Square;
+        }
+
+        /// <summary>
+        /// The distance from the top of a line of the text of the item to its baseline, so a marker can be drawn on the same line as the text.
+        /// </summary>
+        private Unit GetTextBaselineOffset(Style style)
+        {
+            var options = style.CreateTextOptions();
+            if (null == options.Font || !(this.Context.Document is Document doc))
+                return Unit.Zero;
+
+            if (null == options.Font.FontMetrics)
+            {
+                var resource = doc.GetFontResource(options.Font, true);
+                if (null != resource && null != resource.Definition)
+                    options.Font.FontMetrics = resource.Definition.GetFontMetrics(options.Font.Size);
+            }
+            return options.GetBaselineOffset();
+        }
+
+        private Unit GetFontSize(Style style)
+        {
+            return style.GetValue(StyleKeys.FontSizeKey, new Unit(Font.DefaultFontSize, PageUnits.Points));
+        }
+
         /// <summary>
         /// The default space between the marker and the text, about the width of a space in the font of the item
         /// (as the space after the marker in a browser).
         /// </summary>
         private Unit GetDefaultAlley(Style style)
         {
-            var size = style.GetValue(StyleKeys.FontSizeKey, new Unit(Font.DefaultFontSize, PageUnits.Points));
+            var size = this.GetFontSize(style);
             return new Unit(size.PointsValue * DefaultListItemAlleyFactor, PageUnits.Points);
         }
 
@@ -175,6 +236,11 @@ namespace Scryber.PDF.Layout
         /// The default space between the marker and the text, as a factor of the font size.
         /// </summary>
         public const double DefaultListItemAlleyFactor = 0.3;
+
+        /// <summary>
+        /// The least the number box reaches back from the text, as a factor of the font size (30pt at 12pt)
+        /// </summary>
+        public const double DefaultNumberWidthFactor = 2.5;
 
         protected override void DoLayoutChildren()
         {
@@ -266,7 +332,7 @@ namespace Scryber.PDF.Layout
             panel.Width = width;
             panel.TextWrapping = Text.WordWrap.NoWrap;
             panel.OverflowAction = OverflowAction.Clip;
-            panel.Padding = new Thickness(0, 2, 0, 0); // add a little padding for space.
+            //the space between the number and the text is the alley
             panel.HorizontalAlignment = label.Alignment;
             panel.PositionMode = PositionMode.Absolute;
             panel.X = -label.NumberWidth.PointsValue;
@@ -275,7 +341,10 @@ namespace Scryber.PDF.Layout
             //panel.OverflowSplit = OverflowSplit.Never;
             panel.ID = (item.ID ?? "no_id") + "_Num";
             
-            panel.Contents.Add(label);
+            if (label is PDFListBulletItemLabel && IsMarkerShape(label.ListType))
+                panel.Contents.Add(new ListItemMarker(label.ListType, this.GetFontSize(this.FullStyle), this.GetTextBaselineOffset(this.FullStyle)) { ID = panel.ID + "_Marker" });
+            else
+                panel.Contents.Add(label);
             item.Contents.Insert(0, panel);
             
             // if (item.Contents.Count > 0)
@@ -329,10 +398,15 @@ namespace Scryber.PDF.Layout
                     defn.Text = text;
                     label = defn;
                 }
-                else if (type == ListNumberingGroupStyle.Bullet)
+                else if (type.IsBullet())
                 {
                     label = new PDFListBulletItemLabel();
                     label.Text = item.Document.ListNumbering.Increment();
+
+                    //the marker is drawn as a shape - an automatic bullet is a disc, a circle in a nested list,
+                    //and a square when nested deeper (as the browser default styles).
+                    if (type == ListNumberingGroupStyle.Bullet)
+                        type = GetBulletForDepth(item);
                 }
                 else
                 {

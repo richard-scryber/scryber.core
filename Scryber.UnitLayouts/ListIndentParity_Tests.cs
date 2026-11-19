@@ -3,6 +3,8 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.PDF.Layout;
+using System.Collections.Generic;
 
 namespace Scryber.UnitLayouts
 {
@@ -80,6 +82,95 @@ ul, ol, dl { margin: 0 0 10pt 0; }
             AssertBounds(doc, "dl", 10, 380);
             AssertBounds(doc, "dt", 10, 380);
             AssertBounds(doc, "dd", 40, 350);
+        }
+
+        private const string MarkersHtml = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head><style>
+@page { size: 400pt 400pt; margin: 0; } html{width:400pt} body { margin: 0; padding: 10pt; font-family: Helvetica, sans-serif; font-size: 12pt; }
+ul, ol { margin: 0; }
+</style></head>
+<body>
+<ul><li id='d1'>disc<ul><li id='d2'>circle<ul><li id='d3'>square<ul><li id='d4'>still square</li></ul></li></ul></li></ul></li></ul>
+<ol><li id='o1'>number<ul><li id='o2'>circle in an ol</li></ul></li></ol>
+<ul style='list-style-type: square'><li id='e1'>explicit square</li></ul>
+<ul><li>x<ul style='list-style-type: disc'><li id='e2'>explicit disc</li></ul></li></ul>
+<ul style='list-style-type: circle'><li id='e3'>explicit circle</li></ul>
+</body>
+</html>
+";
+
+        /// <summary>
+        /// Finds the markers in the layout, by the id of their list item
+        /// </summary>
+        private static void CollectMarkers(PDFLayoutBlock block, Dictionary<string, ListItemMarker> found)
+        {
+            if (null != block.Columns)
+            {
+                foreach (var region in block.Columns)
+                    CollectMarkers(region, found);
+            }
+            if (block.HasPositionedRegions)
+            {
+                foreach (var region in block.PositionedRegions)
+                    CollectMarkers(region, found);
+            }
+        }
+
+        private static void CollectMarkers(PDFLayoutRegion region, Dictionary<string, ListItemMarker> found)
+        {
+            foreach (var item in region.Contents)
+            {
+                if (item is PDFLayoutBlock inner)
+                    CollectMarkers(inner, found);
+                else if (item is PDFLayoutLine line)
+                {
+                    foreach (var run in line.Runs)
+                    {
+                        if (run is PDFLayoutComponentRun comp && comp.Owner is ListItemMarker marker)
+                            found[marker.ID.Replace("_Num_Marker", "")] = marker;
+                    }
+                }
+            }
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void ListIndent_02_Markers()
+        {
+            var doc = Document.ParseDocument(new StringReader(MarkersHtml), ParseSourceType.DynamicContent);
+            PDFLayoutDocument layout = null;
+            doc.LayoutComplete += (sender, args) => layout = args.Context.GetLayout<PDFLayoutDocument>();
+            using (var ms = DocStreams.GetOutputStream("ListIndent_02_Markers.pdf"))
+            {
+                doc.SaveAsPDF(ms);
+            }
+
+            var markers = new Dictionary<string, ListItemMarker>();
+            CollectMarkers(layout.AllPages[0].ContentBlock, markers);
+
+            //as Chrome - a disc, then a circle in a nested list (in a ul or an ol), then a square for any deeper
+            Assert.AreEqual(ListNumberingGroupStyle.Disc, markers["d1"].Shape);
+            Assert.AreEqual(ListNumberingGroupStyle.Circle, markers["d2"].Shape);
+            Assert.AreEqual(ListNumberingGroupStyle.Square, markers["d3"].Shape);
+            Assert.AreEqual(ListNumberingGroupStyle.Square, markers["d4"].Shape);
+            Assert.IsFalse(markers.ContainsKey("o1"), "A number is not a marker");
+            Assert.AreEqual(ListNumberingGroupStyle.Circle, markers["o2"].Shape);
+
+            //an explicit list-style-type is used at any depth
+            Assert.AreEqual(ListNumberingGroupStyle.Square, markers["e1"].Shape);
+            Assert.AreEqual(ListNumberingGroupStyle.Disc, markers["e2"].Shape);
+            Assert.AreEqual(ListNumberingGroupStyle.Circle, markers["e3"].Shape);
+
+            foreach (var marker in markers.Values)
+                Assert.AreEqual(12.0, marker.FontSize.PointsValue, 0.001, "The marker is sized from the font of the item");
+
+            //and the items are where they are in Chrome
+            AssertBounds(doc, "d1", 40, 350);
+            AssertBounds(doc, "d2", 70, 320);
+            AssertBounds(doc, "d3", 100, 290);
+            AssertBounds(doc, "d4", 130, 260);
+            AssertBounds(doc, "o2", 70, 320);
+            AssertBounds(doc, "e2", 70, 320);
         }
     }
 }

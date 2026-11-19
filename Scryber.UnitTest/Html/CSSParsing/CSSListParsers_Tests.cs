@@ -50,27 +50,43 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         [TestMethod()]
         [TestCategory("CSS")]
         [TestCategory("CSS-Parsers")]
-        public void ListStyleType_Disc_SetsBullet()
+        public void ListStyleType_Disc_SetsDisc()
         {
             var parser = new CSSListStyleTypeParser();
             var style = CreateStyle();
             var result = ParseValue(parser, style, "disc");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(ListNumberingGroupStyle.Bullet, style.List.NumberingStyle);
+            Assert.AreEqual(ListNumberingGroupStyle.Disc, style.List.NumberingStyle);
+            Assert.IsTrue(style.List.NumberingStyle.IsBullet());
         }
 
         [TestMethod()]
         [TestCategory("CSS")]
         [TestCategory("CSS-Parsers")]
-        public void ListStyleType_Circle_SetsBullet()
+        public void ListStyleType_Circle_SetsCircle()
         {
             var parser = new CSSListStyleTypeParser();
             var style = CreateStyle();
             var result = ParseValue(parser, style, "circle");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(ListNumberingGroupStyle.Bullet, style.List.NumberingStyle);
+            Assert.AreEqual(ListNumberingGroupStyle.Circle, style.List.NumberingStyle);
+            Assert.IsTrue(style.List.NumberingStyle.IsBullet());
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ListStyleType_Square_SetsSquare()
+        {
+            var parser = new CSSListStyleTypeParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "square");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(ListNumberingGroupStyle.Square, style.List.NumberingStyle);
+            Assert.IsTrue(style.List.NumberingStyle.IsBullet());
         }
 
         [TestMethod()]

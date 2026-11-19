@@ -246,9 +246,29 @@ namespace Scryber.Drawing
         UppercaseLetters,
         LowercaseLetters,
         Bullet,
-        Labels
+        Labels,
+        /// <summary>A filled circle marker (css disc). Bullet chooses disc, circle or square from the depth of the list.</summary>
+        Disc,
+        /// <summary>A hollow circle marker (css circle)</summary>
+        Circle,
+        /// <summary>A filled square marker (css square)</summary>
+        Square
         //[Obsolete("The labels and images are not currently supported", false)]
         //Image
+    }
+
+    public static class ListNumberingGroupStyleExtensions
+    {
+        /// <summary>
+        /// True if the style is a marker (bullet, disc, circle or square) rather than a number or label
+        /// </summary>
+        public static bool IsBullet(this ListNumberingGroupStyle style)
+        {
+            return style == ListNumberingGroupStyle.Bullet
+                   || style == ListNumberingGroupStyle.Disc
+                   || style == ListNumberingGroupStyle.Circle
+                   || style == ListNumberingGroupStyle.Square;
+        }
     }
 
     public static class FontWeights
