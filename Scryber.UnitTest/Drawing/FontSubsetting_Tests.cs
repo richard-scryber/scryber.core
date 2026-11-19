@@ -25,9 +25,9 @@ namespace Scryber.Core.UnitTests.Drawing
         private static string SegoeBoldPath => FontPath("Mocks/Fonts/segoeuib.ttf");
         private static string ArchivePath => FontPath("Resources/Archive.otf");
 
-        private static string Html(string extraCss = "", string body = null)
+        private static string Html(string extraCss = "", string body = null, string head = "")
         {
-            return @"<html xmlns='http://www.w3.org/1999/xhtml'><head><style>
+            return @"<html xmlns='http://www.w3.org/1999/xhtml'><head>" + head + @"<style>
 @font-face { font-family: 'Segoe'; src: url('" + SegoePath + @"'); font-weight: normal; }
 @font-face { font-family: 'Segoe'; src: url('" + SegoeBoldPath + @"'); font-weight: bold; }
 @page { size: 400pt 300pt; margin: 20pt; }
@@ -233,6 +233,43 @@ body { font-family: 'Segoe'; font-size: 12pt; }
             //the font is embedded in full
             var archive = File.ReadAllBytes(ArchivePath);
             Assert.IsTrue(GetFontFiles(pdf).Any(f => f.Length == archive.Length), "The whole Archive font is embedded");
+        }
+
+        [TestMethod()]
+        public void FontSubsetting_06_MetaTagTurnsSubsettingOn()
+        {
+            var html = Html(head: "<meta name='font-subset' content='true' />");
+            var pdf = Render(html, null, out var doc, out _, "FontSubsetting_06_MetaOn.pdf");
+
+            Assert.IsTrue(doc.RenderOptions.SubsetEmbeddedFonts, "The meta tag set the render option");
+            var files = GetFontFiles(pdf);
+            Assert.AreEqual(2, files.Length);
+            foreach (var file in files)
+                Assert.IsTrue(file.Length < 100000, "The font (" + file.Length + ") is a subset");
+        }
+
+        [TestMethod()]
+        public void FontSubsetting_07_MetaTagFalseEmbedsInFull()
+        {
+            //the meta tag is applied when the document is bound, so replaces a value set in code before saving
+            var html = Html(head: "<meta name='font-subset' content='False' />");
+            var pdf = Render(html, true, out var doc, out _, "FontSubsetting_07_MetaOff.pdf");
+
+            Assert.IsFalse(doc.RenderOptions.SubsetEmbeddedFonts, "The meta tag set the render option off");
+            var regular = File.ReadAllBytes(SegoePath);
+            Assert.IsTrue(GetFontFiles(pdf).Any(f => f.Length == regular.Length), "The whole font is embedded");
+        }
+
+        [TestMethod()]
+        public void FontSubsetting_08_UnknownMetaValueIsAWarning()
+        {
+            var html = Html(head: "<meta name='font-subset' content='sometimes' />");
+            var pdf = Render(html, null, out var doc, out var log, "FontSubsetting_08_MetaUnknown.pdf");
+
+            Assert.IsFalse(doc.RenderOptions.SubsetEmbeddedFonts, "The option is unchanged");
+            Assert.IsTrue(HasWarning(log, "font-subset value 'sometimes'"), "A warning about the value");
+            var regular = File.ReadAllBytes(SegoePath);
+            Assert.IsTrue(GetFontFiles(pdf).Any(f => f.Length == regular.Length), "The whole font is embedded");
         }
     }
 }

@@ -146,6 +146,9 @@ namespace Scryber.Html.Components
                                 ParseSecurityType(meta.Content, doc.RenderOptions.Permissions, doc.TraceLog);
 
                                 break;
+                            case ("font-subset"):
+                                ParseFontSubset(meta.Content, doc.RenderOptions, doc.TraceLog);
+                                break;
                             default:
                                 if (logVerbose)
                                     doc.TraceLog.Add(TraceLevel.Verbose, "meta", "Skipping unknown meta tag " + meta.Name);
@@ -154,6 +157,22 @@ namespace Scryber.Html.Components
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Sets whether embedded TrueType fonts are subset, from the content of a font-subset meta tag (true or false).
+        /// This replaces the value from the configuration, or set on the RenderOptions before the document is bound.
+        /// </summary>
+        protected void ParseFontSubset(string content, PDFDocumentRenderOptions options, TraceLog log)
+        {
+            if (!string.IsNullOrEmpty(content) && bool.TryParse(content.Trim(), out var subset))
+            {
+                if (log.ShouldLog(TraceLevel.Message))
+                    log.Add(TraceLevel.Message, "meta", "Set the embedded fonts to " + (subset ? "be subset" : "be embedded in full"));
+                options.SubsetEmbeddedFonts = subset;
+            }
+            else if (log.ShouldLog(TraceLevel.Warning))
+                log.Add(TraceLevel.Warning, "meta", "The font-subset value '" + content + "' was not recognised, use true or false");
         }
 
         protected void ParseSecurityType(string content, PDFDocumentPermissions permissions, TraceLog log)
