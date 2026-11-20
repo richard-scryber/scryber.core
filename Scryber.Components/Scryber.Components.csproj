@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.11.0-beta.1</PackageVersion>
+    <PackageVersion>9.11.0-beta.2</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.11.0-beta.1
+    <PackageReleaseNotes>9.11.0-beta.2
+Fixed: a complete html document bound into an iframe (with data-content or src) was not unwrapped when there was whitespace around it, such as a new line after the doctype. It was laid out as a document within the page, and generation failed with 'No Current group on the stack to unregister' (GitHub issue #179).
+Changed: a complete html document bound with data-content into any other element, such as a div, now gives a clear error that names the element and says to use an iframe. In strict conformance it is an exception; in lax it is an error in the trace log and the content is left out. Before, it failed later with 'No Current group on the stack to unregister'.
+
+9.11.0-beta.1
 Breaking change: an svg image (img src='image.svg') with a percentage width or height on its svg root (e.g. width='100%' viewBox='0 0 24 24') is sized as a browser - a percentage is not a size of its own, so the image fills the width available with the ratio of the viewBox (or uses the other, absolute, dimension with that ratio). It was sized as the percentage of the viewBox. Give the img a width or height to size it.
 Fixed: a style attribute on an svg gradient stop (e.g. style='stop-color: red') stopped the whole document from parsing. The stroke-dashoffset and opacity attributes were only read from css, and a rect did not read its stroke-opacity or stroke-linejoin attributes - they are now read on svg shapes, as their css properties are (opacity is the fill opacity, as the css property).
 Fixed: mode() only took numbers - text (e.g. mode(model.choices) of 'A', 'B', 'A') raised an error. Text is now compared as text, and numbers (or text that is a number) as numbers.
