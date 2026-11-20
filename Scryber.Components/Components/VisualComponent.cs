@@ -2041,6 +2041,20 @@ namespace Scryber.Components
 
             var component = this.ParseDataContent(data);
 
+            if (IsWholeDocument(component))
+            {
+                //A whole html document has its own pages and page numbering, and cannot be laid out inside this component.
+                var msg = "The data-content of the '" + (string.IsNullOrEmpty(this.ID) ? this.ElementName : this.ID) +
+                          "' component is a whole html document, which can only be bound into an iframe. " +
+                          "Use <iframe data-content='...'> for a complete document, or bind only the content of its body.";
+
+                if (context.Conformance == ParserConformanceMode.Strict)
+                    throw new PDFDataException(msg);
+
+                context.TraceLog.Add(TraceLevel.Error, "Binding", msg);
+                return;
+            }
+
             //We clear out even if the returned content is null
             if (data.Action == DataContentAction.Replace)
             {
@@ -2085,6 +2099,25 @@ namespace Scryber.Components
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns true if the parsed data-content is (or contains) a whole html document, rather than a fragment of content
+        /// </summary>
+        private static bool IsWholeDocument(Component parsed)
+        {
+            if (parsed is Scryber.Html.Components.HTMLDocument)
+                return true;
+
+            if (parsed is Scryber.Html.Components.HTMLFragmentWrapper fragment && fragment.HasContent)
+            {
+                foreach (var item in fragment.Content)
+                {
+                    if (item is Scryber.Html.Components.HTMLDocument)
+                        return true;
+                }
+            }
+            return false;
+        }
 
         protected virtual Component ParseDataContent(Data.DataBindingContent data)
         {

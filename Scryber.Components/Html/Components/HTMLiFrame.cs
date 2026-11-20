@@ -511,9 +511,10 @@ namespace Scryber.Html.Components
                 
                 if (contents != null)
                 {
-                    //A whole document can have whitespace around it (e.g. a new line after the doctype),
-                    //it is still the whole document and must be unwrapped, or it is laid out as a document within the page.
-                    var doc = GetOnlyDocument(contents);
+                    //A whole document can have whitespace or stray content around it (e.g. a new line after the doctype).
+                    //The document must be unwrapped, or it is laid out as a document within the page,
+                    //and anything around it is dropped when the contents are replaced.
+                    var doc = FindDocument(contents);
                     if (null != doc)
                     {
                         if (allowOuterHtml)
@@ -565,21 +566,16 @@ namespace Scryber.Html.Components
         }
 
         /// <summary>
-        /// Returns the html document in the contents, if it is the only thing in them apart from whitespace, otherwise null.
+        /// Returns the first html document in the contents, or null if there is not one.
         /// </summary>
-        private static HTMLDocument GetOnlyDocument(ComponentList contents)
+        private static HTMLDocument FindDocument(ComponentList contents)
         {
-            HTMLDocument found = null;
             foreach (var item in contents)
             {
-                if (item is Whitespace)
-                    continue;
-                else if (item is HTMLDocument doc && null == found)
-                    found = doc;
-                else
-                    return null;
+                if (item is HTMLDocument doc)
+                    return doc;
             }
-            return found;
+            return null;
         }
 
         private HTMLArticle WrapContentsInArticle(HTMLDocument doc)

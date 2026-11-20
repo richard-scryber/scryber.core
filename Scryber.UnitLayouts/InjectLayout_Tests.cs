@@ -1458,7 +1458,8 @@ This is the {{.name}} item at index {{.index}}</div>";
                 "<iframe id='srcFrame' data-content='{{model.offer.design}}' data-content-type='text/html'></iframe>")));
             using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_DocumentWithDoctypeAndPageNumbers.pdf"))
             {
-                doc.Params["model"] = new { offer = new { design = IFrameFullDocument("Offer design") } };
+                //stray text after the document is dropped, the document is still unwrapped
+                doc.Params["model"] = new { offer = new { design = IFrameFullDocument("Offer design") + "stray text" } };
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
@@ -1469,7 +1470,7 @@ This is the {{.name}} item at index {{.index}}</div>";
             //the document is unwrapped into an article, with no html document left in the frame
             var frame = doc.FindAComponentById("srcFrame") as HTMLiFrame;
             Assert.IsNotNull(frame);
-            Assert.AreEqual(1, frame.Contents.Count, "Just the article, the whitespace around the document is not kept");
+            Assert.AreEqual(1, frame.Contents.Count, "Just the article, the whitespace and text around the document are not kept");
             Assert.IsInstanceOfType(frame.Contents[0], typeof(HTMLArticle));
             Assert.AreEqual(0, CountInnerDocuments(frame), "No html document inside the frame");
         }
@@ -1516,6 +1517,70 @@ This is the {{.name}} item at index {{.index}}</div>";
             Assert.IsNotInstanceOfType(outer.Contents[0], typeof(HTMLDocument));
             foreach (HTMLiFrame frame in frames)
                 Assert.AreEqual(0, CountInnerDocuments(frame), "No html document inside any frame");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_Div_DataContent_WholeDocument_StrictThrows()
+        {
+            //A whole document can only go into an iframe - a div explains this rather than failing in the page numbering
+            var doc = Document.ParseDocument(new StringReader(IFrameNumberedTemplate(
+                "<div id='lineDesign' data-content='{{model.design}}' data-content-type='text/html'></div>")));
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.Params["model"] = new { design = IFrameFullDocument("Design") };
+
+            Exception caught = null;
+            try
+            {
+                using (var ms = new MemoryStream())
+                    doc.SaveAsPDF(ms);
+            }
+            catch (Exception ex)
+            {
+                caught = ex;
+            }
+
+            Assert.IsNotNull(caught, "A whole document in a div should fail in strict mode");
+            var inner = caught;
+            while (!(inner is PDFDataException) && null != inner.InnerException)
+                inner = inner.InnerException;
+
+            Assert.IsInstanceOfType(inner, typeof(PDFDataException), "The error is a data exception, not " + inner.GetType().Name);
+            Assert.IsTrue(inner.Message.Contains("'lineDesign'"), "The message names the element: " + inner.Message);
+            Assert.IsTrue(inner.Message.Contains("can only be bound into an iframe"), "The message explains how to fix it: " + inner.Message);
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_Div_DataContent_WholeDocument_LaxLogsAnError()
+        {
+            var doc = Document.ParseDocument(new StringReader(IFrameNumberedTemplate(
+                "<div id='lineDesign' data-content='{{model.design}}' data-content-type='text/html'></div><p>After</p>")));
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Lax;
+            var log = new Scryber.Logging.CollectorTraceLog(TraceRecordLevel.Warnings, "test", true);
+            ((IParsedDocument)doc).SetTraceLog(log);
+
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_Div_DataContent_WholeDocument_LaxLogsAnError.pdf"))
+            {
+                doc.Params["model"] = new { design = IFrameFullDocument("Design") };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(1, _layout.AllPages.Count, "The rest of the document is laid out");
+
+            var div = doc.FindAComponentById("lineDesign") as HTMLDiv;
+            Assert.IsNotNull(div);
+            Assert.IsFalse(div.HasContent && div.Contents.Count > 0, "The document is not added to the div");
+
+            var logged = false;
+            foreach (var entry in log)
+            {
+                if (entry.Level == TraceLevel.Error && null != entry.Message && entry.Message.Contains("can only be bound into an iframe"))
+                    logged = true;
+            }
+            Assert.IsTrue(logged, "The error is in the log");
         }
     }
 }
