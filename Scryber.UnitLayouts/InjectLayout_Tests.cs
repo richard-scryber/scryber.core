@@ -1420,5 +1420,102 @@ This is the {{.name}} item at index {{.index}}</div>";
             var literal = varAfter.Contents[0] as TextLiteral;
             Assert.AreEqual("R", literal.Text, "Outer var should still be accessible");
         }
+
+        // A complete document as it is usually stored - a doctype on its own line, so there is whitespace before the html element.
+        // (GitHub issue #179) The whitespace stopped the document being unwrapped, so it was laid out as a document within the page,
+        // closed the page numbering of the outer document, and the outer page then failed to unregister its numbering.
+        private static string IFrameFullDocument(string text) =>
+            "<!DOCTYPE html>\n" +
+            "<html>\n<head><meta charset='utf-8' /><style>p { color: #336699; }</style></head>\n" +
+            "<body><p>" + text + "</p></body>\n</html>\n";
+
+        private static string IFrameNumberedTemplate(string body) =>
+            "<html xmlns='http://www.w3.org/1999/xhtml'><body>" +
+            "<footer><div>Page <page-number /> of <page-count /></div></footer>" +
+            body +
+            "</body></html>";
+
+        private static int CountInnerDocuments(Component parent)
+        {
+            var count = 0;
+            if (parent is IContainerComponent container && container.HasContent)
+            {
+                foreach (var child in container.Content)
+                {
+                    if (child is HTMLDocument)
+                        count++;
+                    count += CountInnerDocuments(child);
+                }
+            }
+            return count;
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_DocumentWithDoctypeAndPageNumbers()
+        {
+            var doc = Document.ParseDocument(new StringReader(IFrameNumberedTemplate(
+                "<iframe id='srcFrame' data-content='{{model.offer.design}}' data-content-type='text/html'></iframe>")));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_DocumentWithDoctypeAndPageNumbers.pdf"))
+            {
+                doc.Params["model"] = new { offer = new { design = IFrameFullDocument("Offer design") } };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(1, _layout.AllPages.Count);
+
+            //the document is unwrapped into an article, with no html document left in the frame
+            var frame = doc.FindAComponentById("srcFrame") as HTMLiFrame;
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(1, frame.Contents.Count, "Just the article, the whitespace around the document is not kept");
+            Assert.IsInstanceOfType(frame.Contents[0], typeof(HTMLArticle));
+            Assert.AreEqual(0, CountInnerDocuments(frame), "No html document inside the frame");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_DocumentsInEachLoop()
+        {
+            var doc = Document.ParseDocument(new StringReader(IFrameNumberedTemplate(
+                "{{#each model.lines}}<div>{{this.name}}</div>" +
+                "<iframe data-content='{{this.design}}' data-content-type='text/html'></iframe>{{/each}}" +
+                "<iframe id='outerFrame' data-content='{{model.end}}' data-content-type='text/html' allow='outer-html any'></iframe>")));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_DocumentsInEachLoop.pdf"))
+            {
+                doc.Params["model"] = new
+                {
+                    lines = new[]
+                    {
+                        new { name = "Line 1", design = IFrameFullDocument("Design 1") },
+                        new { name = "Line 2", design = IFrameFullDocument("Design 2") },
+                        new { name = "Line 3", design = IFrameFullDocument("Design 3") }
+                    },
+                    end = IFrameFullDocument("End design")
+                };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(1, _layout.AllPages.Count);
+
+            var frames = doc.FindMatches("iframe");
+            Assert.AreEqual(4, frames.Count, "A frame for each line and one at the end");
+            for (var i = 0; i < 3; i++)
+            {
+                var frame = (HTMLiFrame)frames[i];
+                Assert.AreEqual(1, frame.Contents.Count, "Frame " + i + " has only the article");
+                Assert.IsInstanceOfType(frame.Contents[0], typeof(HTMLArticle), "Frame " + i + " content is unwrapped into an article");
+            }
+
+            //with outer-html allowed the document is a div (with an article for the body), not an html document
+            var outer = (HTMLiFrame)frames[3];
+            Assert.AreEqual(1, outer.Contents.Count);
+            Assert.IsNotInstanceOfType(outer.Contents[0], typeof(HTMLDocument));
+            foreach (HTMLiFrame frame in frames)
+                Assert.AreEqual(0, CountInnerDocuments(frame), "No html document inside any frame");
+        }
     }
 }

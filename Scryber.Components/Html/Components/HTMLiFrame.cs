@@ -511,7 +511,10 @@ namespace Scryber.Html.Components
                 
                 if (contents != null)
                 {
-                    if (contents.Count == 1 && contents[0] is HTMLDocument doc)
+                    //A whole document can have whitespace around it (e.g. a new line after the doctype),
+                    //it is still the whole document and must be unwrapped, or it is laid out as a document within the page.
+                    var doc = GetOnlyDocument(contents);
+                    if (null != doc)
                     {
                         if (allowOuterHtml)
                         {
@@ -559,6 +562,24 @@ namespace Scryber.Html.Components
             }
 
             return all;
+        }
+
+        /// <summary>
+        /// Returns the html document in the contents, if it is the only thing in them apart from whitespace, otherwise null.
+        /// </summary>
+        private static HTMLDocument GetOnlyDocument(ComponentList contents)
+        {
+            HTMLDocument found = null;
+            foreach (var item in contents)
+            {
+                if (item is Whitespace)
+                    continue;
+                else if (item is HTMLDocument doc && null == found)
+                    found = doc;
+                else
+                    return null;
+            }
+            return found;
         }
 
         private HTMLArticle WrapContentsInArticle(HTMLDocument doc)
