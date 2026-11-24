@@ -4,7 +4,7 @@
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>9.11.0-beta.2</PackageVersion>
+    <PackageVersion>9.11.0</PackageVersion>
     <Version>9.11.0.0</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>ASP.NET MVC extensions for Scryber.Core, the open-source PDF rendering engine behind Paperwork.Core. Return a PDF from a controller action, generated from an HTML template with CSS styles and SVG drawing, bound to your model.
@@ -21,11 +21,8 @@ Scryber.Core and these extensions still work as they always have, and will conti
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>See: https://paperwork.help/changelog/scryber_core.html for a full break down.
 
-9.11.0-beta.2
-Updates the Scryber.Core dependency to 9.11.0-beta.2 - a beta, with a fix for complete html documents in an iframe (GitHub issue #179), and a clear error when one is bound into another element. See the Scryber.Core release notes.
-
-9.11.0-beta.1
-Updates the Scryber.Core dependency to 9.11.0-beta.1 - a beta, see the Scryber.Core release notes (new: list markers and indents as css, shrink to fit, font subsetting, paint-order on svg shapes; fixes for patterns and gradients on transformed shapes and svg images).
+9.11.0
+Updates the Scryber.Core dependency to 9.11.0 - see the Scryber.Core release notes (new: list markers drawn as disc, circle and square, and list indents as in a browser; shrink to fit for absolute, floating and inline-block elements; font subsetting, off by default; paint-order on svg shapes; complete html documents in an iframe, and a clear error when one is bound into another element).
 
 9.10.0
 Updates the Scryber.Core dependency to 9.10.0 - see the Scryber.Core release notes (new: the conditional ? : operator in expressions; fixes @page and rule order in style blocks with more than 30 rules, Newtonsoft and System.Text.Json binding the same, font embedding, and the num value attribute).
