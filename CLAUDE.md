@@ -1952,7 +1952,7 @@ Standard CSS box model: margin → border → padding → content
 - **TrueType/OpenType**: Full support via `Scryber.Core.OpenType` package
 - **Google Fonts**: Can load from external URLs
 - **Font Fallback**: Chain of fallbacks when exact font not found
-- **Font subsetting**: supported from 9.11.0, but **off by default**. Set `Scryber:Fonts:SubsetEmbeddedFonts` to `true`, or `doc.RenderOptions.SubsetEmbeddedFonts = true` for one document. A CFF-outline font, or one whose licence forbids subsetting, is embedded in full with a trace warning. Requires Scryber.Core.OpenType 9.8.0.
+- **Font subsetting**: supported from 9.11.0, but **off by default**. Set `Scryber:Fonts:SubsetEmbeddedFonts` to `true`, or `doc.RenderOptions.SubsetEmbeddedFonts = true` for one document. A CFF-outline font, or one whose licence forbids subsetting, is embedded in full with a trace warning. Requires Scryber.Core.OpenType 9.11.0.
 
 ### Unicode and Special Character Support
 
